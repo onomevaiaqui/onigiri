@@ -1,0 +1,16 @@
+[Unit]
+Description=Onigiri RPLIDAR A1 ROS 2 driver
+After=network.target
+
+[Service]
+Type=simple
+User=onigiri
+Group=onigiri
+SupplementaryGroups=dialout
+WorkingDirectory=/home/onigiri
+ExecStart=/bin/bash -lc 'source /opt/ros/jazzy/setup.bash && exec ros2 launch rplidar_ros rplidar.launch.py serial_port:=/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0'
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
