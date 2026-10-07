@@ -133,9 +133,23 @@ Há dois perfis Wi-Fi configurados com reconexão automática: `Itaipu_Parquetec
 
 ## 10. Próximas etapas
 
-1. Criar e validar o modo autônomo básico.
+### 10.1 Modo autônomo básico
+
+O arquivo `onigiri_autonomous_basic.py` publica um comando lento de avanço (`0,20`) no tópico `/cmd_vel`. O controlador principal mantém a responsabilidade pela segurança: se o LiDAR enxergar algo a menos de 0,35 m, o avanço é bloqueado.
+
+O controle manual do F710 tem prioridade enquanto estiver enviando dados. Para testar a autonomia, pare a ponte do F710 com `Ctrl+C` e execute no Raspberry:
+
+```bash
+source /opt/ros/jazzy/setup.bash
+python3 ~/onigiri_autonomous_basic.py
+```
+
+O serviço `onigiri-autonomous.service` existe, mas **não deve ser habilitado no boot antes da validação física**. Para interromper a autonomia, use `Ctrl+C`; o script publica um comando de parada ao encerrar.
+
+### 10.2 Evolução planejada
+
+1. Validar o modo autônomo básico em área livre.
 2. Definir forma segura de alternar entre controle manual e autonomia.
 3. Implementar desvio de obstáculos usando o LiDAR.
 4. Acrescentar câmera, áudio e demais periféricos.
 5. Documentar cada mudança neste manual.
-

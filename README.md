@@ -12,13 +12,14 @@ O estado atual é um robô omnidirecional de três motores, comandado pelo Logit
 - [x] RPLIDAR A1 publicando `/scan` no ROS 2.
 - [x] Proteção frontal: avanço bloqueado a menos de 0,35 m; ré, giro e lateral continuam disponíveis.
 - [x] Controlador de motores e LiDAR inicializados automaticamente no Raspberry.
-- [ ] Modo autônomo básico.
+- [x] Modo autônomo básico: avanço lento e parada diante de obstáculo.
 - [ ] Desvio autônomo de obstáculos e navegação.
 
 ## Estrutura
 
 - `onigiri_udp_tank.py` — controlador executado no Raspberry: motores, UDP, `/cmd_vel` e proteção LiDAR.
 - `f710_bridge.py` — ponte executada no Windows: Logitech F710 para UDP.
+- `onigiri_autonomous_basic.py` — comportamento autônomo inicial, desabilitado no boot até validação.
 - `systemd/` — serviços para iniciar o controlador e o LiDAR no boot.
 - `docs/MANUAL_DE_CONSTRUCAO.md` — montagem, alimentação, rede e operação.
 
@@ -29,4 +30,3 @@ Os motores e o Raspberry usam alimentações separadas com terra comum: a LiPo 3
 Antes de qualquer teste, mantenha as rodas suspensas ou deixe área livre ao redor do robô. A proteção por LiDAR é uma camada adicional e não substitui supervisão humana ou um desligamento físico da alimentação.
 
 Para o procedimento completo, consulte o [manual de construção](docs/MANUAL_DE_CONSTRUCAO.md).
-
