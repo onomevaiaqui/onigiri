@@ -12,7 +12,7 @@ O estado atual é um robô omnidirecional de três motores, comandado pelo Logit
 - [x] RPLIDAR A1 publicando `/scan` no ROS 2.
 - [x] Proteção frontal: avanço bloqueado a menos de 0,35 m; ré, giro e lateral continuam disponíveis.
 - [x] Controlador de motores e LiDAR inicializados automaticamente no Raspberry.
-- [x] Modo autônomo experimental: avanço lento e giro curto diante de obstáculo.
+- [x] Modo autônomo experimental: avanço lento e desvio pelo lado mais livre.
 - [ ] Desvio autônomo de obstáculos e navegação.
 
 ## Estrutura

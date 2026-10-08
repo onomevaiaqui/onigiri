@@ -135,7 +135,7 @@ Há dois perfis Wi-Fi configurados com reconexão automática: `Itaipu_Parquetec
 
 ### 10.1 Modo autônomo básico
 
-O arquivo `onigiri_autonomous_basic.py` publica um comando lento de avanço (`0,20`) no tópico `/cmd_vel`. Ao encontrar obstáculo a menos de **0,50 m**, ele faz um giro curto para a esquerda antes de voltar a avançar. O controlador principal mantém a responsabilidade pela segurança: se o LiDAR enxergar algo a menos de 0,35 m, o avanço é bloqueado.
+O arquivo `onigiri_autonomous_basic.py` publica um comando lento de avanço (`0,20`) no tópico `/cmd_vel`. Ao encontrar obstáculo a menos de **0,50 m**, ele compara os setores diagonais esquerdo e direito do LiDAR e faz um giro curto para o lado com mais espaço livre antes de voltar a avançar. O controlador principal mantém a responsabilidade pela segurança: se o LiDAR enxergar algo a menos de 0,35 m, o avanço é bloqueado.
 
 Em 8 de outubro de 2026, o modo autônomo básico foi validado após reinicialização por troca de bateria. Os três motores também foram confirmados por comandos ROS: M1/M2 no avanço e M3 no movimento lateral.
 

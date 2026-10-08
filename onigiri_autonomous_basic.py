@@ -17,10 +17,12 @@ from sensor_msgs.msg import LaserScan
 
 
 FORWARD_SPEED = 0.20
-TURN_LEFT_SPEED = 0.35
+TURN_SPEED = 0.35
 PUBLISH_HZ = 10.0
 AVOIDANCE_DISTANCE = 0.50
 FRONT_HALF_ANGLE_DEGREES = 12.0
+SIDE_MIN_ANGLE_DEGREES = 30.0
+SIDE_MAX_ANGLE_DEGREES = 75.0
 SCAN_TIMEOUT_SECONDS = 0.50
 TURN_SECONDS = 0.90
 
@@ -32,24 +34,53 @@ class BasicAutonomy(Node):
         self.create_subscription(LaserScan, "/scan", self.on_scan, 10)
         self.create_timer(1.0 / PUBLISH_HZ, self.publish_command)
         self.front_distance = None
+        self.left_clearance = None
+        self.right_clearance = None
         self.last_scan = 0.0
         self.turn_until = 0.0
+        self.turn_speed = 0.0
         self.get_logger().info(
-            "Autonomia ativa: avanca devagar; obstaculo a 0,50 m inicia giro curto para a esquerda."
+            "Autonomia ativa: avanca devagar; o LiDAR escolhe o lado mais livre para desviar."
         )
 
     def on_scan(self, scan: LaserScan) -> None:
-        distances = []
-        half_angle = math.radians(FRONT_HALF_ANGLE_DEGREES)
+        front = []
+        left = []
+        right = []
+        front_half_angle = math.radians(FRONT_HALF_ANGLE_DEGREES)
+        side_min_angle = math.radians(SIDE_MIN_ANGLE_DEGREES)
+        side_max_angle = math.radians(SIDE_MAX_ANGLE_DEGREES)
         for index, distance in enumerate(scan.ranges):
             angle = scan.angle_min + index * scan.angle_increment
             angle = math.atan2(math.sin(angle), math.cos(angle))
-            if abs(angle) <= half_angle and math.isfinite(distance):
-                if scan.range_min <= distance <= scan.range_max:
-                    distances.append(distance)
+            if not math.isfinite(distance):
+                continue
+            if not scan.range_min <= distance <= scan.range_max:
+                continue
 
-        self.front_distance = min(distances) if distances else float("inf")
+            if abs(angle) <= front_half_angle:
+                front.append(distance)
+            elif side_min_angle <= angle <= side_max_angle:
+                left.append(distance)
+            elif -side_max_angle <= angle <= -side_min_angle:
+                right.append(distance)
+
+        self.front_distance = min(front) if front else float("inf")
+        self.left_clearance = min(left) if left else float("inf")
+        self.right_clearance = min(right) if right else float("inf")
         self.last_scan = time.monotonic()
+
+    def start_turn(self, now: float) -> None:
+        # ROS positive angular.z is a left/anti-clockwise turn. In a tie,
+        # left is deliberately preferred so behavior is deterministic.
+        choose_left = self.left_clearance >= self.right_clearance
+        self.turn_speed = TURN_SPEED if choose_left else -TURN_SPEED
+        self.turn_until = now + TURN_SECONDS
+        direction = "esquerda" if choose_left else "direita"
+        self.get_logger().info(
+            "Obstaculo a %.2f m; livre: E=%.2f m D=%.2f m; girando para %s."
+            % (self.front_distance, self.left_clearance, self.right_clearance, direction)
+        )
 
     def publish_command(self) -> None:
         command = Twist()
@@ -61,13 +92,10 @@ class BasicAutonomy(Node):
             return
 
         if now < self.turn_until:
-            command.angular.z = TURN_LEFT_SPEED
+            command.angular.z = self.turn_speed
         elif self.front_distance is not None and self.front_distance < AVOIDANCE_DISTANCE:
-            self.turn_until = now + TURN_SECONDS
-            command.angular.z = TURN_LEFT_SPEED
-            self.get_logger().info(
-                f"Obstaculo a {self.front_distance:.2f} m: girando para a esquerda."
-            )
+            self.start_turn(now)
+            command.angular.z = self.turn_speed
         else:
             command.linear.x = FORWARD_SPEED
 
