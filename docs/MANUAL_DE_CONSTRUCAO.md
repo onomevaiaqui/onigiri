@@ -141,6 +141,8 @@ Em 8 de outubro de 2026, o modo autônomo básico foi validado após reinicializ
 
 Na mesma validação, o comportamento de desvio experimental foi confirmado: com um objeto a aproximadamente 40 cm à frente, o Onigiri interrompeu o avanço, girou para a esquerda e retomou o deslocamento sem atingir o limite de segurança de 35 cm.
 
+Também foi validada a escolha dinâmica do lado: com espaço livre à esquerda, o robô escolheu a esquerda; bloqueando o setor diagonal esquerdo e mantendo a direita livre, escolheu corretamente a direita.
+
 O controle manual do F710 tem prioridade enquanto estiver enviando dados. Para testar a autonomia, pare a ponte do F710 com `Ctrl+C` e execute no Raspberry:
 
 ```bash
