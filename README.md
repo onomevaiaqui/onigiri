@@ -21,6 +21,8 @@ O Onigiri usa um Raspberry Pi 4 com Ubuntu 24.04 e ROS 2 Jazzy, três motores JG
 
 O guia completo de montagem, instalação, operação, atualização e diagnóstico está em [docs/MANUAL_DE_CONSTRUCAO.md](docs/MANUAL_DE_CONSTRUCAO.md).
 
+A visão do produto, a jornada de uso e os próximos marcos estão em [docs/ESPECIFICACAO_DE_PRODUTO.md](docs/ESPECIFICACAO_DE_PRODUTO.md).
+
 ## Estrutura
 
 | Caminho | Uso |
