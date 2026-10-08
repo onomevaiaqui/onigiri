@@ -137,6 +137,8 @@ Há dois perfis Wi-Fi configurados com reconexão automática: `Itaipu_Parquetec
 
 O arquivo `onigiri_autonomous_basic.py` publica um comando lento de avanço (`0,20`) no tópico `/cmd_vel`. O controlador principal mantém a responsabilidade pela segurança: se o LiDAR enxergar algo a menos de 0,35 m, o avanço é bloqueado.
 
+Em 8 de outubro de 2026, o modo autônomo básico foi validado após reinicialização por troca de bateria. Os três motores também foram confirmados por comandos ROS: M1/M2 no avanço e M3 no movimento lateral.
+
 O controle manual do F710 tem prioridade enquanto estiver enviando dados. Para testar a autonomia, pare a ponte do F710 com `Ctrl+C` e execute no Raspberry:
 
 ```bash
