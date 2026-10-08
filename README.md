@@ -20,6 +20,7 @@ O estado atual é um robô omnidirecional de três motores, comandado pelo Logit
 
 - `onigiri_udp_tank.py` — controlador executado no Raspberry: motores, UDP, `/cmd_vel` e proteção LiDAR.
 - `f710_bridge.py` — ponte executada no Windows: Logitech F710 para UDP.
+- `f710_buttons.py` — identificador do botão que ativará/desativará a autonomia.
 - `onigiri_autonomous_basic.py` — comportamento autônomo inicial, desabilitado no boot até validação.
 - `systemd/` — serviços para iniciar o controlador e o LiDAR no boot.
 - `docs/MANUAL_DE_CONSTRUCAO.md` — montagem, alimentação, rede e operação.
