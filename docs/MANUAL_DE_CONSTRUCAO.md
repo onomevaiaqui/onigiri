@@ -159,6 +159,8 @@ ros2 service call /onigiri_autonomous/set_enabled std_srvs/srv/SetBool "{data: f
 
 O serviço `onigiri-autonomous.service` pode ser habilitado no boot porque permanece parado até a ativação explícita. Este é um comportamento experimental: sempre realize o teste em área livre e supervisionada.
 
+Em 8 de outubro de 2026, o serviço foi habilitado e validado: ativar o serviço ROS iniciou a navegação, e desativá-lo parou o robô imediatamente, mantendo o processo em espera.
+
 ### 10.2 Evolução planejada
 
 1. Validar o modo autônomo básico em área livre.
