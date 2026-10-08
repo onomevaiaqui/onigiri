@@ -14,6 +14,7 @@ import rclpy
 from geometry_msgs.msg import Twist
 from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
+from std_srvs.srv import SetBool
 
 
 FORWARD_SPEED = 0.20
@@ -32,6 +33,7 @@ class BasicAutonomy(Node):
         super().__init__("onigiri_autonomous_basic")
         self.publisher = self.create_publisher(Twist, "/cmd_vel", 10)
         self.create_subscription(LaserScan, "/scan", self.on_scan, 10)
+        self.create_service(SetBool, "/onigiri_autonomous/set_enabled", self.set_enabled)
         self.create_timer(1.0 / PUBLISH_HZ, self.publish_command)
         self.front_distance = None
         self.left_clearance = None
@@ -39,9 +41,25 @@ class BasicAutonomy(Node):
         self.last_scan = 0.0
         self.turn_until = 0.0
         self.turn_speed = 0.0
+        self.enabled = False
         self.get_logger().info(
-            "Autonomia ativa: avanca devagar; o LiDAR escolhe o lado mais livre para desviar."
+            "Autonomia pronta, mas desativada. Use o servico /onigiri_autonomous/set_enabled para iniciar."
         )
+
+    def set_enabled(self, request: SetBool.Request, response: SetBool.Response) -> SetBool.Response:
+        self.enabled = request.data
+        self.turn_until = 0.0
+        self.turn_speed = 0.0
+
+        if not self.enabled:
+            self.publisher.publish(Twist())
+            response.message = "Autonomia desativada; comando de parada enviado."
+        else:
+            response.message = "Autonomia ativada; aguardando leitura atual do LiDAR."
+
+        response.success = True
+        self.get_logger().info(response.message)
+        return response
 
     def on_scan(self, scan: LaserScan) -> None:
         front = []
@@ -85,6 +103,10 @@ class BasicAutonomy(Node):
     def publish_command(self) -> None:
         command = Twist()
         now = time.monotonic()
+
+        if not self.enabled:
+            self.publisher.publish(command)
+            return
 
         # Without a current LiDAR reading, do not command any movement.
         if now - self.last_scan > SCAN_TIMEOUT_SECONDS:

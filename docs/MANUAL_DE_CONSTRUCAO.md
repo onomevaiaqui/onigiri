@@ -143,14 +143,21 @@ Na mesma validação, o comportamento de desvio experimental foi confirmado: com
 
 Também foi validada a escolha dinâmica do lado: com espaço livre à esquerda, o robô escolheu a esquerda; bloqueando o setor diagonal esquerdo e mantendo a direita livre, escolheu corretamente a direita.
 
-O controle manual do F710 tem prioridade enquanto estiver enviando dados. Para testar a autonomia, pare a ponte do F710 com `Ctrl+C` e execute no Raspberry:
+O controle manual do F710 tem prioridade enquanto estiver enviando dados. O serviço autônomo inicia **desativado**, portanto não move o robô ao ligar a bateria. Para ativá-lo intencionalmente no Raspberry, pare a ponte do F710 com `Ctrl+C` e execute:
 
 ```bash
 source /opt/ros/jazzy/setup.bash
-python3 ~/onigiri_autonomous_basic.py
+ros2 service call /onigiri_autonomous/set_enabled std_srvs/srv/SetBool "{data: true}"
 ```
 
-O serviço `onigiri-autonomous.service` existe, mas **não deve ser habilitado no boot antes da validação física**. Para interromper a autonomia, use `Ctrl+C`; o script publica um comando de parada ao encerrar. Este é um comportamento experimental: sempre realize o teste em área livre e supervisionada.
+Para parar a autonomia explicitamente:
+
+```bash
+source /opt/ros/jazzy/setup.bash
+ros2 service call /onigiri_autonomous/set_enabled std_srvs/srv/SetBool "{data: false}"
+```
+
+O serviço `onigiri-autonomous.service` pode ser habilitado no boot porque permanece parado até a ativação explícita. Este é um comportamento experimental: sempre realize o teste em área livre e supervisionada.
 
 ### 10.2 Evolução planejada
 

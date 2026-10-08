@@ -1,6 +1,6 @@
 [Unit]
-Description=Onigiri basic autonomous behavior
-After=onigiri-udp.service onigiri-lidar.service
+Description=Onigiri autonomous behavior (armed but stopped by default)
+After=network.target onigiri-udp.service onigiri-lidar.service
 Requires=onigiri-udp.service onigiri-lidar.service
 
 [Service]
