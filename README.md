@@ -14,6 +14,7 @@ O Onigiri usa um Raspberry Pi 4 com Ubuntu 24.04 e ROS 2 Jazzy, três motores JG
 - Botão 7 do F710 ativa/desativa a autonomia.
 - Inicialização automática no Raspberry: base, LiDAR e autonomia armada.
 - Autonomia segura no boot: o processo inicia, mas o robô fica parado até receber ativação explícita.
+- Primeiro mapa experimental salvo com `slam_toolbox`; ainda não é um mapa validado para navegação.
 
 > A autonomia atual é reativa, não é navegação por mapa. Ela não possui encoders, odometria, SLAM ou planejamento de rota.
 

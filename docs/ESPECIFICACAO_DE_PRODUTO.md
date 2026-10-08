@@ -36,9 +36,11 @@ Uma interação típica será:
 
 O protótipo atual já controla os três motores, recebe o Logitech F710 pela rede, lê o RPLIDAR A1M8 e executa uma autonomia reativa de parada e desvio.
 
+Em 8 de outubro de 2026, o projeto gerou e salvou o primeiro mapa experimental com `slam_toolbox`. O arquivo serve para validar a integração inicial entre LiDAR, TF e SLAM. Ainda não deve ser usado para navegação até destinos, pois a plataforma não tem encoders nem odometria física.
+
 Para alcançar a experiência desejada, os próximos marcos são:
 
-1. Criar e salvar um mapa do ambiente.
+1. Ampliar e avaliar o mapa do ambiente.
 2. Estimar a posição do robô no mapa.
 3. Cadastrar `casa` e destinos nomeados.
 4. Navegar de forma segura até um destino e retornar.
