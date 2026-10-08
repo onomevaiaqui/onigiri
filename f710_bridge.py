@@ -40,13 +40,6 @@ def main() -> int:
     pygame.init()
     pygame.joystick.init()
 
-    if pygame.joystick.get_count() == 0:
-        print("Nenhum joystick detectado. Conecte o receptor USB do Logitech F710.")
-        return 1
-
-    joystick = pygame.joystick.Joystick(0)
-    joystick.init()
-    print(f"Joystick ativo: {joystick.get_name()}")
     print("Esquerdo: cima/baixo acelera; esquerda/direita gira.")
     print("Direito horizontal: deslocamento lateral. Ctrl+C para parar.")
     print(f"Botao {AUTONOMY_BUTTON}: alterna autonomia ligada/desligada.")
@@ -54,21 +47,45 @@ def main() -> int:
     destination = (args.host, args.port)
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     autonomy_enabled = False
+    joystick = None
+    waiting_reported = False
 
     try:
         while True:
-            for event in pygame.event.get():
-                if event.type == pygame.JOYBUTTONDOWN and event.button == AUTONOMY_BUTTON:
-                    autonomy_enabled = not autonomy_enabled
-                    send_autonomy(sock, destination, autonomy_enabled)
-                    state = "LIGADA" if autonomy_enabled else "DESLIGADA"
-                    print(f"Autonomia {state}.")
+            if joystick is None:
+                pygame.joystick.quit()
+                pygame.joystick.init()
+                if pygame.joystick.get_count() == 0:
+                    if not waiting_reported:
+                        print("Aguardando o receptor USB do Logitech F710...")
+                        waiting_reported = True
+                    time.sleep(1)
+                    continue
 
-            # F710 em XInput: eixo 0 = horizontal; eixo 1 = vertical (cima é negativo).
-            forward = deadzone(-joystick.get_axis(1))
-            turn_right = deadzone(joystick.get_axis(0))
-            lateral_right = deadzone(joystick.get_axis(2))
-            send(sock, destination, forward, turn_right, lateral_right)
+                joystick = pygame.joystick.Joystick(0)
+                joystick.init()
+                waiting_reported = False
+                print(f"Joystick ativo: {joystick.get_name()}")
+
+            try:
+                for event in pygame.event.get():
+                    if event.type == pygame.JOYBUTTONDOWN and event.button == AUTONOMY_BUTTON:
+                        autonomy_enabled = not autonomy_enabled
+                        send_autonomy(sock, destination, autonomy_enabled)
+                        state = "LIGADA" if autonomy_enabled else "DESLIGADA"
+                        print(f"Autonomia {state}.")
+
+                # F710 em XInput: eixo 0 = horizontal; eixo 1 = vertical (cima é negativo).
+                forward = deadzone(-joystick.get_axis(1))
+                turn_right = deadzone(joystick.get_axis(0))
+                lateral_right = deadzone(joystick.get_axis(2))
+                send(sock, destination, forward, turn_right, lateral_right)
+            except pygame.error:
+                print("Controle desconectado; autonomia desativada. Aguardando reconexao...")
+                autonomy_enabled = False
+                send_autonomy(sock, destination, False)
+                joystick = None
+
             time.sleep(1 / 30)
     except KeyboardInterrupt:
         print("Parando: enviando comando zero.")

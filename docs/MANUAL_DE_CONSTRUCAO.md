@@ -120,6 +120,8 @@ O Raspberry recebe os comandos por UDP na porta `5005`. O watchdog para os motor
 
 Com a ponte F710 em execução, o botão 7 ativa/desativa a autonomia sem precisar de SSH. Qualquer movimento real dos analógicos tem prioridade sobre a autonomia; depois que os analógicos voltam ao centro, a autonomia pode retomar se continuar ligada. Encerrar a ponte com `Ctrl+C` também desativa a autonomia.
 
+No Windows, a ponte pode ser colocada na pasta de inicialização do usuário para abrir automaticamente após o login. A versão atual aguarda o receptor F710 se ele ainda não estiver conectado e desativa a autonomia caso o controle desconecte.
+
 ## 8. Proteção frontal por LiDAR
 
 O controlador monitora os pontos do LiDAR em ±12° na frente. Quando há obstáculo a menos de **0,35 m**, ele bloqueia somente o comando para frente. Ré, giro e deslocamento lateral permanecem possíveis para que o operador se afaste.
