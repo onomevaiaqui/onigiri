@@ -17,10 +17,12 @@ from sensor_msgs.msg import LaserScan
 from std_srvs.srv import SetBool
 
 
-FORWARD_SPEED = 0.20
+# The JGY370 gearmotors are 40 RPM. Autonomous travel uses full available PWM;
+# obstacle anticipation is deliberately increased to preserve a safety margin.
+FORWARD_SPEED = 1.00
 TURN_SPEED = 0.35
 PUBLISH_HZ = 10.0
-AVOIDANCE_DISTANCE = 0.50
+AVOIDANCE_DISTANCE = 0.80
 FRONT_HALF_ANGLE_DEGREES = 12.0
 SIDE_MIN_ANGLE_DEGREES = 30.0
 SIDE_MAX_ANGLE_DEGREES = 75.0
