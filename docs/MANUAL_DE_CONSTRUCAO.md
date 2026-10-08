@@ -114,8 +114,11 @@ Mapeamento atual:
 | Analógico esquerdo vertical | Frente/ré |
 | Analógico esquerdo horizontal | Giro |
 | Analógico direito horizontal | Deslocamento lateral |
+| Botão 7 | Alterna a autonomia ligada/desligada |
 
 O Raspberry recebe os comandos por UDP na porta `5005`. O watchdog para os motores se os pacotes pararem por mais de 0,30 s.
+
+Com a ponte F710 em execução, o botão 7 ativa/desativa a autonomia sem precisar de SSH. Qualquer movimento real dos analógicos tem prioridade sobre a autonomia; depois que os analógicos voltam ao centro, a autonomia pode retomar se continuar ligada. Encerrar a ponte com `Ctrl+C` também desativa a autonomia.
 
 ## 8. Proteção frontal por LiDAR
 

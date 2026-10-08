@@ -14,6 +14,7 @@ O estado atual é um robô omnidirecional de três motores, comandado pelo Logit
 - [x] Controlador de motores e LiDAR inicializados automaticamente no Raspberry.
 - [x] Modo autônomo experimental: avanço lento e desvio pelo lado mais livre.
 - [x] Autonomia inicia desativada e exige ativação explícita.
+- [x] Botão 7 do F710 alterna entre autonomia ligada e desligada.
 - [ ] Desvio autônomo de obstáculos e navegação.
 
 ## Estrutura

@@ -9,6 +9,7 @@ import rclpy
 from geometry_msgs.msg import Twist
 from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
+from std_srvs.srv import SetBool
 from smbus import SMBus
 
 
@@ -95,12 +96,13 @@ class OnigiriBase(Node):
         self.sock.bind(("0.0.0.0", PORT))
         self.sock.setblocking(False)
         self.last_command = 0.0
-        self.last_udp = 0.0
+        self.last_manual_motion = 0.0
         self.front_distance = None
         self.last_scan = 0.0
         self.last_guard_log = 0.0
 
         self.create_subscription(Twist, "/cmd_vel", self.on_cmd_vel, 10)
+        self.autonomy_client = self.create_client(SetBool, "/onigiri_autonomous/set_enabled")
         self.create_subscription(LaserScan, "/scan", self.on_scan, 10)
         self.create_timer(0.02, self.poll)
         self.get_logger().info(
@@ -142,7 +144,7 @@ class OnigiriBase(Node):
 
     def on_cmd_vel(self, msg: Twist) -> None:
         # Enquanto o F710 envia pacotes, ele tem prioridade sobre autonomia.
-        if time.monotonic() - self.last_udp < WATCHDOG_SECONDS:
+        if time.monotonic() - self.last_manual_motion < WATCHDOG_SECONDS:
             return
 
         # Convenção ROS: x = frente, y = esquerda, z angular = anti-horário.
@@ -152,6 +154,23 @@ class OnigiriBase(Node):
             -msg.linear.y,
         )
 
+    def set_autonomy(self, enabled: bool) -> None:
+        if not self.autonomy_client.service_is_ready():
+            self.get_logger().warning("Servico de autonomia ainda nao esta disponivel.")
+            return
+
+        request = SetBool.Request()
+        request.data = enabled
+        future = self.autonomy_client.call_async(request)
+        future.add_done_callback(self.on_autonomy_response)
+
+    def on_autonomy_response(self, future) -> None:
+        try:
+            response = future.result()
+            self.get_logger().info(response.message)
+        except Exception as error:
+            self.get_logger().error(f"Falha ao alternar autonomia: {error}")
+
     def poll(self) -> None:
         while True:
             try:
@@ -160,12 +179,29 @@ class OnigiriBase(Node):
                 break
 
             try:
-                forward, turn_right, lateral_right = parse_command(payload)
+                message = payload.decode("ascii").strip()
             except (UnicodeDecodeError, ValueError):
                 continue
 
-            self.last_udp = time.monotonic()
-            self.apply(forward, turn_right, lateral_right)
+            if message == "AUTO_ON":
+                self.set_autonomy(True)
+                continue
+            if message == "AUTO_OFF":
+                self.set_autonomy(False)
+                continue
+
+            try:
+                forward, turn_right, lateral_right = parse_command(payload)
+            except ValueError:
+                continue
+
+            moving = max(abs(forward), abs(turn_right), abs(lateral_right)) >= DEADZONE
+            if moving:
+                self.last_manual_motion = time.monotonic()
+                self.apply(forward, turn_right, lateral_right)
+            elif time.monotonic() - self.last_manual_motion < WATCHDOG_SECONDS:
+                # Stops immediately after the operator releases a moving stick.
+                self.apply(0.0, 0.0, 0.0)
 
         if time.monotonic() - self.last_command > WATCHDOG_SECONDS:
             self.hat.stop_all()
