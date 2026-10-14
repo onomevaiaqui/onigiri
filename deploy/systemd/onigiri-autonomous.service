@@ -7,8 +7,8 @@ Requires=onigiri-udp.service onigiri-lidar.service
 Type=simple
 User=onigiri
 Group=onigiri
-WorkingDirectory=/home/onigiri
-ExecStart=/bin/bash -lc 'source /opt/ros/jazzy/setup.bash && exec python3 /home/onigiri/onigiri_autonomous_basic.py'
+WorkingDirectory=/home/onigiri/onigiri
+ExecStart=/bin/bash -lc 'source /opt/ros/jazzy/setup.bash && exec python3 software/raspberry/onigiri_autonomous_basic.py'
 Restart=on-failure
 RestartSec=1
 

@@ -30,20 +30,15 @@ Uma interação típica será:
 - Um risco próximo, uma leitura LiDAR ausente ou um timeout de comando devem interromper o movimento.
 - O controle manual tem prioridade sobre a autonomia.
 - O retorno para `casa` deve obedecer às mesmas regras de segurança do deslocamento ao destino.
-- O corte físico da alimentação dos motores continua sendo uma próxima integração necessária.
+- O corte físico da alimentação dos motores é obrigatório antes da validação de percursos autônomos.
 
-## Estado atual e próximos marcos
+## Estado de desenvolvimento
 
 O protótipo atual já controla os três motores, recebe o Logitech F710 pela rede, lê o RPLIDAR A1M8 e executa uma autonomia reativa de parada e desvio.
 
 Em 8 de outubro de 2026, o projeto gerou e salvou o primeiro mapa experimental com `slam_toolbox`. O arquivo serve para validar a integração inicial entre LiDAR, TF e SLAM. Ainda não deve ser usado para navegação até destinos, pois a plataforma não tem encoders nem odometria física.
 
-Para alcançar a experiência desejada, os próximos marcos são:
-
-1. Ampliar e avaliar o mapa do ambiente.
-2. Estimar a posição do robô no mapa.
-3. Cadastrar `casa` e destinos nomeados.
-4. Navegar de forma segura até um destino e retornar.
-5. Integrar voz, síntese de fala e a espera de 15 segundos.
-
-> A autonomia atual não realiza SLAM, localização, rota por mapa, reconhecimento de voz nem retorno automático. Esses itens são metas de desenvolvimento.
+O repositório contém interfaces para voz offline, fala, destinos nomeados,
+Nav2, espera de 15 segundos e retorno à base. A integração completa depende da
+configuração do mapa, da localização e dos periféricos, seguida de validação
+física. Veja o [estado, testes e limitações](ESTADO_TESTES_E_LIMITACOES.md).

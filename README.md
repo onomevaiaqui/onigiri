@@ -8,27 +8,25 @@ O objetivo é apoiar a orientação de pessoas em empresas, escolas, supermercad
 
 ## Estado do projeto
 
-O projeto está em desenvolvimento. A base física e de software já foi validada, enquanto a navegação por mapa, a interação por voz e o retorno automático à base seguem como próximas etapas.
+O projeto está em desenvolvimento. O repositório reúne a construção, a
+implantação e as integrações planejadas, mas ainda existem testes físicos,
+ajustes de segurança e bugs a corrigir antes de qualquer uso autônomo real.
 
-### O que já funciona
+### Recursos presentes no repositório
 
 - Tração com três motores DC: frente, ré, giro e deslocamento lateral.
 - Controle remoto por Logitech F710 em um PC Windows, usando rede Tailscale.
 - RPLIDAR A1M8 publicando leituras no ROS 2.
-- Proteção LiDAR a 35 cm para frente, ré e deslocamentos laterais implementada, pendente de validação física.
+- Proteção LiDAR a 35 cm para frente, ré e deslocamentos laterais implementada.
 - Autonomia reativa experimental para parar e desviar de obstáculos.
 - Prioridade para o controle manual.
 - Inicialização automática no Raspberry Pi por serviços `systemd`.
 - Primeiro mapa experimental gerado com `slam_toolbox`.
+- Fluxo preparado para voz offline, destinos nomeados, chegada, espera e retorno
+  à base, dependente de mapa, localização e Nav2 configurados.
 
-### Próximas etapas
-
-1. Validar percursos com múltiplos obstáculos.
-2. Integrar câmera, áudio e interface de voz.
-3. Localizar o robô no mapa, cadastrar destinos e navegar até eles.
-4. Implementar chegada ao destino, espera e retorno à base.
-
-> A autonomia atual é reativa. A navegação por mapa e o retorno automático ainda dependem de configuração e validação; o reconhecimento de voz offline está preparado, mas requer o modelo Vosk e validação do microfone da webcam.
+> Consulte [Estado, testes e limitações](docs/ESTADO_TESTES_E_LIMITACOES.md)
+> antes de energizar ou movimentar uma unidade.
 
 ## Plataforma
 
@@ -57,6 +55,8 @@ CHANGELOG.md             Registro das atualizações do projeto
 ## Comece pelos documentos
 
 - [Manual de construção e operação](docs/MANUAL_DE_CONSTRUCAO.md)
+- [Guia de construção do zero](docs/GUIA_DE_CONSTRUCAO_DO_ZERO.md)
+- [Estado, testes e limitações](docs/ESTADO_TESTES_E_LIMITACOES.md)
 - [Especificação de produto](docs/ESPECIFICACAO_DE_PRODUTO.md)
 - [Arquitetura da plataforma](docs/ARQUITETURA.md)
 - [Integração do botão de emergência](docs/BOTAO_DE_EMERGENCIA.md)

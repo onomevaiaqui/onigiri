@@ -1,6 +1,9 @@
 # Manual de construção e operação — Onigiri
 
-Este manual descreve a configuração montada e validada até 8 de outubro de 2026. Atualize-o junto de qualquer alteração elétrica, mecânica ou de software.
+Este manual registra a configuração de referência do protótipo. O projeto está
+em desenvolvimento e testes físicos, ajustes de segurança e correções de bugs
+continuam pendentes. Para uma montagem nova, siga primeiro o
+[guia de construção do zero](GUIA_DE_CONSTRUCAO_DO_ZERO.md).
 
 ## 1. Segurança
 
@@ -9,9 +12,9 @@ Este manual descreve a configuração montada e validada até 8 de outubro de 20
 3. A autonomia atual é experimental e reativa; supervisione o robô o tempo todo.
 4. O LiDAR protege frente, ré e deslocamentos laterais. Valide as quatro zonas após qualquer alteração física ou de software.
 5. Não conecte simultaneamente o Tobsun e outra fonte/carregador USB-C ao Raspberry.
-6. O botão de parada de emergência é uma próxima integração elétrica. Quando instalado, teste-o antes de qualquer percurso.
+6. O botão de parada de emergência deve ser instalado e testado antes de qualquer percurso.
 
-## 2. Componentes validados
+## 2. Componentes de referência
 
 | Item | Função |
 |---|---|
@@ -34,7 +37,7 @@ LiPo 3S (11,1 V)
                                            └── USB ──> RPLIDAR A1
 ```
 
-- Saída Tobsun validada: **5,07 V**.
+- Referência medida em uma montagem anterior: **5,07 V**. Meça novamente em cada unidade.
 - O HAT não alimenta o Raspberry nesta montagem.
 - Confira a polaridade antes de ligar a bateria.
 - A tensão e a corrente de pico dos motores devem permanecer dentro da capacidade do HAT.
@@ -43,13 +46,13 @@ LiPo 3S (11,1 V)
 
 O chassi usa três módulos de tração para movimento omnidirecional.
 
-| Canal | Posição | Movimento positivo validado |
+| Canal | Posição | Movimento positivo de referência |
 |---|---|---|
 | M1 | Dianteiro esquerdo | Frente |
 | M2 | Dianteiro direito | Frente |
 | M3 | Traseiro | Direita/lateral |
 
-Comandos combinados validados:
+Comandos combinados esperados para a montagem de referência:
 
 - M1 + M2 positivos: frente.
 - M1 positivo + M2 negativo: giro à direita.
@@ -81,7 +84,7 @@ sudo i2cdetect -y 1
 ls -l /dev/serial/by-id/
 ```
 
-O HAT deve aparecer em `6f`. O LiDAR validado usa o link estável:
+O HAT deve aparecer em `6f`. Na montagem de referência, o LiDAR usa o link estável:
 
 ```text
 /dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0
@@ -107,19 +110,20 @@ O desenvolvimento atual usa `C:\Python314\python.exe`. Ajuste os comandos se o P
 
 ## 6. Implantação no Raspberry
 
-Os scripts devem ficar em `/home/onigiri`. A partir do Windows, com Git Bash, copie os arquivos organizados no repositório:
+O caminho padrão de implantação é um clone completo em `/home/onigiri/onigiri`.
+No Raspberry:
 
 ```bash
-scp software/raspberry/onigiri_udp_tank.py software/raspberry/onigiri_autonomous_basic.py onigiri@<IP_TAILSCALE_DO_RASPBERRY>:~/
-scp deploy/systemd/onigiri-udp.service deploy/systemd/onigiri-lidar.service deploy/systemd/onigiri-autonomous.service onigiri@<IP_TAILSCALE_DO_RASPBERRY>:~/
+git clone https://github.com/onomevaiaqui/onigiri.git /home/onigiri/onigiri
+cd /home/onigiri/onigiri
 ```
 
-No Raspberry, instale os serviços:
+Instale os serviços básicos:
 
 ```bash
-sudo install -m 644 ~/onigiri-udp.service /etc/systemd/system/onigiri-udp.service
-sudo install -m 644 ~/onigiri-lidar.service /etc/systemd/system/onigiri-lidar.service
-sudo install -m 644 ~/onigiri-autonomous.service /etc/systemd/system/onigiri-autonomous.service
+sudo install -m 644 deploy/systemd/onigiri-udp.service /etc/systemd/system/
+sudo install -m 644 deploy/systemd/onigiri-lidar.service /etc/systemd/system/
+sudo install -m 644 deploy/systemd/onigiri-autonomous.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable --now onigiri-udp.service onigiri-lidar.service onigiri-autonomous.service
 ```
@@ -134,7 +138,7 @@ source /opt/ros/jazzy/setup.bash
 ros2 node list
 ```
 
-Resultado esperado: três linhas `active`, além de nós como `/onigiri_base`, `/rplidar_composition` e `/onigiri_autonomous_basic`.
+Resultado esperado: três linhas `active`, além de nós como `/onigiri_base`, `/rplidar_composition` e `/onigiri_autonomous_basic`. Para voz, fala, missões e Nav2, siga o [guia de construção do zero](GUIA_DE_CONSTRUCAO_DO_ZERO.md); não habilite esses serviços antes de sua configuração e testes.
 
 ## 7. Controle Logitech F710
 
@@ -255,23 +259,12 @@ ros2 topic echo /scan --once
 ## 11. Atualização de código
 
 1. Faça alterações no repositório e publique no GitHub.
-2. Copie ao Raspberry somente os arquivos modificados com `scp`.
-3. Para alterações em `onigiri_udp_tank.py`, reinicie `onigiri-udp.service`.
-4. Para alterações em `onigiri_autonomous_basic.py`, reinicie `onigiri-autonomous.service`.
-5. Para alterações em um arquivo de `systemd/`, execute `sudo install`, `sudo systemctl daemon-reload` e reinicie/habilite o serviço afetado.
-6. Documente e valide a mudança antes de considerar a etapa concluída.
+2. No Raspberry, execute `cd /home/onigiri/onigiri && git pull --ff-only`.
+3. Para alterações em um arquivo de `systemd/`, execute `sudo install -m 644 deploy/systemd/<arquivo>.service /etc/systemd/system/`, `sudo systemctl daemon-reload` e reinicie o serviço afetado.
+4. Para alterações em código, reinicie somente o serviço responsável.
+5. Documente o resultado e valide a mudança fisicamente antes de marcá-la como concluída.
 
-## 12. Itens validados e evolução
+## 12. Registro de testes
 
-Validações concluídas:
-
-- M1, M2 e M3 respondem corretamente.
-- LiDAR, barreira frontal, desvio à esquerda e desvio à direita foram testados.
-- Autonomia pode ser ativada/desativada por serviço ROS e pelo botão 7.
-- Serviços sobem após reboot sem movimentar o robô.
-
-Próximas evoluções:
-
-1. Curso com múltiplos obstáculos.
-2. Câmera, áudio e interface de operação.
-3. Odometria/SLAM/navegação por mapa, se sensores adicionais forem incorporados.
+Consulte [Estado, testes e limitações](ESTADO_TESTES_E_LIMITACOES.md) para os
+critérios de aceitação, limitações conhecidas e forma de registrar resultados.

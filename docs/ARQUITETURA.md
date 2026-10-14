@@ -10,12 +10,16 @@ Logitech F710 + PC Windows
           | UDP pela rede Tailscale
           v
 Raspberry Pi 4 + ROS 2 Jazzy
-   |              |             |
+   |              |             |              |
    |              |             +--> RPLIDAR A1M8 --> /scan
    |              |
    |              +--> autonomia reativa
    |
    +--> Stepper Motor HAT v0.2 --> M1, M2 e M3
+   |
+   +--> Webcam UVC + microfone --> Vosk --> /onigiri/voice_command
+   |
+   +--> Alto-falante/amplificador <-- espeak-ng <-- /onigiri/speech
 ```
 
 ## Software
@@ -24,19 +28,26 @@ Raspberry Pi 4 + ROS 2 Jazzy
 |---|---|---|
 | Raspberry Pi | `software/raspberry/onigiri_udp_tank.py` | Recebe comandos UDP, controla motores, aplica parada frontal e publica integração ROS 2. |
 | Raspberry Pi | `software/raspberry/onigiri_autonomous_basic.py` | Executa a autonomia reativa quando habilitada. |
+| Raspberry Pi | `software/raspberry/onigiri_voice_recognizer.py` | Transcreve localmente o microfone da webcam e publica frases reconhecidas. |
+| Raspberry Pi | `software/raspberry/onigiri_mission_manager.py` | Conecta pedidos de destino ao Nav2, espera e retorno à base. |
+| Raspberry Pi | `software/raspberry/onigiri_speech.py` | Converte mensagens ROS em fala local. |
 | Windows | `software/windows/f710_bridge.py` | Lê o Logitech F710 e envia comandos UDP ao Raspberry. |
 | Windows | `software/windows/f710_axes.py` | Ajuda a identificar os eixos de um controle. |
 | Windows | `software/windows/f710_buttons.py` | Ajuda a identificar os botões de um controle. |
 
 ## Implantação no Raspberry Pi
 
-Os serviços em `deploy/systemd/` foram preparados para a instalação atual, na qual os scripts são copiados para `/home/onigiri/`.
+Os serviços em `deploy/systemd/` foram preparados para um clone em
+`/home/onigiri/onigiri`.
 
-Para atualizar o Raspberry a partir deste repositório, copie os arquivos de `software/raspberry/` para `/home/onigiri/` e os arquivos de `deploy/systemd/` para `/etc/systemd/system/`, conforme o manual.
+Para atualizar o Raspberry, execute `git pull` no clone e reinstale os serviços,
+conforme o [guia de construção do zero](GUIA_DE_CONSTRUCAO_DO_ZERO.md).
 
 ## Limites atuais
 
 - Sem encoders e odometria física.
 - Sem localização persistente em mapa.
-- A proteção automática cobre apenas o avanço frontal.
-- Voz, câmera e navegação até destinos são recursos planejados.
+- A proteção automática por LiDAR foi implementada para frente, ré e laterais,
+  mas precisa de validação física completa.
+- Voz e missão dependem de webcam/microfone, modelo Vosk, mapa, localização e
+  Nav2 instalados e configurados.
