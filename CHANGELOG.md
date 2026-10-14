@@ -15,6 +15,7 @@ Este arquivo registra mudanças relevantes da plataforma Onigiri. As versões de
 - Projeto elétrico e procedimento de validação para o botão de parada de emergência.
 - Camada de missão com destinos nomeados, espera de 15 segundos e retorno à base via Nav2.
 - Interface ROS para fala e cancelamento de missão pelo controle manual.
+- Definição da webcam UVC com microfone integrado como entrada planejada para reconhecimento de voz.
 
 ### Validado
 

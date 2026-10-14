@@ -21,6 +21,7 @@ Este manual descreve a configuração montada e validada até 8 de outubro de 20
 | LiPo 3S, 11,1 V, 1150 mAh | Alimentação dos motores/HAT |
 | Tobsun EA75-5V | Conversão para 5 V; alimenta o Raspberry por USB-C |
 | RPLIDAR A1M8 | Percepção de obstáculos |
+| Webcam UVC com microfone integrado | Contexto visual e entrada de voz planejada |
 | Logitech F710 + PC Windows | Controle manual e seleção da autonomia |
 | Botão de emergência 22 mm, contato NC | Corte físico planejado da alimentação do HAT e motores |
 

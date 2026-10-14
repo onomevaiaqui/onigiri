@@ -37,6 +37,7 @@ O projeto está em desenvolvimento. A base física e de software já foi validad
 | Computação | Raspberry Pi 4, Ubuntu 24.04 e ROS 2 Jazzy |
 | Tração | 3 motores JGY370 12 V, 40 RPM e Stepper Motor HAT v0.2 |
 | Percepção | RPLIDAR A1M8 |
+| Visão e voz | Webcam UVC com microfone integrado |
 | Alimentação | LiPo 3S 11,1 V e conversor Tobsun EA75-5V |
 | Controle | Logitech F710 em PC Windows via Tailscale |
 | Projeto mecânico | Modelo CAD em STEP compartilhado neste repositório |

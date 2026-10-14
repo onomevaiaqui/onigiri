@@ -23,7 +23,8 @@
 2. Substitua as coordenadas de exemplo por poses medidas no mapa final.
 3. Instale a pilha de navegação Nav2 e forneça a transformação de localização no mapa.
 4. Instale `espeak-ng` no Raspberry para saída de áudio.
-5. Conecte um microfone e publique o texto reconhecido em `/onigiri/voice_command`.
+5. Use uma webcam UVC com **microfone integrado**. O microfone da webcam será a entrada de voz do Onigiri.
+6. O reconhecedor de voz deverá publicar o texto reconhecido em `/onigiri/voice_command`.
 
 ## Teste sem microfone
 
@@ -35,4 +36,4 @@ ros2 topic pub --once /onigiri/mission/request std_msgs/msg/String "{data: 'Onig
 
 ## Limites
 
-Esta camada não substitui a localização no mapa, a configuração de Nav2 ou o reconhecimento de voz. Ela fornece o fluxo de missão e as interfaces que conectam esses componentes.
+Esta camada não substitui a localização no mapa, a configuração de Nav2 ou o reconhecimento de voz. Ela fornece o fluxo de missão e as interfaces que conectam esses componentes. A webcam escolhida precisa ser compatível com Linux/UVC e disponibilizar seu microfone integrado como dispositivo de áudio USB.
