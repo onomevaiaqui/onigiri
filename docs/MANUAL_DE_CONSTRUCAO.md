@@ -9,6 +9,7 @@ Este manual descreve a configuração montada e validada até 8 de outubro de 20
 3. A autonomia atual é experimental e reativa; supervisione o robô o tempo todo.
 4. O LiDAR protege frente, ré e deslocamentos laterais. Valide as quatro zonas após qualquer alteração física ou de software.
 5. Não conecte simultaneamente o Tobsun e outra fonte/carregador USB-C ao Raspberry.
+6. O botão de parada de emergência é uma próxima integração elétrica. Quando instalado, teste-o antes de qualquer percurso.
 
 ## 2. Componentes validados
 
@@ -21,6 +22,7 @@ Este manual descreve a configuração montada e validada até 8 de outubro de 20
 | Tobsun EA75-5V | Conversão para 5 V; alimenta o Raspberry por USB-C |
 | RPLIDAR A1M8 | Percepção de obstáculos |
 | Logitech F710 + PC Windows | Controle manual e seleção da autonomia |
+| Botão de emergência 22 mm, contato NC | Corte físico planejado da alimentação do HAT e motores |
 
 ## 3. Alimentação
 
@@ -207,6 +209,7 @@ Se `/scan` ficar sem atualização por mais de 0,5 s, a autonomia não envia mov
 4. Controle manualmente pelos analógicos ou pressione o botão 7 para ativar a autonomia.
 5. Para interromper a autonomia, pressione novamente o botão 7, mova os analógicos ou desligue a ponte com `Ctrl+C`.
 6. Desligue a LiPo antes de transportar, alterar a montagem ou trocar cabos.
+7. Após instalar o botão de emergência, valide-o conforme [o procedimento dedicado](BOTAO_DE_EMERGENCIA.md).
 
 ## 10. Diagnóstico e recuperação
 

@@ -12,6 +12,7 @@ Este arquivo registra mudanças relevantes da plataforma Onigiri. As versões de
 - Documento de arquitetura e guia para uso do modelo CAD.
 - Proteção LiDAR para ré e deslocamentos laterais no controlador do Raspberry.
 - Procedimento de teste para percurso com múltiplos obstáculos.
+- Projeto elétrico e procedimento de validação para o botão de parada de emergência.
 
 ### Validado
 

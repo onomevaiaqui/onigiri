@@ -57,6 +57,7 @@ CHANGELOG.md             Registro das atualizações do projeto
 - [Manual de construção e operação](docs/MANUAL_DE_CONSTRUCAO.md)
 - [Especificação de produto](docs/ESPECIFICACAO_DE_PRODUTO.md)
 - [Arquitetura da plataforma](docs/ARQUITETURA.md)
+- [Integração do botão de emergência](docs/BOTAO_DE_EMERGENCIA.md)
 - [Modelo CAD em STEP](cad/README.md)
 - [Registro de versões](CHANGELOG.md)
 
@@ -66,6 +67,7 @@ CHANGELOG.md             Registro das atualizações do projeto
 - Não conecte outro carregador ou fonte USB-C ao Raspberry enquanto o Tobsun o estiver alimentando.
 - Antes de testar, mantenha pessoas, cabos e objetos fora da área de movimento.
 - O LiDAR e o software são camadas de proteção. Eles não substituem supervisão humana nem um corte físico de alimentação.
+- O [botão de parada de emergência](docs/BOTAO_DE_EMERGENCIA.md) está planejado para cortar fisicamente a tração dos motores.
 
 ## Contribuição
 
