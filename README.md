@@ -75,3 +75,11 @@ CHANGELOG.md             Registro das atualizações do projeto
 ## Contribuição
 
 O Onigiri evolui por meio de testes, documentação e colaboração. Ao contribuir, registre o que foi alterado, como foi validado e quais limitações ainda permanecem.
+
+## Licenças
+
+- O código, serviços e scripts usam a [licença MIT](LICENSE).
+- O CAD e o hardware original usam a [CERN-OHL-S v2](LICENSE-HARDWARE.md).
+
+Essas licenças mantêm o software reutilizável e exigem que derivações do
+hardware continuem abertas.

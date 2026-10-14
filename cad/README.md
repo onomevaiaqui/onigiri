@@ -16,3 +16,8 @@ O formato STEP preserva a geometria para abertura e edição em ferramentas CAD 
 ## Estado
 
 O modelo representa o chassi em desenvolvimento. Ele deve evoluir junto com a montagem física e os testes do robô.
+
+## Licença
+
+O modelo e demais arquivos de hardware originais do Onigiri usam a
+[CERN-OHL-S v2](../LICENSE-HARDWARE.md).
