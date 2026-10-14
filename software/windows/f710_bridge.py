@@ -31,6 +31,10 @@ def send_autonomy(sock: socket.socket, destination: tuple[str, int], enabled: bo
     sock.sendto(b"AUTO_ON" if enabled else b"AUTO_OFF", destination)
 
 
+def send_mission_cancel(sock: socket.socket, destination: tuple[str, int]) -> None:
+    sock.sendto(b"MISSION_CANCEL", destination)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="F710 to Onigiri UDP bridge")
     parser.add_argument("host", help="IPv4 address or Tailscale name of the Raspberry Pi")
@@ -47,6 +51,7 @@ def main() -> int:
     destination = (args.host, args.port)
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     autonomy_enabled = False
+    manual_override_active = False
     joystick = None
     waiting_reported = False
 
@@ -79,6 +84,13 @@ def main() -> int:
                 forward = deadzone(-joystick.get_axis(1))
                 turn_right = deadzone(joystick.get_axis(0))
                 lateral_right = deadzone(joystick.get_axis(2))
+                moving = max(abs(forward), abs(turn_right), abs(lateral_right)) > 0.0
+                if moving and not manual_override_active:
+                    send_mission_cancel(sock, destination)
+                    manual_override_active = True
+                    print("Missao automatica cancelada pelo controle manual.")
+                elif not moving:
+                    manual_override_active = False
                 send(sock, destination, forward, turn_right, lateral_right)
             except pygame.error:
                 print("Controle desconectado; autonomia desativada. Aguardando reconexao...")

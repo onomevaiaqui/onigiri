@@ -13,6 +13,8 @@ Este arquivo registra mudanças relevantes da plataforma Onigiri. As versões de
 - Proteção LiDAR para ré e deslocamentos laterais no controlador do Raspberry.
 - Procedimento de teste para percurso com múltiplos obstáculos.
 - Projeto elétrico e procedimento de validação para o botão de parada de emergência.
+- Camada de missão com destinos nomeados, espera de 15 segundos e retorno à base via Nav2.
+- Interface ROS para fala e cancelamento de missão pelo controle manual.
 
 ### Validado
 

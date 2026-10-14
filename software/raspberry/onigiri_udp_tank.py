@@ -10,6 +10,7 @@ from geometry_msgs.msg import Twist
 from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
 from std_srvs.srv import SetBool
+from std_msgs.msg import String
 from smbus import SMBus
 
 
@@ -110,6 +111,9 @@ class OnigiriBase(Node):
         self.last_guard_log = 0.0
 
         self.create_subscription(Twist, "/cmd_vel", self.on_cmd_vel, 10)
+        self.mission_cancel_publisher = self.create_publisher(
+            String, "/onigiri/mission/cancel", 10
+        )
         self.autonomy_client = self.create_client(SetBool, "/onigiri_autonomous/set_enabled")
         self.create_subscription(LaserScan, "/scan", self.on_scan, 10)
         self.create_timer(0.02, self.poll)
@@ -225,6 +229,11 @@ class OnigiriBase(Node):
                 continue
             if message == "AUTO_OFF":
                 self.set_autonomy(False)
+                continue
+            if message == "MISSION_CANCEL":
+                self.mission_cancel_publisher.publish(String(data="manual_override"))
+                self.hat.stop_all()
+                self.last_command = time.monotonic()
                 continue
 
             try:

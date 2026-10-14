@@ -49,6 +49,7 @@ deploy/systemd/          Serviços de inicialização do Raspberry Pi
 docs/                    Manual, especificação e arquitetura
 software/raspberry/     Controle de motores e autonomia em ROS 2
 software/windows/        Ponte e ferramentas do Logitech F710
+config/                 Destinos nomeados e ponto de retorno
 CHANGELOG.md             Registro das atualizações do projeto
 ```
 
@@ -58,6 +59,7 @@ CHANGELOG.md             Registro das atualizações do projeto
 - [Especificação de produto](docs/ESPECIFICACAO_DE_PRODUTO.md)
 - [Arquitetura da plataforma](docs/ARQUITETURA.md)
 - [Integração do botão de emergência](docs/BOTAO_DE_EMERGENCIA.md)
+- [Missões, destinos e interação por voz](docs/MISSOES_E_DESTINOS.md)
 - [Modelo CAD em STEP](cad/README.md)
 - [Registro de versões](CHANGELOG.md)
 
