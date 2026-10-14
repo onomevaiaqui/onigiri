@@ -17,11 +17,14 @@ I2C_ADDR = 0x6F
 PORT = 5005
 DEADZONE = 0.08
 WATCHDOG_SECONDS = 0.30
-# The LiDAR is centered and its 0-degree direction is the robot's front.
-# Forward movement is inhibited below this distance; reversing and turning remain available.
+# The LiDAR is centered and scans 360 degrees. Translational motion is
+# inhibited only in the direction where an obstacle is too close. Turning is
+# intentionally still allowed so the operator can free the robot.
 FRONT_STOP_DISTANCE = 0.35
+REAR_STOP_DISTANCE = 0.35
+LATERAL_STOP_DISTANCE = 0.35
 SCAN_TIMEOUT_SECONDS = 0.50
-FRONT_HALF_ANGLE_DEGREES = 12.0
+GUARD_HALF_ANGLE_DEGREES = 12.0
 
 
 class MotorHAT:
@@ -97,7 +100,12 @@ class OnigiriBase(Node):
         self.sock.setblocking(False)
         self.last_command = 0.0
         self.last_manual_motion = 0.0
-        self.front_distance = None
+        self.distances = {
+            "frente": None,
+            "re": None,
+            "direita": None,
+            "esquerda": None,
+        }
         self.last_scan = 0.0
         self.last_guard_log = 0.0
 
@@ -106,39 +114,68 @@ class OnigiriBase(Node):
         self.create_subscription(LaserScan, "/scan", self.on_scan, 10)
         self.create_timer(0.02, self.poll)
         self.get_logger().info(
-            f"Pronto: UDP na porta {PORT}, /cmd_vel e protecao frontal do LiDAR em {FRONT_STOP_DISTANCE:.2f} m."
+            "Pronto: UDP na porta %s, /cmd_vel e protecao 360 graus do LiDAR em %.2f m."
+            % (PORT, FRONT_STOP_DISTANCE)
         )
 
     def on_scan(self, scan: LaserScan) -> None:
-        distances = []
-        half_angle = math.radians(FRONT_HALF_ANGLE_DEGREES)
+        sectors = {name: [] for name in self.distances}
+        half_angle = math.radians(GUARD_HALF_ANGLE_DEGREES)
         for index, distance in enumerate(scan.ranges):
             angle = scan.angle_min + index * scan.angle_increment
             # Normalizes to [-pi, pi], so 0 degrees means straight ahead.
             angle = math.atan2(math.sin(angle), math.cos(angle))
-            if abs(angle) <= half_angle and math.isfinite(distance):
-                if scan.range_min <= distance <= scan.range_max:
-                    distances.append(distance)
+            if not math.isfinite(distance):
+                continue
+            if not scan.range_min <= distance <= scan.range_max:
+                continue
 
-        self.front_distance = min(distances) if distances else float("inf")
+            if abs(angle) <= half_angle:
+                sectors["frente"].append(distance)
+            elif abs(abs(angle) - math.pi) <= half_angle:
+                sectors["re"].append(distance)
+            elif abs(angle + math.pi / 2) <= half_angle:
+                sectors["direita"].append(distance)
+            elif abs(angle - math.pi / 2) <= half_angle:
+                sectors["esquerda"].append(distance)
+
+        self.distances = {
+            name: min(values) if values else float("inf")
+            for name, values in sectors.items()
+        }
         self.last_scan = time.monotonic()
 
-    def forward_is_safe(self) -> bool:
+    def direction_is_safe(self, direction: str, minimum_distance: float) -> bool:
         if time.monotonic() - self.last_scan > SCAN_TIMEOUT_SECONDS:
             return False
-        return self.front_distance is not None and self.front_distance >= FRONT_STOP_DISTANCE
+        distance = self.distances[direction]
+        return distance is not None and distance >= minimum_distance
+
+    def block_if_unsafe(
+        self, value: float, direction: str, minimum_distance: float
+    ) -> float:
+        if value <= 0.0 or self.direction_is_safe(direction, minimum_distance):
+            return value
+
+        now = time.monotonic()
+        if now - self.last_guard_log > 1.0:
+            distance = self.distances[direction]
+            description = "sem leitura recente" if distance is None else f"{distance:.2f} m"
+            self.get_logger().warning(
+                f"Movimento para {direction} bloqueado pelo LiDAR ({description})."
+            )
+            self.last_guard_log = now
+        return 0.0
 
     def apply(self, forward: float, turn_right: float, lateral_right: float) -> None:
-        if forward > 0.0 and not self.forward_is_safe():
-            forward = 0.0
-            now = time.monotonic()
-            if now - self.last_guard_log > 1.0:
-                distance = self.front_distance
-                description = "sem leitura recente" if distance is None else f"{distance:.2f} m"
-                self.get_logger().warning(
-                    f"Movimento para frente bloqueado pelo LiDAR ({description})."
-                )
-                self.last_guard_log = now
+        forward = self.block_if_unsafe(forward, "frente", FRONT_STOP_DISTANCE)
+        forward = -self.block_if_unsafe(-forward, "re", REAR_STOP_DISTANCE)
+        lateral_right = self.block_if_unsafe(
+            lateral_right, "direita", LATERAL_STOP_DISTANCE
+        )
+        lateral_right = -self.block_if_unsafe(
+            -lateral_right, "esquerda", LATERAL_STOP_DISTANCE
+        )
         self.hat.drive(forward, turn_right, lateral_right)
         self.last_command = time.monotonic()
 

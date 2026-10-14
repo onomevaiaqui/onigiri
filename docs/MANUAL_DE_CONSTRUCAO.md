@@ -7,7 +7,7 @@ Este manual descreve a configuração montada e validada até 8 de outubro de 20
 1. Desligue a LiPo antes de mexer em cabos, HAT ou motores.
 2. Antes de testar, suspenda as rodas ou deixe uma área livre ao redor do robô.
 3. A autonomia atual é experimental e reativa; supervisione o robô o tempo todo.
-4. O LiDAR só protege o setor frontal configurado. Ré e deslocamento lateral não possuem, por enquanto, barreira equivalente.
+4. O LiDAR protege frente, ré e deslocamentos laterais. Valide as quatro zonas após qualquer alteração física ou de software.
 5. Não conecte simultaneamente o Tobsun e outra fonte/carregador USB-C ao Raspberry.
 
 ## 2. Componentes validados
@@ -174,15 +174,16 @@ A ponte aguarda o receptor USB se ele não estiver conectado e desativa a autono
 
 O LiDAR publica `/scan`; seu eixo zero está alinhado com a frente do robô.
 
-### Barreira de emergência
+### Barreiras de emergência
 
-O controlador principal mede o setor de ±12° à frente. Abaixo de **0,35 m**, bloqueia apenas o avanço. Ré, giro e lateral continuam disponíveis para liberar o robô.
+O controlador principal mede setores de ±12° à frente, atrás, à direita e à esquerda. Abaixo de **0,35 m**, bloqueia somente o movimento em direção ao obstáculo. O giro continua disponível para liberar o robô.
 
 Teste:
 
 1. Coloque um objeto plano a 25 cm, na altura do LiDAR.
-2. Tente avançar: o robô deve ficar parado.
-3. Afaste o objeto para 60 cm: o avanço deve voltar a funcionar.
+2. Teste frente, ré, lateral direita e lateral esquerda: o movimento correspondente deve ficar bloqueado.
+3. Afaste o objeto para 60 cm: o movimento correspondente deve voltar a funcionar.
+4. Siga o [teste de percurso com múltiplos obstáculos](TESTE_PERCURSO_OBSTACULOS.md) antes de usar a autonomia no chão.
 
 ### Autonomia reativa
 
@@ -268,6 +269,5 @@ Validações concluídas:
 Próximas evoluções:
 
 1. Curso com múltiplos obstáculos.
-2. Proteções equivalentes para ré e deslocamento lateral.
-3. Câmera, áudio e interface de operação.
-4. Odometria/SLAM/navegação por mapa, se sensores adicionais forem incorporados.
+2. Câmera, áudio e interface de operação.
+3. Odometria/SLAM/navegação por mapa, se sensores adicionais forem incorporados.

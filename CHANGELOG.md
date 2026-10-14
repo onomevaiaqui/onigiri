@@ -10,6 +10,8 @@ Este arquivo registra mudanças relevantes da plataforma Onigiri. As versões de
 - Organização do repositório por plataforma: Raspberry Pi, Windows, implantação e CAD.
 - Página inicial com visão geral do robô, estado de desenvolvimento e próximos marcos.
 - Documento de arquitetura e guia para uso do modelo CAD.
+- Proteção LiDAR para ré e deslocamentos laterais no controlador do Raspberry.
+- Procedimento de teste para percurso com múltiplos obstáculos.
 
 ### Validado
 

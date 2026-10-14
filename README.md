@@ -15,7 +15,7 @@ O projeto está em desenvolvimento. A base física e de software já foi validad
 - Tração com três motores DC: frente, ré, giro e deslocamento lateral.
 - Controle remoto por Logitech F710 em um PC Windows, usando rede Tailscale.
 - RPLIDAR A1M8 publicando leituras no ROS 2.
-- Parada frontal de segurança a 35 cm.
+- Proteção LiDAR a 35 cm para frente, ré e deslocamentos laterais implementada, pendente de validação física.
 - Autonomia reativa experimental para parar e desviar de obstáculos.
 - Prioridade para o controle manual.
 - Inicialização automática no Raspberry Pi por serviços `systemd`.
@@ -24,10 +24,9 @@ O projeto está em desenvolvimento. A base física e de software já foi validad
 ### Próximas etapas
 
 1. Validar percursos com múltiplos obstáculos.
-2. Ampliar a proteção para ré e deslocamento lateral.
-3. Integrar câmera, áudio e interface de voz.
-4. Localizar o robô no mapa, cadastrar destinos e navegar até eles.
-5. Implementar chegada ao destino, espera e retorno à base.
+2. Integrar câmera, áudio e interface de voz.
+3. Localizar o robô no mapa, cadastrar destinos e navegar até eles.
+4. Implementar chegada ao destino, espera e retorno à base.
 
 > A autonomia atual é reativa. Ela ainda não realiza navegação por mapa, reconhecimento de voz ou retorno automático.
 
