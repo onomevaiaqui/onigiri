@@ -1,44 +1,73 @@
 # Onigiri
 
-Base de software, operação e construção do robô móvel **Onigiri**.
+> **Plataforma aberta de robótica assistiva, em desenvolvimento, para orientar pessoas e navegar com segurança em ambientes internos com ROS 2.**
 
-O Onigiri usa um Raspberry Pi 4 com Ubuntu 24.04 e ROS 2 Jazzy, três motores JGY370 de 12 V, um Stepper Motor HAT v0.2 e um RPLIDAR A1M8. O Logitech F710, conectado a um PC Windows, controla o robô pela rede Tailscale.
+O Onigiri é mais do que um conjunto de códigos. É uma plataforma aberta que reúne mecânica, eletrônica, software, documentação, CAD e testes para criar um robô-guia acessível, adaptável e reproduzível.
 
-## O que já funciona
+O objetivo é apoiar a orientação de pessoas em empresas, escolas, supermercados, eventos e projetos acadêmicos. No cenário final, uma pessoa poderá solicitar um destino por voz, acompanhar o robô com segurança e receber uma confirmação ao chegar ao local.
 
-- Três motores: frente/ré, giro e deslocamento lateral.
-- RPLIDAR A1 publicando `/scan`.
-- Parada frontal rígida a 35 cm.
-- Desvio autônomo experimental: compara os lados livres e começa a desviar a 80 cm.
-- Prioridade manual: movimentar um analógico do F710 assume imediatamente o controle.
-- Botão 7 do F710 ativa/desativa a autonomia.
-- Inicialização automática no Raspberry: base, LiDAR e autonomia armada.
-- Autonomia segura no boot: o processo inicia, mas o robô fica parado até receber ativação explícita.
-- Primeiro mapa experimental salvo com `slam_toolbox`; ainda não é um mapa validado para navegação.
+## Estado do projeto
 
-> A autonomia atual é reativa, não é navegação por mapa. Ela não possui encoders, odometria, SLAM ou planejamento de rota.
+O projeto está em desenvolvimento. A base física e de software já foi validada, enquanto a navegação por mapa, a interação por voz e o retorno automático à base seguem como próximas etapas.
 
-## Comece aqui
+### O que já funciona
 
-O guia completo de montagem, instalação, operação, atualização e diagnóstico está em [docs/MANUAL_DE_CONSTRUCAO.md](docs/MANUAL_DE_CONSTRUCAO.md).
+- Tração com três motores DC: frente, ré, giro e deslocamento lateral.
+- Controle remoto por Logitech F710 em um PC Windows, usando rede Tailscale.
+- RPLIDAR A1M8 publicando leituras no ROS 2.
+- Parada frontal de segurança a 35 cm.
+- Autonomia reativa experimental para parar e desviar de obstáculos.
+- Prioridade para o controle manual.
+- Inicialização automática no Raspberry Pi por serviços `systemd`.
+- Primeiro mapa experimental gerado com `slam_toolbox`.
 
-A visão do produto, a jornada de uso e os próximos marcos estão em [docs/ESPECIFICACAO_DE_PRODUTO.md](docs/ESPECIFICACAO_DE_PRODUTO.md).
+### Próximas etapas
 
-## Estrutura
+1. Validar percursos com múltiplos obstáculos.
+2. Ampliar a proteção para ré e deslocamento lateral.
+3. Integrar câmera, áudio e interface de voz.
+4. Localizar o robô no mapa, cadastrar destinos e navegar até eles.
+5. Implementar chegada ao destino, espera e retorno à base.
 
-| Caminho | Uso |
+> A autonomia atual é reativa. Ela ainda não realiza navegação por mapa, reconhecimento de voz ou retorno automático.
+
+## Plataforma
+
+| Camada | Componentes atuais |
 |---|---|
-| `onigiri_udp_tank.py` | Raspberry: motores, LiDAR, UDP e `/cmd_vel`. |
-| `onigiri_autonomous_basic.py` | Raspberry: autonomia reativa, inicialmente desativada. |
-| `f710_bridge.py` | Windows: ponte Logitech F710 → UDP. |
-| `f710_axes.py` | Windows: identifica eixos do controle. |
-| `f710_buttons.py` | Windows: identifica botões do controle. |
-| `systemd/` | Serviços automáticos do Raspberry. |
-| `docs/` | Manual e procedimentos operacionais. |
+| Computação | Raspberry Pi 4, Ubuntu 24.04 e ROS 2 Jazzy |
+| Tração | 3 motores JGY370 12 V, 40 RPM e Stepper Motor HAT v0.2 |
+| Percepção | RPLIDAR A1M8 |
+| Alimentação | LiPo 3S 11,1 V e conversor Tobsun EA75-5V |
+| Controle | Logitech F710 em PC Windows via Tailscale |
+| Projeto mecânico | Modelo CAD em STEP compartilhado neste repositório |
 
-## Segurança essencial
+## Estrutura do repositório
 
-- A LiPo 3S alimenta o HAT e os motores; o Tobsun EA75-5V alimenta o Raspberry pelo USB-C.
-- Não conecte outra fonte/carregador USB-C ao Raspberry enquanto o Tobsun estiver alimentando-o.
-- Mantenha pessoas, cabos e objetos fora da área de movimento antes de ativar a autonomia.
-- O LiDAR e o software são camadas de proteção, não substituem supervisão nem uma forma física de cortar a alimentação.
+```text
+cad/                    Modelo 3D compartilhado do robô
+deploy/systemd/          Serviços de inicialização do Raspberry Pi
+docs/                    Manual, especificação e arquitetura
+software/raspberry/     Controle de motores e autonomia em ROS 2
+software/windows/        Ponte e ferramentas do Logitech F710
+CHANGELOG.md             Registro das atualizações do projeto
+```
+
+## Comece pelos documentos
+
+- [Manual de construção e operação](docs/MANUAL_DE_CONSTRUCAO.md)
+- [Especificação de produto](docs/ESPECIFICACAO_DE_PRODUTO.md)
+- [Arquitetura da plataforma](docs/ARQUITETURA.md)
+- [Modelo CAD em STEP](cad/README.md)
+- [Registro de versões](CHANGELOG.md)
+
+## Segurança
+
+- Desligue a bateria LiPo antes de alterar cabos, motores ou o HAT.
+- Não conecte outro carregador ou fonte USB-C ao Raspberry enquanto o Tobsun o estiver alimentando.
+- Antes de testar, mantenha pessoas, cabos e objetos fora da área de movimento.
+- O LiDAR e o software são camadas de proteção. Eles não substituem supervisão humana nem um corte físico de alimentação.
+
+## Contribuição
+
+O Onigiri evolui por meio de testes, documentação e colaboração. Ao contribuir, registre o que foi alterado, como foi validado e quais limitações ainda permanecem.

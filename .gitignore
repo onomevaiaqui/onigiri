@@ -4,6 +4,7 @@ __pycache__/
 .idea/
 .vscode/
 .presentation-build/
+output/
 output/*.inspect.ndjson
 output/*.pptx
 output/Onigiri_Latinoware_2026_atualizada.pptx

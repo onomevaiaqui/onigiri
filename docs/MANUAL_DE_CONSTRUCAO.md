@@ -104,11 +104,11 @@ O desenvolvimento atual usa `C:\Python314\python.exe`. Ajuste os comandos se o P
 
 ## 6. Implantação no Raspberry
 
-Os scripts devem ficar em `/home/onigiri`. A partir do Windows, com Git Bash:
+Os scripts devem ficar em `/home/onigiri`. A partir do Windows, com Git Bash, copie os arquivos organizados no repositório:
 
 ```bash
-scp onigiri_udp_tank.py onigiri_autonomous_basic.py onigiri@<IP_TAILSCALE_DO_RASPBERRY>:~/
-scp systemd/onigiri-udp.service systemd/onigiri-lidar.service systemd/onigiri-autonomous.service onigiri@<IP_TAILSCALE_DO_RASPBERRY>:~/
+scp software/raspberry/onigiri_udp_tank.py software/raspberry/onigiri_autonomous_basic.py onigiri@<IP_TAILSCALE_DO_RASPBERRY>:~/
+scp deploy/systemd/onigiri-udp.service deploy/systemd/onigiri-lidar.service deploy/systemd/onigiri-autonomous.service onigiri@<IP_TAILSCALE_DO_RASPBERRY>:~/
 ```
 
 No Raspberry, instale os serviços:
@@ -138,7 +138,7 @@ Resultado esperado: três linhas `active`, além de nós como `/onigiri_base`, `
 Execute a ponte no Windows/Git Bash:
 
 ```bash
-python "/c/caminho/para/onigiri/f710_bridge.py" <IP_TAILSCALE_DO_RASPBERRY>
+python "/c/caminho/para/onigiri/software/windows/f710_bridge.py" <IP_TAILSCALE_DO_RASPBERRY>
 ```
 
 | Controle | Ação |
@@ -151,7 +151,7 @@ python "/c/caminho/para/onigiri/f710_bridge.py" <IP_TAILSCALE_DO_RASPBERRY>
 
 O F710 envia UDP para a porta `5005`. Movimentar um analógico tem prioridade sobre a autonomia. Quando os analógicos retornam ao centro, a autonomia pode retomar se o botão 7 permanecer ligado.
 
-Para descobrir um eixo ou botão em outro controle, execute `f710_axes.py` ou `f710_buttons.py` no Windows.
+Para descobrir um eixo ou botão em outro controle, execute `software/windows/f710_axes.py` ou `software/windows/f710_buttons.py` no Windows.
 
 ### Inicialização automática no Windows
 
@@ -165,7 +165,7 @@ Conteúdo, ajustando os caminhos quando necessário:
 
 ```bat
 @echo off
-start "Onigiri F710 Bridge" /min "C:\Python314\python.exe" "C:\caminho\para\onigiri\f710_bridge.py" <IP_TAILSCALE_DO_RASPBERRY>
+start "Onigiri F710 Bridge" /min "C:\Python314\python.exe" "C:\caminho\para\onigiri\software\windows\f710_bridge.py" <IP_TAILSCALE_DO_RASPBERRY>
 ```
 
 A ponte aguarda o receptor USB se ele não estiver conectado e desativa a autonomia se o controle desconectar.
