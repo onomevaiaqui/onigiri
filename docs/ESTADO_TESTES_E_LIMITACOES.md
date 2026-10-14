@@ -25,7 +25,7 @@ em que uma falha de movimento possa causar dano.
 - Botão de emergência definido eletricamente, ainda dependente de instalação e
   teste físico.
 
-## Pendências obrigatórias de validação física
+## Validações físicas em andamento
 
 | Área | Critério mínimo de aceitação |
 |---|---|
