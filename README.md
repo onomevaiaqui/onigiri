@@ -28,7 +28,7 @@ O projeto está em desenvolvimento. A base física e de software já foi validad
 3. Localizar o robô no mapa, cadastrar destinos e navegar até eles.
 4. Implementar chegada ao destino, espera e retorno à base.
 
-> A autonomia atual é reativa. Ela ainda não realiza navegação por mapa, reconhecimento de voz ou retorno automático.
+> A autonomia atual é reativa. A navegação por mapa e o retorno automático ainda dependem de configuração e validação; o reconhecimento de voz offline está preparado, mas requer o modelo Vosk e validação do microfone da webcam.
 
 ## Plataforma
 

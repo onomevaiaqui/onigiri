@@ -6,6 +6,7 @@ Este arquivo registra mudanças relevantes da plataforma Onigiri. As versões de
 
 ### Adicionado
 
+- Reconhecimento de voz offline preparado com Vosk e microfone integrado à webcam UVC.
 - Modelo CAD do chassi no formato STEP em `cad/Onigiri.step`.
 - Organização do repositório por plataforma: Raspberry Pi, Windows, implantação e CAD.
 - Página inicial com visão geral do robô, estado de desenvolvimento e próximos marcos.
