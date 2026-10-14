@@ -4,6 +4,7 @@ __pycache__/
 .idea/
 .vscode/
 .presentation-build/
+.codex-finalizer/
 output/
 output/*.inspect.ndjson
 output/*.pptx
