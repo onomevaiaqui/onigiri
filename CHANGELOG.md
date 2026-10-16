@@ -23,10 +23,13 @@ Este arquivo registra mudanças relevantes da plataforma Onigiri. As versões de
 - Roteiro de validação local do painel antes da instalação no Raspberry Pi.
 - Gerador local de frases sugeridas e editáveis para acelerar o cadastro de
   comandos de voz por destino.
+- Revisão de pré-implantação: interface sem interpretação de HTML cadastrado,
+  validação de backup malformado e formulário sempre limpo ao abrir.
 
 ### Validado
 
-- Cadastro, interpretação de frases, exportação e simulação do painel no Windows.
+- Cadastro, edição, interpretação, exportação, backup, restauração e simulação
+  do painel no Windows, incluindo uma rodada controlada da API.
 
 ### Ainda em validação física
 

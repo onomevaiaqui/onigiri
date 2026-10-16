@@ -174,13 +174,16 @@ alto-falante e sotaques antes de ser usado em uma missão real.
    O protótipo não possui encoders; portanto, não considere a localização pronta
    antes de demonstrar repetibilidade em testes físicos.
 3. Suba o Nav2 com o mapa e a localização já configurados.
-4. Crie o arquivo local de destinos, que não é enviado ao Git:
+4. Para o fluxo recomendado, cadastre destinos pelo painel local. Ele gerará
+   `config/destinations.runtime.json`, que não é enviado ao Git. Sem usar o
+   painel, a alternativa manual de desenvolvimento é:
 
 ```bash
 cp config/destinations.example.json config/destinations.json
 ```
 
-5. Preencha coordenadas reais de `base` e dos ambientes cadastrados.
+5. Preencha coordenadas reais de `base` e dos ambientes cadastrados no painel
+   ou, no fluxo manual, no arquivo JSON.
 6. Habilite o gerenciador de missão:
 
 ```bash

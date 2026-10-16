@@ -10,6 +10,8 @@ python3 -m venv "$venv_path"
 "$venv_path/bin/python" -m pip install --upgrade pip
 "$venv_path/bin/python" -m pip install -r software/admin_web/requirements.txt
 sudo install -m 644 deploy/systemd/onigiri-admin-web.service /etc/systemd/system/onigiri-admin-web.service
+sudo install -m 644 deploy/systemd/onigiri-mission.service /etc/systemd/system/onigiri-mission.service
 sudo systemctl daemon-reload
 sudo systemctl enable --now onigiri-admin-web.service
 echo "Painel instalado apenas em 127.0.0.1:8080. Acesse por tunel SSH a partir do PC."
+echo "O arquivo do servico de missoes foi atualizado; reinicie-o de forma controlada para usar a configuracao exportada."

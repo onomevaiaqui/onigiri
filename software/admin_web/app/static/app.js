@@ -28,6 +28,7 @@ function resetForm() {
   element("destinationId").value = "";
   element("dialogTitle").textContent = "Novo destino";
   element("formError").textContent = "";
+  ["name", "aliases", "phrases", "arrivalMessage"].forEach((id) => { element(id).value = ""; });
   element("returnToBase").checked = true;
   ["x", "y", "yaw"].forEach((id) => { element(id).value = "0"; });
   element("waitSeconds").value = "15";
@@ -110,8 +111,11 @@ function renderInterpretation(result) {
   const box = element("testResult");
   const simulate = element("simulateButton");
   box.className = `result ${result.recognized ? "success" : "failure"}`;
+  box.replaceChildren();
   if (result.recognized) {
-    box.innerHTML = `<strong>${result.message}</strong><br>Trecho correspondente: “${result.matched_phrase}”`;
+    const headline = document.createElement("strong");
+    headline.textContent = result.message;
+    box.append(headline, document.createElement("br"), document.createTextNode(`Trecho correspondente: “${result.matched_phrase}”`));
     simulate.disabled = false;
   } else {
     box.textContent = result.message;
@@ -124,7 +128,11 @@ function renderSimulation(result) {
   timeline.replaceChildren();
   result.events.forEach((event) => {
     const item = document.createElement("li");
-    item.innerHTML = `<strong>${event.state}</strong><span>${event.detail}</span>`;
+    const title = document.createElement("strong");
+    title.textContent = event.state;
+    const detail = document.createElement("span");
+    detail.textContent = event.detail;
+    item.append(title, detail);
     timeline.appendChild(item);
   });
 }

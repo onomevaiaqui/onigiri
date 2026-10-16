@@ -21,7 +21,9 @@
 
 ## Preparação futura
 
-1. Copie `config/destinations.example.json` para `config/destinations.json`.
+1. Use o painel local para gerar `config/destinations.runtime.json`. Sem o
+   painel, o arquivo manual `config/destinations.json` continua disponível como
+   alternativa de desenvolvimento.
 2. Substitua as coordenadas de exemplo por poses medidas no mapa final.
 3. Instale a pilha de navegação Nav2 e forneça a transformação de localização no mapa.
 4. Instale `espeak-ng` no Raspberry para saída de áudio.

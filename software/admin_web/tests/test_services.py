@@ -67,6 +67,10 @@ class DestinationStoreTests(unittest.TestCase):
         self.assertEqual([item["name"] for item in restored], ["base", "escritorio"])
         self.assertEqual(next(item for item in restored if item["is_home"])["name"], "base")
 
+    def test_backup_rejects_invalid_destination_record(self) -> None:
+        with self.assertRaisesRegex(ValueError, "formato inválido"):
+            self.store.restore({"format": "onigiri-admin-backup", "version": 1, "destinations": ["inválido"]})
+
     def test_readiness_reports_ambiguous_phrase_and_missing_position(self) -> None:
         self.store.save({"name": "laboratorio", "aliases": ["escritorio"], "phrases": []})
         report = self.store.readiness()

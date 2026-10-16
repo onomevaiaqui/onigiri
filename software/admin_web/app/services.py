@@ -248,6 +248,8 @@ class DestinationStore:
         records = payload.get("destinations")
         if not isinstance(records, list) or not records:
             raise ValueError("O backup precisa conter ao menos um destino.")
+        if any(not isinstance(record, dict) for record in records):
+            raise ValueError("O backup contém um destino em formato inválido.")
         homes = [record for record in records if record.get("is_home")]
         if len(homes) != 1:
             raise ValueError("O backup precisa ter exatamente uma base definida.")

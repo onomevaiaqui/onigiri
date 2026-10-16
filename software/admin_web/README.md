@@ -63,6 +63,10 @@ O repositório já contém, mas **não executa automaticamente**, o instalador
 final de instalação no Raspberry. O serviço fica limitado a `127.0.0.1`; não
 abre uma porta pública na rede.
 
+O instalador também atualiza o arquivo do serviço de missões, mas não o reinicia
+sozinho. A troca para a configuração exportada ocorre apenas em uma reinicialização
+controlada desse serviço, evitando alteração de uma missão que já esteja ativa.
+
 Depois da instalação futura no **Raspberry Pi**, o acesso pelo **computador
 Windows** será feito por túnel SSH:
 
