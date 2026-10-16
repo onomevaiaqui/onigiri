@@ -36,6 +36,12 @@ class TextRequest(BaseModel):
     text: Annotated[str, Field(min_length=1, max_length=300)]
 
 
+class TextBatchRequest(BaseModel):
+    texts: list[Annotated[str, Field(min_length=1, max_length=300)]] = Field(
+        min_length=1, max_length=50
+    )
+
+
 class BackupInput(BaseModel):
     format: str
     version: int
@@ -107,6 +113,11 @@ def delete_destination(destination_id: int) -> None:
 @app.post("/api/interpret")
 def interpret_command(payload: TextRequest) -> dict:
     return store.interpret(payload.text)
+
+
+@app.post("/api/interpret/batch")
+def interpret_batch(payload: TextBatchRequest) -> dict[str, list[dict]]:
+    return {"results": [store.interpret(text) for text in payload.texts]}
 
 
 @app.post("/api/simulate")

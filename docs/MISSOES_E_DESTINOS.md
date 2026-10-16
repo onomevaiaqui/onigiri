@@ -45,6 +45,11 @@ destinos, locais sem comandos cadastrados e coordenadas que ainda precisam ser
 medidas no mapa. O botão de backup preserva o cadastro editável para que ele
 possa ser levado ao Raspberry Pi posteriormente.
 
+Quando a integração no Raspberry Pi for instalada, o serviço de missões usará
+`config/destinations.runtime.json`. Ao exportar mudanças no painel, esse arquivo
+é substituído de forma atômica e o gerenciador o recarrega apenas no estado
+ocioso. Assim, uma missão já iniciada mantém a configuração com que começou.
+
 As instruções para testar o painel no Windows estão em
 [`software/admin_web/README.md`](../software/admin_web/README.md).
 

@@ -59,6 +59,12 @@ input:focus, textarea:focus { outline: 3px solid #dcd7ff; border-color: var(--pu
 .timeline li { padding-left: 4px; color: #354052; }
 .timeline strong, .timeline span { display: block; }
 .timeline span { margin-top: 2px; color: var(--muted); }
+.section-divider { border: 0; border-top: 1px solid var(--line); margin: 24px 0 18px; }
+.batch-label { display: block; margin-bottom: 7px; color: #354052; font-size: 14px; font-weight: 700; }
+.batch-label + textarea { margin-bottom: 10px; }
+.batch-results { display: grid; gap: 7px; margin: 14px 0 0; padding: 0; list-style: none; color: var(--muted); font-size: 14px; }
+.batch-results .recognized { color: #14633c; }
+.batch-results .not-recognized { color: #8b1e13; }
 .note { border-left: 5px solid var(--green); }
 .readiness-list { margin: 12px 0 16px; padding-left: 20px; color: var(--muted); line-height: 1.45; }
 .readiness-list li + li { margin-top: 7px; }

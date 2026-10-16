@@ -15,6 +15,12 @@ Este arquivo registra mudanças relevantes da plataforma Onigiri. As versões de
 - Backup e restauração local dos destinos cadastrados.
 - Reconhecimento de frases por palavras completas, evitando que destinos curtos
   sejam ativados acidentalmente dentro de outras palavras.
+- Teste em lote de frases diretamente no painel local.
+- Serviço e instalador preparados para o painel no Raspberry Pi, com acesso
+  restrito a túnel SSH e sem abertura de porta pública.
+- Recarga segura de destinos exportados quando o gerenciador de missões estiver
+  ocioso.
+- Roteiro de validação local do painel antes da instalação no Raspberry Pi.
 
 ### Validado
 

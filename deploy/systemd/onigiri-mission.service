@@ -1,13 +1,14 @@
 [Unit]
 Description=Onigiri destination mission manager
-After=network.target
+Wants=onigiri-admin-web.service
+After=network.target onigiri-admin-web.service
 
 [Service]
 Type=simple
 User=onigiri
 Group=onigiri
 WorkingDirectory=/home/onigiri/onigiri
-ExecStart=/bin/bash -lc 'source /opt/ros/jazzy/setup.bash && exec python3 software/raspberry/onigiri_mission_manager.py'
+ExecStart=/bin/bash -lc 'source /opt/ros/jazzy/setup.bash && exec python3 software/raspberry/onigiri_mission_manager.py --ros-args -p destinations_file:=/home/onigiri/onigiri/config/destinations.runtime.json'
 Restart=on-failure
 RestartSec=3
 

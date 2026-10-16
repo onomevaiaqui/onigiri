@@ -58,6 +58,11 @@
             <div id="testResult" class="result empty">Nenhum teste executado.</div>
             <button id="simulateButton" class="secondary full" disabled>Simular missão sem mover o robô</button>
             <ol id="simulation" class="timeline"></ol>
+            <hr class="section-divider" />
+            <label for="batchText" class="batch-label">Teste em lote — uma frase por linha</label>
+            <textarea id="batchText" rows="4" placeholder="me leve ao escritório&#10;onde fica a recepção"></textarea>
+            <button id="batchButton" class="secondary full" type="button">Testar frases em lote</button>
+            <ul id="batchResults" class="batch-results"></ul>
           </section>
 
           <section class="panel note">

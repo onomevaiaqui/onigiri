@@ -52,3 +52,23 @@ tempo de espera e a opção de retornar à base cadastrados para cada destino.
 
 A ligação com voz, áudio e Nav2 só será ativada após testes físicos controlados.
 Enquanto isso, este painel permanece local, em `127.0.0.1`, e em simulação.
+
+### Pacote preparado para o Raspberry Pi
+
+O repositório já contém, mas **não executa automaticamente**, o instalador
+`deploy/scripts/install_admin_web.sh` e o serviço
+`deploy/systemd/onigiri-admin-web.service`. Eles serão usados somente na etapa
+final de instalação no Raspberry. O serviço fica limitado a `127.0.0.1`; não
+abre uma porta pública na rede.
+
+Depois da instalação futura no **Raspberry Pi**, o acesso pelo **computador
+Windows** será feito por túnel SSH:
+
+```powershell
+ssh -L 8080:127.0.0.1:8080 onigiri@ENDERECO_DO_RASPBERRY
+```
+
+Então, no navegador do Windows, abra `http://127.0.0.1:8080`. A configuração
+exportada será recarregada pelo gerenciador de missões apenas quando ele estiver
+sem uma missão ativa; uma missão em andamento nunca muda de destino no meio do
+percurso.

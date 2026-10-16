@@ -165,6 +165,29 @@ element("simulateButton").addEventListener("click", async () => {
   renderSimulation(result);
 });
 
+element("batchButton").addEventListener("click", async () => {
+  const texts = lines(element("batchText").value);
+  const results = element("batchResults");
+  results.replaceChildren();
+  if (!texts.length) {
+    results.textContent = "Digite ao menos uma frase para testar.";
+    return;
+  }
+  try {
+    const response = await api("/api/interpret/batch", { method: "POST", body: JSON.stringify({ texts }) });
+    response.results.forEach((result) => {
+      const item = document.createElement("li");
+      item.className = result.recognized ? "recognized" : "not-recognized";
+      item.textContent = result.recognized
+        ? `✓ “${result.request}” → ${result.destination.name}`
+        : `× “${result.request}” → não reconhecida`;
+      results.appendChild(item);
+    });
+  } catch (error) {
+    results.textContent = error.message;
+  }
+});
+
 element("exportButton").addEventListener("click", async () => {
   const result = await api("/api/export", { method: "POST" });
   alert(`Configuração atualizada em:\n${result.path}`);

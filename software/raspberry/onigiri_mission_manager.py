@@ -24,6 +24,7 @@ from std_msgs.msg import String
 
 DEFAULT_DESTINATIONS_FILE = "/home/onigiri/onigiri/config/destinations.json"
 ARRIVAL_WAIT_SECONDS = 15.0
+RELOAD_CHECK_SECONDS = 2.0
 
 
 def normalize(text: str) -> str:
@@ -47,6 +48,7 @@ class MissionManager(Node):
         super().__init__("onigiri_mission_manager")
         self.declare_parameter("destinations_file", DEFAULT_DESTINATIONS_FILE)
         self.declare_parameter("arrival_wait_seconds", ARRIVAL_WAIT_SECONDS)
+        self.declare_parameter("reload_check_seconds", RELOAD_CHECK_SECONDS)
 
         self.destinations_file = Path(
             self.get_parameter("destinations_file").value
@@ -54,7 +56,12 @@ class MissionManager(Node):
         self.arrival_wait_seconds = float(
             self.get_parameter("arrival_wait_seconds").value
         )
+        self.reload_check_seconds = float(
+            self.get_parameter("reload_check_seconds").value
+        )
         self.destinations, self.home_name = self.load_destinations()
+        self.destinations_modified_at = self.destination_file_mtime()
+        self.last_reload_check = 0.0
 
         self.navigator = ActionClient(self, NavigateToPose, "navigate_to_pose")
         self.speech_publisher = self.create_publisher(String, "/onigiri/speech", 10)
@@ -84,6 +91,31 @@ class MissionManager(Node):
         if home_name not in destinations:
             raise RuntimeError("O destino configurado como home nao existe.")
         return destinations, home_name
+
+    def destination_file_mtime(self) -> int | None:
+        try:
+            return self.destinations_file.stat().st_mtime_ns
+        except OSError:
+            return None
+
+    def reload_destinations_if_changed(self) -> None:
+        """Adopt an exported configuration only while no mission is active."""
+        now = time.monotonic()
+        if self.phase != "idle" or now - self.last_reload_check < self.reload_check_seconds:
+            return
+        self.last_reload_check = now
+        modified_at = self.destination_file_mtime()
+        if modified_at == self.destinations_modified_at:
+            return
+        try:
+            destinations, home_name = self.load_destinations()
+        except RuntimeError as error:
+            self.get_logger().error(f"Configuracao de destinos ignorada: {error}")
+            return
+        self.destinations = destinations
+        self.home_name = home_name
+        self.destinations_modified_at = modified_at
+        self.get_logger().info("Configuracao de destinos atualizada pelo painel.")
 
     def say(self, phrase: str) -> None:
         self.speech_publisher.publish(String(data=phrase))
@@ -190,6 +222,7 @@ class MissionManager(Node):
             self.say("Voltei para a base.")
 
     def tick(self) -> None:
+        self.reload_destinations_if_changed()
         if self.phase != "waiting_at_destination" or time.monotonic() < self.wait_until:
             return
         if not self.current_destination.get("return_to_base", True):
