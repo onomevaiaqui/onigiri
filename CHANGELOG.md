@@ -13,6 +13,8 @@ Este arquivo registra mudanças relevantes da plataforma Onigiri. As versões de
 - Revisão automática do cadastro para identificar frases ambíguas e posições de
   mapa ainda pendentes.
 - Backup e restauração local dos destinos cadastrados.
+- Reconhecimento de frases por palavras completas, evitando que destinos curtos
+  sejam ativados acidentalmente dentro de outras palavras.
 
 ### Validado
 

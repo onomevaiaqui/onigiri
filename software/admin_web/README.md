@@ -10,7 +10,7 @@ publica tópicos ROS, não chama o Nav2 e não movimenta motores.
 - Definição do ponto de retorno como base.
 - Sinônimos e frases completas para cada destino.
 - Teste de interpretação de texto com correspondência sem diferença entre
-  maiúsculas, minúsculas ou acentos.
+  maiúsculas, minúsculas ou acentos, respeitando palavras completas.
 - Simulação da sequência de pedido, fala, navegação, chegada, espera e retorno.
 - Exportação automática em JSON compatível com o atual nó
   `software/raspberry/onigiri_mission_manager.py`.

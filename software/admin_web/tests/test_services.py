@@ -44,6 +44,11 @@ class DestinationStoreTests(unittest.TestCase):
         self.assertTrue(result["recognized"])
         self.assertEqual(result["destination"]["name"], "escritorio x")
 
+    def test_short_destination_does_not_match_inside_a_word(self) -> None:
+        self.store.save({"name": "ti", "aliases": ["TI"], "phrases": []})
+        self.assertFalse(self.store.interpret("vamos partir agora")["recognized"])
+        self.assertEqual(self.store.interpret("me leve ao TI")["destination"]["name"], "ti")
+
     def test_exports_ros_compatible_file(self) -> None:
         exported = json.loads(self.store.export_path.read_text(encoding="utf-8"))
         self.assertEqual(exported["home"], "base")

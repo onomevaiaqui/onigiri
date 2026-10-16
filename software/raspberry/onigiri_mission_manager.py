@@ -8,6 +8,7 @@ node only needs to publish the recognized phrase on that topic.
 
 import json
 import math
+import re
 import time
 import unicodedata
 from pathlib import Path
@@ -28,7 +29,13 @@ ARRIVAL_WAIT_SECONDS = 15.0
 def normalize(text: str) -> str:
     """Normalize Portuguese input without losing meaningful words."""
     decomposed = unicodedata.normalize("NFD", text.casefold())
-    return "".join(character for character in decomposed if not unicodedata.combining(character))
+    without_accents = "".join(character for character in decomposed if not unicodedata.combining(character))
+    return " ".join(without_accents.split())
+
+
+def contains_phrase(request: str, phrase: str) -> bool:
+    """Match a complete registered expression, never part of another word."""
+    return bool(re.search(r"(?<!\w)" + re.escape(phrase) + r"(?!\w)", request))
 
 
 def quaternion_from_yaw(yaw: float) -> tuple[float, float]:
@@ -89,7 +96,7 @@ class MissionManager(Node):
             names = [destination["name"], *destination.get("aliases", [])]
             for name in names:
                 normalized_name = normalize(name)
-                if normalized_name and normalized_name in request:
+                if normalized_name and contains_phrase(request, normalized_name):
                     candidates.append((len(normalized_name), destination))
         if candidates:
             # A frase mais específica evita que "escritório 2" seja confundido

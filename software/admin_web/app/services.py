@@ -8,6 +8,7 @@ read that exported file without depending on the web application at runtime.
 from __future__ import annotations
 
 import json
+import re
 import sqlite3
 import unicodedata
 from contextlib import contextmanager
@@ -18,7 +19,13 @@ from typing import Any
 def normalize(text: str) -> str:
     """Normalize Portuguese text for accent-insensitive matching."""
     decomposed = unicodedata.normalize("NFD", text.casefold().strip())
-    return "".join(character for character in decomposed if not unicodedata.combining(character))
+    without_accents = "".join(character for character in decomposed if not unicodedata.combining(character))
+    return " ".join(without_accents.split())
+
+
+def contains_phrase(request: str, phrase: str) -> bool:
+    """Match a complete registered expression, never a fragment of another word."""
+    return bool(re.search(r"(?<!\w)" + re.escape(phrase) + r"(?!\w)", request))
 
 
 def split_lines(value: str | list[str]) -> list[str]:
@@ -318,7 +325,7 @@ class DestinationStore:
             variants = [destination["name"], *destination["aliases"], *destination["phrases"]]
             for variant in variants:
                 normalized_variant = normalize(variant)
-                if normalized_variant and normalized_variant in normalized_request:
+                if normalized_variant and contains_phrase(normalized_request, normalized_variant):
                     candidates.append((len(normalized_variant), destination, variant))
         if not candidates:
             return {
