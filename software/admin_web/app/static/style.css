@@ -82,7 +82,9 @@ dialog form { padding: 28px; }
 .checkbox { display: flex !important; align-items: center; gap: 10px !important; }
 .checkbox input { width: auto; }
 .form-help { margin-top: 16px; font-size: 14px; }
+.phrase-helper { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px; border-radius: 10px; background: #f4f6f9; }
+.phrase-helper p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.4; }
 .error { min-height: 20px; margin: 12px 0 0; color: var(--danger); }
 .dialog-actions { display: flex; justify-content: end; gap: 10px; margin-top: 20px; }
 @media (max-width: 850px) { .layout { grid-template-columns: 1fr; } .intro, .topbar { align-items: start; flex-direction: column; } .destination-card { flex-direction: column; } .destination-actions { justify-content: start; min-width: 0; } }
-@media (max-width: 560px) { main { padding-inline: 16px; } .form-grid { grid-template-columns: 1fr; } .wide { grid-column: auto; } .inline-form { flex-direction: column; } .panel { padding: 18px; } }
+@media (max-width: 560px) { main { padding-inline: 16px; } .form-grid { grid-template-columns: 1fr; } .wide { grid-column: auto; } .inline-form, .phrase-helper { flex-direction: column; align-items: stretch; } .panel { padding: 18px; } }

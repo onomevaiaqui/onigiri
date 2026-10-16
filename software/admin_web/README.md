@@ -9,6 +9,8 @@ publica tópicos ROS, não chama o Nav2 e não movimenta motores.
 - Cadastro, edição e remoção de destinos.
 - Definição do ponto de retorno como base.
 - Sinônimos e frases completas para cada destino.
+- Sugestões editáveis de frases para cada novo destino, como “me leve para...”
+  e “onde fica...”.
 - Teste de interpretação de texto com correspondência sem diferença entre
   maiúsculas, minúsculas ou acentos, respeitando palavras completas.
 - Simulação da sequência de pedido, fala, navegação, chegada, espera e retorno.

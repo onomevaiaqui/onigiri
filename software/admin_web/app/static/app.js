@@ -7,6 +7,10 @@ function lines(value) {
   return value.split("\n").map((item) => item.trim()).filter(Boolean);
 }
 
+function normalizedKey(value) {
+  return value.toLocaleLowerCase("pt-BR").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+}
+
 async function api(path, options = {}) {
   const response = await fetch(path, {
     headers: { "Content-Type": "application/json", ...(options.headers || {}) },
@@ -128,6 +132,24 @@ function renderSimulation(result) {
 element("newDestination").addEventListener("click", () => openEditor());
 element("closeDialog").addEventListener("click", () => dialog.close());
 element("cancelDialog").addEventListener("click", () => dialog.close());
+element("suggestPhrases").addEventListener("click", () => {
+  const name = element("name").value.trim();
+  if (!name) {
+    element("formError").textContent = "Informe o nome do destino antes de gerar sugestões.";
+    return;
+  }
+  const suggestions = [
+    `me leve para ${name}`,
+    `onde fica ${name}`,
+    `quero ir para ${name}`,
+    `como chego em ${name}`,
+  ];
+  const existing = lines(element("phrases").value);
+  const known = new Set(existing.map(normalizedKey));
+  const merged = [...existing, ...suggestions.filter((phrase) => !known.has(normalizedKey(phrase)))];
+  element("phrases").value = merged.join("\n");
+  element("formError").textContent = "";
+});
 
 element("destinationForm").addEventListener("submit", async (event) => {
   event.preventDefault();

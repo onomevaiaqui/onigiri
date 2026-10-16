@@ -21,6 +21,8 @@ Este arquivo registra mudanças relevantes da plataforma Onigiri. As versões de
 - Recarga segura de destinos exportados quando o gerenciador de missões estiver
   ocioso.
 - Roteiro de validação local do painel antes da instalação no Raspberry Pi.
+- Gerador local de frases sugeridas e editáveis para acelerar o cadastro de
+  comandos de voz por destino.
 
 ### Validado
 
