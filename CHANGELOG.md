@@ -10,6 +10,9 @@ Este arquivo registra mudanças relevantes da plataforma Onigiri. As versões de
 - Simulação segura do fluxo de missão no computador, sem ROS 2, Nav2 ou acionamento de motores.
 - Exportação de destinos em JSON compatível com o nó de missões do Raspberry Pi.
 - Configuração por destino da fala de chegada, tempo de espera e retorno à base.
+- Revisão automática do cadastro para identificar frases ambíguas e posições de
+  mapa ainda pendentes.
+- Backup e restauração local dos destinos cadastrados.
 
 ### Validado
 

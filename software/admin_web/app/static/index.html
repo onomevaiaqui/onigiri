@@ -32,7 +32,10 @@
               <h3>Destinos cadastrados</h3>
               <p>Use “Definir como base” para marcar o ponto de retorno.</p>
             </div>
-            <button id="exportButton" class="secondary">Exportar configuração</button>
+            <div class="panel-actions">
+              <button id="exportButton" class="secondary">Exportar configuração</button>
+              <button id="backupButton" class="secondary">Baixar backup</button>
+            </div>
           </div>
           <div id="destinationList" class="destination-list" aria-live="polite"></div>
         </div>
@@ -58,8 +61,10 @@
           </section>
 
           <section class="panel note">
-            <h3>Próxima integração</h3>
-            <p>Depois dos testes no computador, este painel exportará o arquivo que o nó de missões ROS 2 lê no Raspberry Pi.</p>
+            <h3>Revisão do cadastro</h3>
+            <p id="readinessSummary">Verificando cadastro...</p>
+            <ul id="readinessList" class="readiness-list"></ul>
+            <label class="restore-label" for="restoreFile">Restaurar um backup deste painel<input id="restoreFile" type="file" accept="application/json" /></label>
           </section>
         </div>
       </section>

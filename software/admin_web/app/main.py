@@ -36,6 +36,12 @@ class TextRequest(BaseModel):
     text: Annotated[str, Field(min_length=1, max_length=300)]
 
 
+class BackupInput(BaseModel):
+    format: str
+    version: int
+    destinations: list[dict]
+
+
 def build_store() -> DestinationStore:
     database_path = Path(os.environ.get("ONIGIRI_ADMIN_DATABASE", DEFAULT_DATABASE))
     export_path = Path(os.environ.get("ONIGIRI_DESTINATIONS_FILE", DEFAULT_EXPORT))
@@ -111,3 +117,21 @@ def simulate_command(payload: TextRequest) -> dict:
 @app.post("/api/export")
 def export_destinations() -> dict[str, str]:
     return {"path": str(store.export_ros_config())}
+
+
+@app.get("/api/readiness")
+def readiness() -> dict:
+    return store.readiness()
+
+
+@app.get("/api/backup")
+def backup() -> dict:
+    return store.backup()
+
+
+@app.post("/api/backup/restore")
+def restore_backup(payload: BackupInput) -> list[dict]:
+    try:
+        return store.restore(payload.model_dump())
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error

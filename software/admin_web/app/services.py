@@ -230,6 +230,87 @@ class DestinationStore:
         temporary_path.replace(self.export_path)
         return self.export_path
 
+    def backup(self) -> dict[str, Any]:
+        """Return the editable panel data, including the selected base."""
+        return {"format": "onigiri-admin-backup", "version": 1, "destinations": self.list()}
+
+    def restore(self, payload: dict[str, Any]) -> list[dict[str, Any]]:
+        """Replace local records with a validated backup created by this panel."""
+        if payload.get("format") != "onigiri-admin-backup" or payload.get("version") != 1:
+            raise ValueError("Este arquivo não é um backup compatível do Painel Onigiri.")
+        records = payload.get("destinations")
+        if not isinstance(records, list) or not records:
+            raise ValueError("O backup precisa conter ao menos um destino.")
+        homes = [record for record in records if record.get("is_home")]
+        if len(homes) != 1:
+            raise ValueError("O backup precisa ter exatamente uma base definida.")
+
+        prepared: list[tuple[Any, ...]] = []
+        used_names: set[str] = set()
+        for record in records:
+            name = str(record.get("name", "")).strip()
+            normalized_name = normalize(name)
+            if not normalized_name:
+                raise ValueError("Todo destino do backup precisa ter um nome.")
+            if normalized_name in used_names:
+                raise ValueError("O backup contém destinos com o mesmo nome.")
+            used_names.add(normalized_name)
+            prepared.append(
+                (
+                    name,
+                    json.dumps(split_lines(record.get("aliases", [])), ensure_ascii=False),
+                    json.dumps(split_lines(record.get("phrases", [])), ensure_ascii=False),
+                    float(record.get("x", 0.0)),
+                    float(record.get("y", 0.0)),
+                    float(record.get("yaw", 0.0)),
+                    str(record.get("arrival_message", "")).strip() or f"Chegamos a {name}.",
+                    max(0.0, float(record.get("wait_seconds", 15.0))),
+                    1 if record.get("return_to_base", True) else 0,
+                    1 if record.get("is_home") else 0,
+                )
+            )
+        with self._connection() as connection:
+            connection.execute("DELETE FROM destinations")
+            connection.executemany(
+                """
+                INSERT INTO destinations
+                (name, aliases, phrases, x, y, yaw, arrival_message, wait_seconds, return_to_base, is_home)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                prepared,
+            )
+        self.export_ros_config()
+        return self.list()
+
+    def readiness(self) -> dict[str, Any]:
+        """Describe what still needs configuration before physical deployment."""
+        records = self.list()
+        variants: dict[str, list[str]] = {}
+        no_phrases: list[str] = []
+        no_map_position: list[str] = []
+        for record in records:
+            if not record["aliases"] and not record["phrases"]:
+                no_phrases.append(record["name"])
+            if not record["is_home"] and record["x"] == 0 and record["y"] == 0:
+                no_map_position.append(record["name"])
+            for phrase in [record["name"], *record["aliases"], *record["phrases"]]:
+                key = normalize(phrase)
+                if key:
+                    variants.setdefault(key, []).append(record["name"])
+        conflicts = sorted(
+            {phrase: names for phrase, names in variants.items() if len(set(names)) > 1}.items()
+        )
+        return {
+            "destination_count": len(records),
+            "home": next((record["name"] for record in records if record["is_home"]), None),
+            "without_phrases": no_phrases,
+            "without_map_position": no_map_position,
+            "phrase_conflicts": [
+                {"phrase": phrase, "destinations": sorted(set(names))}
+                for phrase, names in conflicts
+            ],
+        }
+
     def interpret(self, request: str) -> dict[str, Any]:
         normalized_request = normalize(request)
         candidates: list[tuple[int, dict[str, Any], str]] = []

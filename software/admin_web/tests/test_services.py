@@ -55,6 +55,19 @@ class DestinationStoreTests(unittest.TestCase):
         self.assertEqual(result["events"][2]["state"], "navegação simulada")
         self.assertIn("Nenhum motor", result["events"][2]["detail"])
 
+    def test_backup_can_restore_and_preserves_home(self) -> None:
+        original = self.store.backup()
+        self.store.save({"name": "laboratorio", "aliases": [], "phrases": ["me leve ao laboratório"]})
+        restored = self.store.restore(original)
+        self.assertEqual([item["name"] for item in restored], ["base", "escritorio"])
+        self.assertEqual(next(item for item in restored if item["is_home"])["name"], "base")
+
+    def test_readiness_reports_ambiguous_phrase_and_missing_position(self) -> None:
+        self.store.save({"name": "laboratorio", "aliases": ["escritorio"], "phrases": []})
+        report = self.store.readiness()
+        self.assertIn("laboratorio", report["without_map_position"])
+        self.assertEqual(report["phrase_conflicts"][0]["phrase"], "escritorio")
+
 
 if __name__ == "__main__":
     unittest.main()

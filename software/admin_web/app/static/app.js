@@ -66,6 +66,25 @@ function renderDestinations() {
 async function loadDestinations() {
   state.destinations = await api("/api/destinations");
   renderDestinations();
+  await loadReadiness();
+}
+
+async function loadReadiness() {
+  const report = await api("/api/readiness");
+  const issues = [];
+  if (report.without_phrases.length) issues.push(`Sem frases ou sinônimos: ${report.without_phrases.join(", ")}.`);
+  if (report.without_map_position.length) issues.push(`Ainda sem posição no mapa: ${report.without_map_position.join(", ")}.`);
+  report.phrase_conflicts.forEach((conflict) => issues.push(`A expressão “${conflict.phrase}” aparece em: ${conflict.destinations.join(" e ")}.`));
+  element("readinessSummary").textContent = issues.length
+    ? "Há itens a revisar antes de integrar ao Raspberry Pi."
+    : "Cadastro consistente para a próxima etapa de integração.";
+  const list = element("readinessList");
+  list.replaceChildren();
+  (issues.length ? issues : [`${report.destination_count} destinos cadastrados; base: ${report.home || "não definida"}.`]).forEach((message) => {
+    const item = document.createElement("li");
+    item.textContent = message;
+    list.appendChild(item);
+  });
 }
 
 async function setHome(destination) {
@@ -149,6 +168,31 @@ element("simulateButton").addEventListener("click", async () => {
 element("exportButton").addEventListener("click", async () => {
   const result = await api("/api/export", { method: "POST" });
   alert(`Configuração atualizada em:\n${result.path}`);
+});
+
+element("backupButton").addEventListener("click", async () => {
+  const backup = await api("/api/backup");
+  const file = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(file);
+  link.download = "onigiri-destinos-backup.json";
+  link.click();
+  URL.revokeObjectURL(link.href);
+});
+
+element("restoreFile").addEventListener("change", async (event) => {
+  const [file] = event.target.files;
+  if (!file) return;
+  try {
+    const backup = JSON.parse(await file.text());
+    await api("/api/backup/restore", { method: "POST", body: JSON.stringify(backup) });
+    await loadDestinations();
+    alert("Backup restaurado com sucesso.");
+  } catch (error) {
+    alert(`Não foi possível restaurar o backup: ${error.message}`);
+  } finally {
+    event.target.value = "";
+  }
 });
 
 loadDestinations().catch((error) => { element("destinationList").textContent = error.message; });

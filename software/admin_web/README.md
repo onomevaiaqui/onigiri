@@ -14,6 +14,9 @@ publica tópicos ROS, não chama o Nav2 e não movimenta motores.
 - Simulação da sequência de pedido, fala, navegação, chegada, espera e retorno.
 - Exportação automática em JSON compatível com o atual nó
   `software/raspberry/onigiri_mission_manager.py`.
+- Revisão automática de frases ambíguas, destinos sem frases e posições ainda
+  não medidas no mapa.
+- Backup e restauração do cadastro local em um arquivo JSON.
 
 ## Teste no computador Windows
 

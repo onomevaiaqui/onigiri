@@ -40,6 +40,11 @@ retornar à base. A exportação gera `config/destinations.runtime.json`, compat
 com este nó de missões. A versão atual é exclusivamente local e simulada: ela
 não publica comandos ROS, não aciona Nav2 e não movimenta o robô.
 
+Antes da exportação final, a revisão do painel indica frases repetidas entre
+destinos, locais sem comandos cadastrados e coordenadas que ainda precisam ser
+medidas no mapa. O botão de backup preserva o cadastro editável para que ele
+possa ser levado ao Raspberry Pi posteriormente.
+
 As instruções para testar o painel no Windows estão em
 [`software/admin_web/README.md`](../software/admin_web/README.md).
 

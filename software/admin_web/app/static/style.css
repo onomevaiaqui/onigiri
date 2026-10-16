@@ -29,6 +29,7 @@ h2 { margin-bottom: 8px; font-size: clamp(30px, 4vw, 46px); letter-spacing: -.03
 .right-column { display: grid; gap: 24px; }
 .panel { padding: 24px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 8px 25px rgba(23,33,58,.05); }
 .panel-heading { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+.panel-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
 .panel-heading h3 { margin-bottom: 5px; font-size: 21px; }
 .panel-heading p, .note p, .form-help { margin-bottom: 0; color: var(--muted); line-height: 1.45; }
 .primary, .secondary, .danger { border: 1px solid transparent; border-radius: 8px; padding: 10px 14px; font-weight: 700; }
@@ -59,6 +60,10 @@ input:focus, textarea:focus { outline: 3px solid #dcd7ff; border-color: var(--pu
 .timeline strong, .timeline span { display: block; }
 .timeline span { margin-top: 2px; color: var(--muted); }
 .note { border-left: 5px solid var(--green); }
+.readiness-list { margin: 12px 0 16px; padding-left: 20px; color: var(--muted); line-height: 1.45; }
+.readiness-list li + li { margin-top: 7px; }
+.restore-label { display: grid; gap: 6px; color: var(--ink); font-size: 14px; font-weight: 700; }
+.restore-label input { color: var(--muted); font-weight: 400; }
 dialog { width: min(760px, calc(100% - 30px)); padding: 0; border: 0; border-radius: 16px; box-shadow: 0 20px 70px rgba(0,0,0,.25); }
 dialog::backdrop { background: rgba(18, 27, 50, .55); }
 dialog form { padding: 28px; }
