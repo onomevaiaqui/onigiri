@@ -26,6 +26,8 @@ ajustes de segurança e bugs a corrigir antes de qualquer uso autônomo real.
 - Prioridade para o controle manual.
 - Inicialização automática no Raspberry Pi por serviços `systemd`.
 - Primeiro mapa experimental gerado com `slam_toolbox`.
+- Painel local que abre o mapa ROS 2 (`.yaml` + `.pgm`) e transforma um ponto
+  livre selecionado no mapa em coordenadas para o cadastro de destinos.
 - Fluxo preparado para voz offline, destinos nomeados, chegada, espera e retorno
   à base, dependente de mapa, localização e Nav2 configurados.
 
