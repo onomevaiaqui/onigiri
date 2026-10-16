@@ -11,7 +11,9 @@ desconhecidas não geram uma missão simulada.
 ## Roteiro
 
 1. Inicie o painel seguindo `software/admin_web/README.md`.
-2. Cadastre a `base` e os destinos que existirão no mapa real.
+2. Carregue o par `.yaml` e `.pgm` do mapa ROS 2. Clique apenas nas regiões
+   brancas do mapa para iniciar o cadastro da `base` e dos destinos. O painel
+   bloqueará células de obstáculo (pretas) e área desconhecida (cinzas).
 3. Para cada destino, inclua nomes alternativos e frases completas. Exemplo para
    `escritorio`:
    - `escritório`
@@ -32,7 +34,7 @@ desconhecidas não geram uma missão simulada.
 - Uma única base definida.
 - Cada destino tem pelo menos uma frase ou sinônimo útil.
 - Nenhuma frase é compartilhada por dois destinos.
-- Coordenadas preenchidas depois da medição no mapa ROS 2.
+- Coordenadas selecionadas em área livre do mapa ROS 2 e revisadas no cadastro.
 - Backup salvo fora do Raspberry Pi.
 
 ## Limite desta etapa

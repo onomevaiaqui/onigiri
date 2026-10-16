@@ -25,6 +25,9 @@ Este arquivo registra mudanças relevantes da plataforma Onigiri. As versões de
   comandos de voz por destino.
 - Revisão de pré-implantação: interface sem interpretação de HTML cadastrado,
   validação de backup malformado e formulário sempre limpo ao abrir.
+- Visualizador local do mapa ROS 2: leitura do par `.yaml` e `.pgm`, cálculo de
+  coordenadas de destino por clique e bloqueio de posições em obstáculos ou
+  regiões ainda desconhecidas.
 
 ### Validado
 

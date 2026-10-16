@@ -42,6 +42,13 @@ retornar à base. A exportação gera `config/destinations.runtime.json`, compat
 com este nó de missões. A versão atual é exclusivamente local e simulada: ela
 não publica comandos ROS, não aciona Nav2 e não movimenta o robô.
 
+Depois de gerar o mapa com o SLAM, o painel também abre o par `.yaml` e `.pgm`
+do mapa ROS 2. Ao clicar em uma célula branca, correspondente a área livre
+conhecida, ele calcula `x` e `y` no referencial do mapa e preenche o novo
+destino. Células pretas (obstáculos) e cinzas (região desconhecida) não podem
+ser selecionadas. A escolha no mapa simplifica o cadastro, mas a validação
+física de localização e chegada continua obrigatória antes do uso autônomo.
+
 Antes da exportação final, a revisão do painel indica frases repetidas entre
 destinos, locais sem comandos cadastrados e coordenadas que ainda precisam ser
 medidas no mapa. O botão de backup preserva o cadastro editável para que ele

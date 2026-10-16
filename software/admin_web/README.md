@@ -19,6 +19,26 @@ publica tópicos ROS, não chama o Nav2 e não movimenta motores.
 - Revisão automática de frases ambíguas, destinos sem frases e posições ainda
   não medidas no mapa.
 - Backup e restauração do cadastro local em um arquivo JSON.
+- Visualização local do mapa ROS 2 (`.yaml` + `.pgm`) com escolha assistida da
+  posição: somente células brancas, já identificadas como área livre, podem ser
+  usadas para iniciar o cadastro de um destino.
+
+## Escolhendo destinos no mapa
+
+Após criar o mapa no Raspberry Pi com o SLAM, copie **os dois arquivos do mesmo
+mapa** para o computador: por exemplo, `onigiri_map.yaml` e
+`onigiri_map.pgm`. No painel, selecione os dois arquivos na área **Mapa e
+posicionamento de destinos**.
+
+- Branco representa uma área livre e pode receber um destino.
+- Preto representa obstáculo e não pode receber um destino.
+- Cinza representa área desconhecida e também não pode receber um destino.
+
+Clique em uma região branca e use **Novo destino neste ponto**. O painel
+preenche `X` e `Y` de acordo com a resolução e a origem registradas no mapa; o
+ângulo `yaw` ainda deve ser definido conforme a orientação desejada na chegada.
+Os arquivos do mapa são lidos somente pelo navegador para auxiliar o cadastro:
+não são enviados, alterados ou armazenados pelo painel.
 
 ## Teste no computador Windows
 

@@ -1,4 +1,4 @@
-const state = { destinations: [], lastText: "" };
+const state = { destinations: [], lastText: "", map: null, selectedMapPoint: null };
 
 const element = (id) => document.getElementById(id);
 const dialog = element("destinationDialog");
@@ -34,7 +34,7 @@ function resetForm() {
   element("waitSeconds").value = "15";
 }
 
-function openEditor(destination = null) {
+function openEditor(destination = null, mapPoint = null) {
   resetForm();
   if (destination) {
     element("dialogTitle").textContent = `Editar: ${destination.name}`;
@@ -46,8 +46,148 @@ function openEditor(destination = null) {
     ["x", "y", "yaw"].forEach((key) => { element(key).value = destination[key]; });
     element("waitSeconds").value = destination.wait_seconds;
     element("returnToBase").checked = destination.return_to_base;
+  } else if (mapPoint) {
+    element("x").value = mapPoint.x.toFixed(3);
+    element("y").value = mapPoint.y.toFixed(3);
   }
   dialog.showModal();
+}
+
+function parseMapMetadata(contents) {
+  const resolution = Number((contents.match(/^\s*resolution\s*:\s*([^#\s]+)/m) || [])[1]);
+  const originMatch = contents.match(/^\s*origin\s*:\s*\[\s*([^,]+),\s*([^,]+),\s*([^\]]+)\s*\]/m);
+  if (!Number.isFinite(resolution) || resolution <= 0 || !originMatch) {
+    throw new Error("O YAML não contém resolução e origem compatíveis com um mapa ROS 2.");
+  }
+  const origin = originMatch.slice(1).map(Number);
+  if (origin.some((value) => !Number.isFinite(value))) {
+    throw new Error("A origem do mapa no YAML não é válida.");
+  }
+  return { resolution, origin: { x: origin[0], y: origin[1], yaw: origin[2] } };
+}
+
+function isWhitespace(value) { return value === 9 || value === 10 || value === 13 || value === 32; }
+
+function pgmToken(bytes, start) {
+  let index = start;
+  while (index < bytes.length) {
+    if (bytes[index] === 35) { while (index < bytes.length && bytes[index] !== 10) index += 1; }
+    else if (isWhitespace(bytes[index])) index += 1;
+    else break;
+  }
+  const tokenStart = index;
+  while (index < bytes.length && !isWhitespace(bytes[index]) && bytes[index] !== 35) index += 1;
+  return { value: new TextDecoder().decode(bytes.slice(tokenStart, index)), next: index };
+}
+
+function parsePgm(buffer) {
+  const bytes = new Uint8Array(buffer);
+  const magic = pgmToken(bytes, 0);
+  if (magic.value !== "P2" && magic.value !== "P5") throw new Error("A imagem precisa estar no formato PGM P2 ou P5.");
+  const widthToken = pgmToken(bytes, magic.next);
+  const width = Number(widthToken.value);
+  const heightToken = pgmToken(bytes, widthToken.next);
+  const height = Number(heightToken.value);
+  const maxToken = pgmToken(bytes, heightToken.next);
+  const max = Number(maxToken.value);
+  if (!Number.isInteger(width) || !Number.isInteger(height) || width < 1 || height < 1 || max < 1 || max > 255) {
+    throw new Error("Dimensões ou escala PGM não suportadas.");
+  }
+  const expected = width * height;
+  const pixels = new Uint8ClampedArray(expected);
+  if (magic.value === "P2") {
+    let cursor = maxToken.next;
+    for (let index = 0; index < expected; index += 1) {
+      const token = pgmToken(bytes, cursor);
+      const value = Number(token.value);
+      if (!Number.isFinite(value)) throw new Error("Imagem PGM incompleta.");
+      pixels[index] = Math.round((value / max) * 255);
+      cursor = token.next;
+    }
+  } else {
+    let cursor = maxToken.next;
+    if (bytes[cursor] === 13 && bytes[cursor + 1] === 10) cursor += 2;
+    else if (isWhitespace(bytes[cursor])) cursor += 1;
+    if (bytes.length - cursor < expected) throw new Error("Imagem PGM incompleta.");
+    for (let index = 0; index < expected; index += 1) pixels[index] = Math.round((bytes[cursor + index] / max) * 255);
+  }
+  return { width, height, pixels };
+}
+
+function drawMap() {
+  const canvas = element("mapCanvas");
+  const empty = element("mapEmpty");
+  const context = canvas.getContext("2d");
+  canvas.width = state.map.width;
+  canvas.height = state.map.height;
+  const image = context.createImageData(state.map.width, state.map.height);
+  state.map.pixels.forEach((value, index) => {
+    const offset = index * 4;
+    image.data[offset] = value; image.data[offset + 1] = value; image.data[offset + 2] = value; image.data[offset + 3] = 255;
+  });
+  context.putImageData(image, 0, 0);
+  if (state.selectedMapPoint) {
+    const point = state.selectedMapPoint;
+    const radius = Math.max(3, Math.min(state.map.width, state.map.height) * 0.014);
+    context.beginPath();
+    context.arc(point.pixelX + 0.5, point.pixelY + 0.5, radius, 0, Math.PI * 2);
+    context.fillStyle = point.valid ? "#6358c8" : "#b42318";
+    context.fill();
+    context.lineWidth = Math.max(1, radius * 0.35);
+    context.strokeStyle = "#ffffff";
+    context.stroke();
+  }
+  canvas.hidden = false;
+  empty.hidden = true;
+}
+
+async function loadMapFiles() {
+  const yaml = element("mapYamlFile").files[0];
+  const pgm = element("mapPgmFile").files[0];
+  if (!yaml || !pgm) {
+    element("mapStatus").textContent = "Selecione os dois arquivos do mapa: .yaml e .pgm.";
+    return;
+  }
+  try {
+    const metadata = parseMapMetadata(await yaml.text());
+    const image = parsePgm(await pgm.arrayBuffer());
+    state.map = { ...metadata, ...image, label: `${yaml.name} + ${pgm.name}` };
+    state.selectedMapPoint = null;
+    element("mapPoint").textContent = "Nenhum ponto selecionado.";
+    element("newDestinationAtPoint").disabled = true;
+    element("mapStatus").textContent = `Mapa carregado: ${image.width} × ${image.height} células, resolução de ${metadata.resolution} m/célula.`;
+    drawMap();
+  } catch (error) {
+    state.map = null;
+    element("mapCanvas").hidden = true;
+    element("mapEmpty").hidden = false;
+    element("mapStatus").textContent = `Não foi possível carregar o mapa: ${error.message}`;
+  }
+}
+
+function selectMapPoint(event) {
+  if (!state.map) return;
+  const canvas = element("mapCanvas");
+  const bounds = canvas.getBoundingClientRect();
+  const pixelX = Math.min(state.map.width - 1, Math.max(0, Math.floor((event.clientX - bounds.left) * state.map.width / bounds.width)));
+  const pixelY = Math.min(state.map.height - 1, Math.max(0, Math.floor((event.clientY - bounds.top) * state.map.height / bounds.height)));
+  const occupancy = state.map.pixels[pixelY * state.map.width + pixelX];
+  const point = {
+    x: state.map.origin.x + (pixelX + 0.5) * state.map.resolution,
+    y: state.map.origin.y + (state.map.height - pixelY - 0.5) * state.map.resolution,
+    pixelX,
+    pixelY,
+    valid: occupancy >= 245,
+  };
+  state.selectedMapPoint = point;
+  drawMap();
+  if (!point.valid) {
+    element("mapPoint").textContent = "Este ponto não é uma área livre mapeada. Selecione uma região branca.";
+    element("newDestinationAtPoint").disabled = true;
+    return;
+  }
+  element("mapPoint").textContent = `Ponto livre: X ${point.x.toFixed(3)}, Y ${point.y.toFixed(3)} m`;
+  element("newDestinationAtPoint").disabled = false;
 }
 
 function renderDestinations() {
@@ -138,6 +278,10 @@ function renderSimulation(result) {
 }
 
 element("newDestination").addEventListener("click", () => openEditor());
+element("mapYamlFile").addEventListener("change", loadMapFiles);
+element("mapPgmFile").addEventListener("change", loadMapFiles);
+element("mapCanvas").addEventListener("click", selectMapPoint);
+element("newDestinationAtPoint").addEventListener("click", () => openEditor(null, state.selectedMapPoint));
 element("closeDialog").addEventListener("click", () => dialog.close());
 element("cancelDialog").addEventListener("click", () => dialog.close());
 element("suggestPhrases").addEventListener("click", () => {

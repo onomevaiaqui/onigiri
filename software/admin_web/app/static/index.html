@@ -25,6 +25,27 @@
         <button id="newDestination" class="primary">Novo destino</button>
       </section>
 
+      <section class="panel map-panel">
+        <div class="panel-heading">
+          <div>
+            <h3>Mapa e posicionamento de destinos</h3>
+            <p>Carregue o par de arquivos do mapa ROS 2 e clique em uma região branca (área livre) para usar suas coordenadas no cadastro.</p>
+          </div>
+          <div class="map-files">
+            <label>Arquivo do mapa (.yaml)<input id="mapYamlFile" type="file" accept=".yaml,.yml,text/yaml" /></label>
+            <label>Imagem do mapa (.pgm)<input id="mapPgmFile" type="file" accept=".pgm,image/x-portable-graymap" /></label>
+          </div>
+        </div>
+        <div class="map-workspace">
+          <div id="mapEmpty" class="map-empty">Selecione o arquivo <strong>.yaml</strong> e a imagem <strong>.pgm</strong> produzidos pelo SLAM para visualizar a área mapeada.</div>
+          <canvas id="mapCanvas" hidden aria-label="Mapa ROS 2 selecionável"></canvas>
+        </div>
+        <div class="map-footer">
+          <p id="mapStatus">Branco = área livre; preto = obstáculo; cinza = área ainda desconhecida. Os arquivos são lidos apenas neste navegador.</p>
+          <div><span id="mapPoint">Nenhum ponto selecionado.</span><button id="newDestinationAtPoint" class="primary" disabled>Novo destino neste ponto</button></div>
+        </div>
+      </section>
+
       <section class="layout">
         <div class="panel destinations-panel">
           <div class="panel-heading">
