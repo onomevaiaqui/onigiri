@@ -1,5 +1,9 @@
 # Onigiri
 
+<p align="center">
+  <img src="assets/onigiri-github-banner.png" alt="Onigiri — robô-guia com ROS 2" width="100%">
+</p>
+
 > **Plataforma aberta de robótica assistiva, em desenvolvimento, construída com componentes comerciais e arquivos próprios compartilhados publicamente.**
 
 O Onigiri é mais do que um conjunto de códigos. É uma plataforma aberta que
