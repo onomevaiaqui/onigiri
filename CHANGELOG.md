@@ -2,6 +2,23 @@
 
 Este arquivo registra mudanças relevantes da plataforma Onigiri. As versões descrevem o estado do protótipo e não representam um produto final.
 
+## [Em desenvolvimento]
+
+### Adicionado
+
+- Painel web local para cadastrar destinos, sinônimos e frases de solicitação por voz.
+- Simulação segura do fluxo de missão no computador, sem ROS 2, Nav2 ou acionamento de motores.
+- Exportação de destinos em JSON compatível com o nó de missões do Raspberry Pi.
+- Configuração por destino da fala de chegada, tempo de espera e retorno à base.
+
+### Validado
+
+- Cadastro, interpretação de frases, exportação e simulação do painel no Windows.
+
+### Ainda em validação física
+
+- Instalação do painel no Raspberry Pi e integração com a navegação, áudio e reconhecimento de voz.
+
 ## [0.2.0] - 2026-10-14
 
 ### Adicionado

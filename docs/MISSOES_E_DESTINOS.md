@@ -14,6 +14,7 @@
 | Caminho | Uso |
 |---|---|
 | `config/destinations.example.json` | Exemplo de casa/base e destinos nomeados |
+| `software/admin_web/` | Painel local para cadastrar destinos, frases e comportamento de chegada |
 | `software/raspberry/onigiri_mission_manager.py` | Orquestra pedidos, Nav2, espera e retorno |
 | `software/raspberry/onigiri_speech.py` | Converte mensagens ROS em fala local usando `espeak-ng` |
 | `software/raspberry/onigiri_voice_recognizer.py` | Reconhece voz offline com o microfone da webcam e publica o texto no ROS 2 |
@@ -26,6 +27,21 @@
 4. Instale `espeak-ng` no Raspberry para saída de áudio.
 5. Use uma webcam UVC com **microfone integrado**. O microfone da webcam será a entrada de voz do Onigiri.
 6. O reconhecedor de voz deverá publicar o texto reconhecido em `/onigiri/voice_command`.
+
+## Painel local de cadastro de destinos
+
+O painel em `software/admin_web/` permite cadastrar, no computador, as frases
+que devem ser associadas a cada destino. Por exemplo, as frases “me leve ao
+escritório”, “onde fica o escritório” e “quero ir ao escritório” podem apontar
+para o mesmo local no mapa.
+
+Ele também permite definir a fala ao chegar, o tempo de espera e se o robô deve
+retornar à base. A exportação gera `config/destinations.runtime.json`, compatível
+com este nó de missões. A versão atual é exclusivamente local e simulada: ela
+não publica comandos ROS, não aciona Nav2 e não movimenta o robô.
+
+As instruções para testar o painel no Windows estão em
+[`software/admin_web/README.md`](../software/admin_web/README.md).
 
 ## Reconhecimento de voz offline preparado
 

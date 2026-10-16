@@ -84,10 +84,17 @@ class MissionManager(Node):
 
     def find_destination(self, request: str) -> dict | None:
         request = normalize(request)
+        candidates: list[tuple[int, dict]] = []
         for destination in self.destinations.values():
             names = [destination["name"], *destination.get("aliases", [])]
-            if any(normalize(name) in request for name in names):
-                return destination
+            for name in names:
+                normalized_name = normalize(name)
+                if normalized_name and normalized_name in request:
+                    candidates.append((len(normalized_name), destination))
+        if candidates:
+            # A frase mais específica evita que "escritório 2" seja confundido
+            # com "escritório" quando ambos estiverem cadastrados.
+            return max(candidates, key=lambda item: item[0])[1]
         return None
 
     def on_request(self, message: String) -> None:
@@ -158,9 +165,18 @@ class MissionManager(Node):
             return
 
         if self.phase == "going_to_destination":
-            self.say(f"{self.current_destination['name']}. Vou aguardar quinze segundos.")
+            wait_seconds = float(
+                self.current_destination.get(
+                    "wait_seconds", self.arrival_wait_seconds
+                )
+            )
+            arrival_message = self.current_destination.get(
+                "arrival_message",
+                f"{self.current_destination['name']}. Vou aguardar {wait_seconds:.0f} segundos.",
+            )
+            self.say(arrival_message)
             self.phase = "waiting_at_destination"
-            self.wait_until = time.monotonic() + self.arrival_wait_seconds
+            self.wait_until = time.monotonic() + wait_seconds
         elif self.phase == "returning_home":
             self.phase = "idle"
             self.current_destination = None
@@ -168,6 +184,11 @@ class MissionManager(Node):
 
     def tick(self) -> None:
         if self.phase != "waiting_at_destination" or time.monotonic() < self.wait_until:
+            return
+        if not self.current_destination.get("return_to_base", True):
+            self.say("Vou permanecer neste destino.")
+            self.phase = "idle"
+            self.current_destination = None
             return
         self.say("Até mais. Vou retornar para a base.")
         self.send_goal(self.destinations[self.home_name], "returning_home")

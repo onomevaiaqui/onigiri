@@ -14,3 +14,5 @@ output/Onigiri_Latinoware_2026_jornada.pptx
 output/Onigiri_Latinoware_2026_jornada_v2.pptx
 output/Onigiri_Latinoware_2026_mapa_v3.pptx
 config/destinations.json
+config/destinations.runtime.json
+data/*.db

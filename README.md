@@ -52,6 +52,7 @@ deploy/systemd/          Serviços de inicialização do Raspberry Pi
 docs/                    Manual, especificação e arquitetura
 software/raspberry/     Controle de motores e autonomia em ROS 2
 software/windows/        Ponte e ferramentas do Logitech F710
+software/admin_web/       Painel local para cadastrar destinos e frases de voz
 config/                 Destinos nomeados e ponto de retorno
 CHANGELOG.md             Registro das atualizações do projeto
 ```
@@ -65,6 +66,7 @@ CHANGELOG.md             Registro das atualizações do projeto
 - [Arquitetura da plataforma](docs/ARQUITETURA.md)
 - [Integração do botão de emergência](docs/BOTAO_DE_EMERGENCIA.md)
 - [Missões, destinos e interação por voz](docs/MISSOES_E_DESTINOS.md)
+- [Painel web de destinos](software/admin_web/README.md)
 - [Modelo CAD em STEP](cad/README.md)
 - [Referências técnicas](docs/REFERENCIAS_TECNICAS.md)
 - [Registro de versões](CHANGELOG.md)
