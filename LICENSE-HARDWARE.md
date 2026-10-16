@@ -3,7 +3,8 @@
 Os arquivos mecânicos e de hardware originais do Onigiri, incluindo o conteúdo
 em `cad/` e futuras esquemáticas, placas e arquivos de fabricação próprios do
 projeto, estão licenciados sob a **CERN Open Hardware Licence Version 2 –
-Strongly Reciprocal (CERN-OHL-S v2)**.
+Strongly Reciprocal (CERN-OHL-S v2)**. Isso não inclui o Raspberry Pi 4, o
+LiDAR, o HAT de motores nem outros componentes comerciais de terceiros.
 
 Essa licença permite estudar, fabricar, modificar e redistribuir o hardware,
 desde que as versões derivadas preservem a mesma abertura e disponibilizem os

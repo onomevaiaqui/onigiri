@@ -1,8 +1,12 @@
 # Onigiri
 
-> **Plataforma aberta de robótica assistiva, em desenvolvimento, para orientar pessoas e navegar com segurança em ambientes internos com ROS 2.**
+> **Plataforma aberta de robótica assistiva, em desenvolvimento, construída com componentes comerciais e arquivos próprios compartilhados publicamente.**
 
-O Onigiri é mais do que um conjunto de códigos. É uma plataforma aberta que reúne mecânica, eletrônica, software, documentação, CAD e testes para criar um robô-guia acessível, adaptável e reproduzível.
+O Onigiri é mais do que um conjunto de códigos. É uma plataforma aberta que
+reúne mecânica, eletrônica, software, documentação, CAD e testes para criar um
+robô-guia acessível, adaptável e reproduzível. O projeto usa componentes
+comerciais, como Raspberry Pi 4, HAT de motores e LiDAR; eles não se tornam
+hardware aberto por integrarem o Onigiri.
 
 O objetivo é apoiar a orientação de pessoas em empresas, escolas, supermercados, eventos e projetos acadêmicos. No cenário final, uma pessoa poderá solicitar um destino por voz, acompanhar o robô com segurança e receber uma confirmação ao chegar ao local.
 
@@ -83,3 +87,7 @@ O Onigiri evolui por meio de testes, documentação e colaboração. Ao contribu
 
 Essas licenças mantêm o software reutilizável e exigem que derivações do
 hardware continuem abertas.
+
+Elas se aplicam somente aos arquivos originais do projeto. Raspberry Pi,
+RPLIDAR, HAT de motores e demais produtos de terceiros permanecem sujeitos às
+licenças e condições de seus fabricantes.

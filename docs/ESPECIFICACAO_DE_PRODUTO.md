@@ -4,7 +4,10 @@
 
 O Onigiri é um robô móvel de apoio à acessibilidade e à orientação em ambientes internos. Pode atender empresas de médio e grande porte, escolas, supermercados e projetos acadêmicos.
 
-Ele deve ajudar uma pessoa a encontrar um local sem depender apenas de placas, mapas impressos ou instruções verbais. O projeto será aberto para que outras pessoas possam estudar, reproduzir e adaptar a solução.
+Ele deve ajudar uma pessoa a encontrar um local sem depender apenas de placas,
+mapas impressos ou instruções verbais. A plataforma compartilha seus arquivos
+originais para que outras pessoas possam estudar, reproduzir e adaptar a
+solução, sem caracterizar como aberto o hardware comercial utilizado.
 
 ## Experiência desejada
 

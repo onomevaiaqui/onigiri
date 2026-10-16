@@ -2,10 +2,15 @@
 
 ## Aviso de desenvolvimento
 
-O Onigiri é um protótipo aberto em desenvolvimento. Este repositório contém
-código, CAD, esquemas de implantação e instruções para reproduzir a plataforma,
-mas **não certifica segurança, confiabilidade nem aptidão para uso sem
-supervisão**. Há testes físicos pendentes e bugs podem existir.
+O Onigiri é uma plataforma aberta em desenvolvimento, construída com
+componentes comerciais. Este repositório contém código, CAD, esquemas de
+implantação e instruções próprias para reproduzir a plataforma, mas **não
+certifica segurança, confiabilidade nem aptidão para uso sem supervisão**. Há
+testes físicos pendentes e bugs podem existir.
+
+Raspberry Pi 4, RPLIDAR, HAT de motores e outros produtos de terceiros não são
+declarados hardware aberto pelo projeto; cada um mantém a licença e as
+condições do respectivo fabricante.
 
 Não utilize o Onigiri para transportar pessoas, em áreas públicas sem
 supervisão, próximo a escadas, desníveis, vias, crianças, animais ou situações
