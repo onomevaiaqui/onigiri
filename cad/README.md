@@ -17,6 +17,14 @@ O formato STEP preserva a geometria para abertura e edição em ferramentas CAD 
 
 O modelo representa o chassi em desenvolvimento. Ele deve evoluir junto com a montagem física e os testes do robô.
 
+## Referência das rodas esféricas
+
+As rodas do Onigiri são uma adaptação inspirada no conceito Omni-Ball, pesquisado
+na Universidade de Osaka. O objetivo do conceito é permitir movimento
+omnidirecional e aumentar a capacidade de transpor desníveis e vãos. Esta não é
+uma reprodução oficial nem usa componentes fornecidos pela universidade. Veja a
+[referência técnica completa](../docs/REFERENCIAS_TECNICAS.md).
+
 ## Licença
 
 O modelo e demais arquivos de hardware originais do Onigiri usam a

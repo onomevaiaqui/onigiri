@@ -66,6 +66,7 @@ CHANGELOG.md             Registro das atualizações do projeto
 - [Integração do botão de emergência](docs/BOTAO_DE_EMERGENCIA.md)
 - [Missões, destinos e interação por voz](docs/MISSOES_E_DESTINOS.md)
 - [Modelo CAD em STEP](cad/README.md)
+- [Referências técnicas](docs/REFERENCIAS_TECNICAS.md)
 - [Registro de versões](CHANGELOG.md)
 
 ## Segurança

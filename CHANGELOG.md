@@ -6,6 +6,7 @@ Este arquivo registra mudanças relevantes da plataforma Onigiri. As versões de
 
 ### Adicionado
 
+- Referência técnica ao conceito Omni-Ball da Universidade de Osaka, que inspira as rodas esféricas adaptadas do Onigiri.
 - Licença MIT para código e serviços, com CERN-OHL-S v2 para o CAD e hardware original.
 - Reconhecimento de voz offline preparado com Vosk e microfone integrado à webcam UVC.
 - Modelo CAD do chassi no formato STEP em `cad/Onigiri.step`.
