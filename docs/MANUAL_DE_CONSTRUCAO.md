@@ -25,7 +25,7 @@ continuam pendentes. Para uma montagem nova, siga primeiro o
 | Tobsun EA75-5V | Conversão para 5 V; alimenta o Raspberry por USB-C |
 | RPLIDAR A1M8 | Percepção de obstáculos |
 | Webcam UVC com microfone integrado | Contexto visual e entrada de voz planejada |
-| Logitech F710 + PC Windows | Controle manual e seleção da autonomia |
+| Logitech F710 + computador do operador | Controle manual e seleção da autonomia em Windows, macOS ou Linux |
 | Botão de emergência 22 mm, contato NC | Corte físico planejado da alimentação do HAT e motores |
 
 ## 3. Alimentação
@@ -98,15 +98,24 @@ sudo usermod -aG i2c,dialout onigiri
 
 Saia e entre novamente na sessão SSH após esse comando.
 
-### PC Windows
+### Computador do operador
 
-Instale Python e `pygame-ce`:
+Instale Python 3 e `pygame-ce`. A ponte do Logitech F710 é multiplataforma:
+use Windows, macOS ou Linux no computador que acompanhará o robô.
+
+No Windows (PowerShell):
 
 ```bash
-python -m pip install pygame-ce
+py -m pip install -r .\software\operator_client\requirements.txt
 ```
 
-O desenvolvimento atual usa `C:\Python314\python.exe`. Ajuste os comandos se o Python estiver em outro local.
+No macOS ou Linux:
+
+```bash
+python3 -m pip install -r software/operator_client/requirements.txt
+```
+
+O Windows pode usar `py` ou `python`; ajuste o comando de acordo com a instalação local.
 
 ## 6. Implantação no Raspberry
 
@@ -142,10 +151,18 @@ Resultado esperado: três linhas `active`, além de nós como `/onigiri_base`, `
 
 ## 7. Controle Logitech F710
 
-Execute a ponte no Windows/Git Bash:
+Execute a ponte no computador do operador:
+
+No Windows (PowerShell):
+
+```powershell
+py .\software\operator_client\f710_bridge.py <IP_TAILSCALE_DO_RASPBERRY>
+```
+
+No macOS ou Linux:
 
 ```bash
-python "/c/caminho/para/onigiri/software/windows/f710_bridge.py" <IP_TAILSCALE_DO_RASPBERRY>
+python3 software/operator_client/f710_bridge.py <IP_TAILSCALE_DO_RASPBERRY>
 ```
 
 | Controle | Ação |
@@ -158,7 +175,7 @@ python "/c/caminho/para/onigiri/software/windows/f710_bridge.py" <IP_TAILSCALE_D
 
 O F710 envia UDP para a porta `5005`. Movimentar um analógico tem prioridade sobre a autonomia. Quando os analógicos retornam ao centro, a autonomia pode retomar se o botão 7 permanecer ligado.
 
-Para descobrir um eixo ou botão em outro controle, execute `software/windows/f710_axes.py` ou `software/windows/f710_buttons.py` no Windows.
+Para descobrir um eixo ou botão em outro controle, execute `software/operator_client/f710_axes.py` ou `software/operator_client/f710_buttons.py` no mesmo sistema operacional em que o F710 será usado.
 
 ### Inicialização automática no Windows
 
@@ -172,7 +189,7 @@ Conteúdo, ajustando os caminhos quando necessário:
 
 ```bat
 @echo off
-start "Onigiri F710 Bridge" /min "C:\Python314\python.exe" "C:\caminho\para\onigiri\software\windows\f710_bridge.py" <IP_TAILSCALE_DO_RASPBERRY>
+start "Onigiri F710 Bridge" /min py "C:\caminho\para\onigiri\software\operator_client\f710_bridge.py" <IP_TAILSCALE_DO_RASPBERRY>
 ```
 
 A ponte aguarda o receptor USB se ele não estiver conectado e desativa a autonomia se o controle desconectar.
@@ -210,7 +227,7 @@ Se `/scan` ficar sem atualização por mais de 0,5 s, a autonomia não envia mov
 
 1. Verifique fiação, bateria, área livre e posição frontal do LiDAR.
 2. Ligue a alimentação do robô e aguarde os três serviços ficarem ativos.
-3. Faça login no Windows; a ponte do F710 inicia automaticamente se a configuração de inicialização estiver criada.
+3. Inicie a ponte no computador do operador. No Windows, ela pode iniciar automaticamente se a configuração de inicialização estiver criada.
 4. Controle manualmente pelos analógicos ou pressione o botão 7 para ativar a autonomia.
 5. Para interromper a autonomia, pressione novamente o botão 7, mova os analógicos ou desligue a ponte com `Ctrl+C`.
 6. Desligue a LiPo antes de transportar, alterar a montagem ou trocar cabos.
@@ -252,8 +269,8 @@ ros2 topic echo /scan --once
 ### F710
 
 1. Confirme o receptor USB e o modo do controle.
-2. Execute `f710_bridge.py` no Git Bash e verifique a mensagem `Joystick ativo`.
-3. Se não houver controle manual, confirme se o PC alcança o IP Tailscale do Raspberry.
+2. Execute `f710_bridge.py` no computador do operador e verifique a mensagem `Joystick ativo`.
+3. Se não houver controle manual, confirme se o computador do operador alcança o IP Tailscale do Raspberry.
 4. Se o robô estiver parado com autonomia ligada, confirme `/scan` e os três serviços.
 
 ## 11. Atualização de código

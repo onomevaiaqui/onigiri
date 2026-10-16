@@ -6,6 +6,8 @@ Este arquivo registra mudanças relevantes da plataforma Onigiri. As versões de
 
 ### Adicionado
 
+- Cliente do operador renomeado de `software/windows` para
+  `software/operator_client`, deixando claro o uso em Windows, macOS e Linux.
 - Painel web local para cadastrar destinos, sinônimos e frases de solicitação por voz.
 - Simulação segura do fluxo de missão no computador, sem ROS 2, Nav2 ou acionamento de motores.
 - Exportação de destinos em JSON compatível com o nó de missões do Raspberry Pi.

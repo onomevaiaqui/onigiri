@@ -2,10 +2,10 @@
 
 ## Visão geral
 
-O Onigiri integra um computador embarcado, motores, sensores e um computador de controle. O Raspberry Pi executa o ROS 2 e toma decisões locais de movimento. O PC Windows fornece o controle manual por rede.
+O Onigiri integra um computador embarcado, motores, sensores e um computador de controle. O Raspberry Pi executa o ROS 2 e toma decisões locais de movimento. O computador do operador fornece o controle manual por rede e pode usar Windows, macOS ou Linux.
 
 ```text
-Logitech F710 + PC Windows
+Logitech F710 + computador do operador
           |
           | UDP pela rede Tailscale
           v
@@ -31,9 +31,9 @@ Raspberry Pi 4 + ROS 2 Jazzy
 | Raspberry Pi | `software/raspberry/onigiri_voice_recognizer.py` | Transcreve localmente o microfone da webcam e publica frases reconhecidas. |
 | Raspberry Pi | `software/raspberry/onigiri_mission_manager.py` | Conecta pedidos de destino ao Nav2, espera e retorno à base. |
 | Raspberry Pi | `software/raspberry/onigiri_speech.py` | Converte mensagens ROS em fala local. |
-| Windows | `software/windows/f710_bridge.py` | Lê o Logitech F710 e envia comandos UDP ao Raspberry. |
-| Windows | `software/windows/f710_axes.py` | Ajuda a identificar os eixos de um controle. |
-| Windows | `software/windows/f710_buttons.py` | Ajuda a identificar os botões de um controle. |
+| Computador do operador | `software/operator_client/f710_bridge.py` | Lê o Logitech F710 e envia comandos UDP ao Raspberry. |
+| Computador do operador | `software/operator_client/f710_axes.py` | Ajuda a identificar os eixos de um controle. |
+| Computador do operador | `software/operator_client/f710_buttons.py` | Ajuda a identificar os botões de um controle. |
 
 ## Implantação no Raspberry Pi
 

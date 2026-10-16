@@ -21,7 +21,7 @@ concluir as verificações da seção final.
 | 1 | Webcam UVC **com microfone integrado** | Vídeo e entrada de voz via USB |
 | 1 | Alto-falante + amplificador | Saída de fala do robô |
 | 1 | Botão de emergência com contato NC | Deve cortar fisicamente apenas a tração |
-| 1 | Logitech F710 + PC Windows | Controle manual pela rede Tailscale |
+| 1 | Logitech F710 + computador do operador | Controle manual pela rede Tailscale em Windows, macOS ou Linux |
 
 ## 2. Segurança elétrica e montagem
 
@@ -193,19 +193,35 @@ sudo systemctl enable --now onigiri-mission.service
 Veja detalhes de frases, destinos e fluxo em
 [Missões, destinos e interação por voz](MISSOES_E_DESTINOS.md).
 
-## 9. Controle manual pelo Windows
+## 9. Controle manual pelo computador do operador
 
 1. Instale Python 3 e conecte o receptor USB do Logitech F710.
-2. Instale a dependência:
+2. Clone o repositório no computador do operador e instale a dependência.
+
+No Windows (PowerShell):
 
 ```powershell
-py -m pip install pygame-ce
+py -m pip install -r .\software\operator_client\requirements.txt
 ```
 
-3. Clone o repositório no PC e inicie a ponte, substituindo o IP Tailscale:
+No macOS ou Linux:
+
+```bash
+python3 -m pip install -r software/operator_client/requirements.txt
+```
+
+3. Inicie a ponte, substituindo o IP Tailscale:
+
+No Windows (PowerShell):
 
 ```powershell
-py .\software\windows\f710_bridge.py <IP_TAILSCALE_DO_RASPBERRY>
+py .\software\operator_client\f710_bridge.py <IP_TAILSCALE_DO_RASPBERRY>
+```
+
+No macOS ou Linux:
+
+```bash
+python3 software/operator_client/f710_bridge.py <IP_TAILSCALE_DO_RASPBERRY>
 ```
 
 O analógico esquerdo controla frente/ré e giro; o direito controla a lateral.

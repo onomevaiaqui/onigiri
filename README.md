@@ -19,7 +19,7 @@ ajustes de segurança e bugs a corrigir antes de qualquer uso autônomo real.
 ### Recursos presentes no repositório
 
 - Tração com três motores DC: frente, ré, giro e deslocamento lateral.
-- Controle remoto por Logitech F710 em um PC Windows, usando rede Tailscale.
+- Controle remoto por Logitech F710 em computador do operador (Windows, macOS ou Linux), usando rede Tailscale.
 - RPLIDAR A1M8 publicando leituras no ROS 2.
 - Proteção LiDAR a 35 cm para frente, ré e deslocamentos laterais implementada.
 - Autonomia reativa experimental para parar e desviar de obstáculos.
@@ -43,7 +43,7 @@ ajustes de segurança e bugs a corrigir antes de qualquer uso autônomo real.
 | Percepção | RPLIDAR A1M8 |
 | Visão e voz | Webcam UVC com microfone integrado |
 | Alimentação | LiPo 3S 11,1 V e conversor Tobsun EA75-5V |
-| Controle | Logitech F710 em PC Windows via Tailscale |
+| Controle | Logitech F710 em computador do operador via Tailscale |
 | Projeto mecânico | Modelo CAD em STEP compartilhado neste repositório |
 
 ## Estrutura do repositório
@@ -53,7 +53,7 @@ cad/                    Modelo 3D compartilhado do robô
 deploy/systemd/          Serviços de inicialização do Raspberry Pi
 docs/                    Manual, especificação e arquitetura
 software/raspberry/     Controle de motores e autonomia em ROS 2
-software/windows/        Ponte e ferramentas do Logitech F710
+software/operator_client/ Cliente multiplataforma e ferramentas do Logitech F710
 software/admin_web/       Painel local para cadastrar destinos e frases de voz
 config/                 Destinos nomeados e ponto de retorno
 CHANGELOG.md             Registro das atualizações do projeto
