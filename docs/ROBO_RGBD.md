@@ -1,4 +1,4 @@
-# StacBot e plataforma comum Onigiri
+# Robô e plataforma comum Onigiri
 
 O mesmo painel atende três chassis: Onigiri de três rodas omniball, tanque de duas esteiras e mecanum de quatro motores. Selecione Raspberry Pi 4 ou 5 e o controlador compatível. O perfil é persistente; mudar de robô não exige outro painel.
 
@@ -22,8 +22,8 @@ O painel reinicia. Mapas, destinos e plataforma persistidos são preservados. A 
 
 ## Configurar e usar
 
-1. Em **Configurações → Plataforma e sensores**, clique em **Preencher perfil StacBot**: Raspberry 4, tanque, Sabertooth 2x32 USB, Gemini 2, sem LiDAR.
-2. Abra **Portas, dimensões e calibração**. Informe a porta real `/dev/serial/by-id/...`, dimensões medidas, distância entre esteiras e posição/orientação da câmera em relação à base. Confirme as medições e salve. O preset não inventa esses valores.
+1. Em **Configurações → Plataforma e sensores**, clique em **Preencher perfil tanque RGB-D**: Raspberry 4, tanque, Sabertooth 2x32 USB, Gemini 2, sem LiDAR.
+2. Preencha **Nome do robô**, se desejar. Esse nome serve apenas para organização. Abra **Portas, dimensões e calibração**. Informe a porta real `/dev/serial/by-id/...`, dimensões medidas, distância entre esteiras e posição/orientação da câmera em relação à base. Confirme as medições e salve. O preset não inventa esses valores.
 3. Em **Mapas e destinos**, use **Mapear com Gemini 2**. O painel inicia a câmera e RTAB-Map, mostra a prévia e permite salvar a captura. Nenhum comando de movimento é enviado ao iniciar o mapeamento.
 4. Salve e abra o mapa. No mesmo painel de posicionamento, cadastre, edite ou exclua destinos e a base. Os pontos ficam associados ao mapa selecionado.
 5. Para localização posterior, abra esse mapa: além de YAML/PGM, o sistema guarda `rtabmap.db`. Preserve os três arquivos; somente a imagem não basta para relocalização visual.

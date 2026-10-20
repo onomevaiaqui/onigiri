@@ -108,4 +108,4 @@ Veja [Operação robótica](docs/OPERACAO_ROBOTICA.md) para Sabertooth, tank, On
 
 ### Mesmo painel em outros chassis
 
-Selecione omniball, esteiras ou mecanum, Raspberry 4/5 e controlador em Configurações. [StacBot com Gemini 2 sem LiDAR](docs/STACBOT_RGBD.md) usa os mesmos mapas e destinos, com odometria visual e banco RTAB-Map persistido.
+Selecione omniball, esteiras ou mecanum, Raspberry 4/5 e controlador em Configurações. [Robô com Gemini 2 sem LiDAR](docs/ROBO_RGBD.md) usa os mesmos mapas e destinos, com odometria visual e banco RTAB-Map persistido.

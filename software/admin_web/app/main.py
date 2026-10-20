@@ -256,6 +256,7 @@ from .platforms import PlatformStore, CATALOG
 platforms = PlatformStore(os.environ.get("ONIGIRI_PLATFORM_FILE", PROJECT_ROOT / "data" / "platform.json"))
 
 class PlatformInput(BaseModel):
+    robot_name: str = Field(default="", max_length=80)
     computer: Literal["raspberry4", "raspberry5"] = "raspberry4"
     motor_driver: Literal["onigiri_hat", "sabertooth2x32", "sabertooth2x60"] = "onigiri_hat"
     motor_connection: Literal["i2c", "usb", "usb_ttl"] = "i2c"

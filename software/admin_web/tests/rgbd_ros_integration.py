@@ -38,8 +38,8 @@ with tempfile.TemporaryDirectory(prefix='onigiri-rgbd-test-') as folder:
   else:raise AssertionError(str(perception[-1:] if perception else 'perception absent')+'\n'+(path/'maps/slam.log').read_text()[-3500:])
   assert all(math.isfinite(msg.pose.pose.position.x) for msg in odoms)
   print('PASS: odometria RGB-D e mapa real RTAB-Map com imagens sintéticas, sem LiDAR')
-  result=manager.save('stacbot-test');assert result['name']=='stacbot-test'
-  saved=path/'maps/stacbot-test';assert (saved/'rtabmap.db').stat().st_size>1000;assert (saved/'map.pgm').is_file()
+  result=manager.save('rgbd-test');assert result['name']=='rgbd-test'
+  saved=path/'maps/rgbd-test';assert (saved/'rtabmap.db').stat().st_size>1000;assert (saved/'map.pgm').is_file()
   print('PASS: prévia do mesmo painel, YAML/PGM e banco visual salvos atomicamente')
   manager.stop();before=hashlib.sha256((saved/'rtabmap.db').read_bytes()).hexdigest()
   log=(path/'localization.log').open('w');process=subprocess.Popen(['/usr/bin/python3',str(root/'software/robot_runtime/stack.py'),str(path),str(saved/'map.yaml')],stdout=log,stderr=subprocess.STDOUT,start_new_session=True)

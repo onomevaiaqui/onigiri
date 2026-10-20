@@ -6,7 +6,7 @@ Implementados: transporte Sabertooth, watchdog, mistura de chassis, extrínsecas
 
 ## Atualizar um Raspberry existente
 
-Para o StacBot sem LiDAR, siga [StacBot RGB-D](STACBOT_RGBD.md), usando `-InstalarRGBD` em vez de `-InstalarOdometria`.
+Para o Robô sem LiDAR, siga [Robô RGB-D](ROBO_RGBD.md), usando `-InstalarRGBD` em vez de `-InstalarOdometria`.
 
 Execute o instalador PowerShell entregue com o pacote usando `-InstalarRuntime -InstalarOdometria -InstalarCamera`. A compilação da câmera pode demorar e requer espaço livre e alimentação estável. Instalar não habilita o serviço de motores. Guarde mapas em andamento antes de atualizar: o painel será reiniciado. A atualização preserva banco, mapas e plataforma. O instalador guarda backup dos arquivos gerenciados e tenta restaurá-los se a atualização falhar; o ambiente virtual Python não é revertido.
 
@@ -57,7 +57,7 @@ Sem encoders, RF2O estima odometria pelo LiDAR. Corredores sem estrutura, superf
 4. Edite os pontos e confira o campo Mapa salvo deste ponto. Destinos antigos sem associação precisam ser associados ao mapa correto; um ponto de outro mapa não pode ser enviado. Arme a base, selecione o destino e clique Ir ao destino. O painel primeiro informa que enfileirou a solicitação; o ROS confirma aceitação ou recusa.
 5. Retornar à base envia um objetivo ao ponto marcado como base. Cancelar desarma e cancela o objetivo. Ao chegar, a base é desarmada. O retorno desta interface é explícito, não automático após uma espera.
 
-Nav2 usa AMCL, costmaps com LiDAR e geometria do robô, planejador, DWB e suavizador. O perfil mecanum habilita velocidade lateral e modelo AMCL omnidirecional; os outros perfis usam diferencial. Valores de aceleração e distâncias de inflação ainda precisam ser ajustados e testados no robô. No perfil sem LiDAR com Gemini 2, RTAB-Map fornece odometria/localização e os pontos de profundidade alimentam os costmaps; consulte STACBOT_RGBD.md para limites de movimento e campo de visão.
+Nav2 usa AMCL, costmaps com LiDAR e geometria do robô, planejador, DWB e suavizador. O perfil mecanum habilita velocidade lateral e modelo AMCL omnidirecional; os outros perfis usam diferencial. Valores de aceleração e distâncias de inflação ainda precisam ser ajustados e testados no robô. No perfil sem LiDAR com Gemini 2, RTAB-Map fornece odometria/localização e os pontos de profundidade alimentam os costmaps; consulte ROBO_RGBD.md para limites de movimento e campo de visão.
 
 O monitor Gamepad continua local: não transmite movimento. Não execute a navegação com outro programa publicando `/cmd_vel` simultaneamente.
 
