@@ -1,0 +1,26 @@
+const {chromium}=require('playwright');
+const assert=require('node:assert/strict');
+(async()=>{const browser=await chromium.launch({channel:'msedge',headless:true});try{
+const page=await browser.newPage({baseURL:process.env.PLATFORMS_TEST_URL||"http://localhost:18086"});await page.goto((process.env.PLATFORMS_TEST_URL||'http://localhost:18086')+'/#settings');
+const form=page.locator('#platformForm');await form.locator('summary').click();await form.locator('[name=chassis]').selectOption('tank');assert.deepEqual(await form.locator('[name=chassis] option').evaluateAll(options=>options.map(option=>option.value)),['onigiri','tank','mecanum']);
+await form.locator('[name=motor_driver]').selectOption('sabertooth2x60');
+await form.locator('[name=computer]').selectOption('raspberry5');
+await form.locator('[name=camera]').selectOption('gemini2');
+await form.locator('[name=serial_port]').fill('/dev/serial/by-id/usb-test');
+await form.locator('button[type=submit]').click();await page.getByText('Plataforma salva. Nenhum serviço foi iniciado.').waitFor();
+await page.reload();await form.locator('[name=chassis] option[value=tank]').waitFor({state:'attached'});
+await page.waitForFunction(()=>document.querySelector('#platformForm [name=motor_driver]').value==='sabertooth2x60');
+assert.equal(await page.locator('#motorConnection').inputValue(),'Adaptador USB–TTL');
+assert.equal(await form.locator('[name=serial_port]').inputValue(),'/dev/serial/by-id/usb-test');
+const bench=page.locator('#tankBench');await bench.locator('[name=forward]').fill('1');
+await bench.locator('[name=turn]').fill('0.5');await bench.locator('button[type=submit]').click();
+await page.getByText(/Esquerda: 0.33 · Direita: 1.00/).waitFor();
+await page.locator('#tankNeutral').click();await page.getByText(/Esquerda: 0.00 · Direita: 0.00/).waitFor();
+await page.setViewportSize({width:390,height:844});assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+await page.locator('[data-view=sensors]').click();await page.locator('#cameraObserve').click();await page.getByText('Active ONIGIRI_CAMERA_PREVIEW_ENABLED=1 no servidor ROS').waitFor();
+await page.locator('[data-view=settings]').click();await form.locator('summary').click();await form.locator('[name=chassis]').selectOption('mecanum');await form.locator('[name=serial_port]').fill('/dev/serial/by-id/front');await form.locator('[name=serial_port_2]').fill('/dev/serial/by-id/rear');await form.locator('[name=invert3]').check();await form.locator('button[type=submit]').click();await page.getByText('Plataforma salva. Nenhum serviço foi iniciado.').waitFor();
+const configured=await page.request.get('/api/platform').then(r=>r.json());assert.equal(configured.config.chassis,'mecanum');assert.equal(configured.config.motor_inversions.length,4);assert.equal(configured.config.motor_inversions[3],true);
+await page.locator('[data-view=missions]').click();await page.locator('#runtimeConnect').click();await page.getByText('Integração ROS desabilitada neste servidor').waitFor();
+const denied=await page.request.post('/api/runtime/base/arm');assert.equal(denied.status(),409);
+console.log('PASS: tank, Raspberry 5, USB–TTL persistente, mistura, zero e layout móvel');
+}finally{await browser.close();}})().catch(e=>{console.error(e);process.exit(1)});

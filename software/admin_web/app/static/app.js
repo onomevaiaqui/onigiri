@@ -34,8 +34,11 @@ function resetForm() {
   element("waitSeconds").value = "15";
 }
 
-function openEditor(destination = null, mapPoint = null) {
+function openEditor(destination = null, mapPoint = null, kind = "destination") {
   resetForm();
+  element("pointType").value = destination?.is_home ? "base" : kind;
+  element("destinationMap").value = destination?.map_name || state.map?.savedName || "";
+  element("deletePoint").hidden = !destination;
   if (destination) {
     element("dialogTitle").textContent = `Editar: ${destination.name}`;
     element("destinationId").value = destination.id;
@@ -126,19 +129,9 @@ function drawMap() {
     image.data[offset] = value; image.data[offset + 1] = value; image.data[offset + 2] = value; image.data[offset + 3] = 255;
   });
   context.putImageData(image, 0, 0);
-  if (state.selectedMapPoint) {
-    const point = state.selectedMapPoint;
-    const radius = Math.max(3, Math.min(state.map.width, state.map.height) * 0.014);
-    context.beginPath();
-    context.arc(point.pixelX + 0.5, point.pixelY + 0.5, radius, 0, Math.PI * 2);
-    context.fillStyle = point.valid ? "#6358c8" : "#b42318";
-    context.fill();
-    context.lineWidth = Math.max(1, radius * 0.35);
-    context.strokeStyle = "#ffffff";
-    context.stroke();
-  }
   canvas.hidden = false;
   empty.hidden = true;
+  window.dispatchEvent(new CustomEvent("onigiri:map-rendered", {detail: {map: state.map, point: state.selectedMapPoint, destinations: state.destinations}}));
 }
 
 async function loadMapFiles() {
@@ -151,7 +144,7 @@ async function loadMapFiles() {
   try {
     const metadata = parseMapMetadata(await yaml.text());
     const image = parsePgm(await pgm.arrayBuffer());
-    state.map = { ...metadata, ...image, label: `${yaml.name} + ${pgm.name}` };
+    state.map = { ...metadata, ...image, savedName: element("mapPgmFile").dataset.savedMapName || null, label: `${yaml.name} + ${pgm.name}` };
     state.selectedMapPoint = null;
     element("mapPoint").textContent = "Nenhum ponto selecionado.";
     element("newDestinationAtPoint").disabled = true;
@@ -172,9 +165,12 @@ function selectMapPoint(event) {
   const pixelX = Math.min(state.map.width - 1, Math.max(0, Math.floor((event.clientX - bounds.left) * state.map.width / bounds.width)));
   const pixelY = Math.min(state.map.height - 1, Math.max(0, Math.floor((event.clientY - bounds.top) * state.map.height / bounds.height)));
   const occupancy = state.map.pixels[pixelY * state.map.width + pixelX];
+  const localX = (pixelX + 0.5) * state.map.resolution;
+  const localY = (state.map.height - pixelY - 0.5) * state.map.resolution;
+  const c = Math.cos(state.map.origin.yaw), s = Math.sin(state.map.origin.yaw);
   const point = {
-    x: state.map.origin.x + (pixelX + 0.5) * state.map.resolution,
-    y: state.map.origin.y + (state.map.height - pixelY - 0.5) * state.map.resolution,
+    x: state.map.origin.x + c * localX - s * localY,
+    y: state.map.origin.y + s * localX + c * localY,
     pixelX,
     pixelY,
     valid: occupancy >= 245,
@@ -211,6 +207,7 @@ function renderDestinations() {
 async function loadDestinations() {
   state.destinations = await api("/api/destinations");
   renderDestinations();
+  if (state.map) drawMap();
   await loadReadiness();
 }
 
@@ -237,14 +234,42 @@ async function setHome(destination) {
   await loadDestinations();
 }
 
+function clearMapSelection() {
+  state.selectedMapPoint = null;
+  element("mapPoint").textContent = "Nenhum ponto selecionado.";
+  element("newDestinationAtPoint").disabled = true;
+}
+
 async function removeDestination(destination) {
-  if (!confirm(`Excluir o destino “${destination.name}”?`)) return;
-  try {
-    await api(`/api/destinations/${destination.id}`, { method: "DELETE" });
-    await loadDestinations();
-  } catch (error) {
-    alert(error.message);
-  }
+  const box = element("deletePointDialog"), yes = element("confirmDeletePoint"), no = element("cancelDeletePoint");
+  const replacement = element("replacementBase");
+  element("deletePointName").textContent = `Excluir “${destination.name}”?`;
+  element("deletePointError").textContent = "";
+  element("replacementBaseField").hidden = !destination.is_home;
+  replacement.replaceChildren(new Option("Escolha a nova base", ""), ...state.destinations.filter(d => d.id !== destination.id).map(d => new Option(d.name, String(d.id))));
+  yes.disabled = false; no.disabled = false;
+  box.showModal();
+  return new Promise(resolve => {
+    const cancel = () => { box.close(); resolve(false); };
+    no.onclick = cancel;
+    box.oncancel = event => { event.preventDefault(); if (!yes.disabled) cancel(); };
+    yes.onclick = async () => {
+      if (destination.is_home && !replacement.value) {
+        element("deletePointError").textContent = "Escolha a base substituta antes de confirmar.";
+        return;
+      }
+      yes.disabled = true; no.disabled = true;
+      try {
+        const suffix = destination.is_home ? `?replacement_id=${encodeURIComponent(replacement.value)}` : "";
+        await api(`/api/destinations/${destination.id}${suffix}`, {method: "DELETE"});
+        clearMapSelection();
+        await loadDestinations();
+        box.close(); resolve(true);
+      } catch (error) {
+        element("deletePointError").textContent = error.message;
+      } finally { yes.disabled = false; no.disabled = false; }
+    };
+  });
 }
 
 function renderInterpretation(result) {
@@ -278,10 +303,15 @@ function renderSimulation(result) {
 }
 
 element("newDestination").addEventListener("click", () => openEditor());
-element("mapYamlFile").addEventListener("change", loadMapFiles);
-element("mapPgmFile").addEventListener("change", loadMapFiles);
+element("mapYamlFile").addEventListener("change", event=>{if(event.isTrusted)delete element("mapPgmFile").dataset.savedMapName;loadMapFiles();});
+element("mapPgmFile").addEventListener("change", event=>{if(event.isTrusted)delete element("mapPgmFile").dataset.savedMapName;loadMapFiles();});
 element("mapCanvas").addEventListener("click", selectMapPoint);
-element("newDestinationAtPoint").addEventListener("click", () => openEditor(null, state.selectedMapPoint));
+element("clearMapSelection").addEventListener("click", () => { clearMapSelection(); if (state.map) drawMap(); });
+element("newDestinationAtPoint").addEventListener("click", () => openEditor(null, state.selectedMapPoint, element("newPointType").value));
+element("deletePoint").addEventListener("click", async () => {
+  const destination = state.destinations.find(item => String(item.id) === element("destinationId").value);
+  if (destination && await removeDestination(destination)) dialog.close();
+});
 element("closeDialog").addEventListener("click", () => dialog.close());
 element("cancelDialog").addEventListener("click", () => dialog.close());
 element("suggestPhrases").addEventListener("click", () => {
@@ -313,12 +343,15 @@ element("destinationForm").addEventListener("submit", async (event) => {
     arrival_message: element("arrivalMessage").value,
     wait_seconds: Number(element("waitSeconds").value),
     return_to_base: element("returnToBase").checked,
+    is_home: element("pointType").value === "base",
+    map_name: element("destinationMap").value.trim() || null,
   };
   const id = element("destinationId").value;
   try {
     await api(id ? `/api/destinations/${id}` : "/api/destinations", {
       method: id ? "PUT" : "POST", body: JSON.stringify(payload),
     });
+    clearMapSelection();
     dialog.close();
     await loadDestinations();
   } catch (error) {

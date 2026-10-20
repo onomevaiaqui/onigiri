@@ -1,0 +1,15 @@
+.map-workspace { position:relative; }
+.map-marker-layer { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.map-marker { position:absolute; transform:translate(-50%,-100%); width:30px; height:30px; display:grid; place-items:center; background:white; border-radius:8px; box-shadow:0 2px 6px #0004; border:1px solid currentColor; }
+.map-marker svg { width:23px; height:23px; }
+.marker-point { color:#6358c8; }.marker-destination { color:#2563a4; }.marker-home { color:#227a4d; }.map-marker.invalid { color:#b42318; }
+.map-marker-legend { display:flex; flex-wrap:wrap; gap:12px; margin-top:12px; font-size:12px; }
+.map-marker-legend>span { display:inline-flex; align-items:center; gap:5px; }.map-marker-legend svg { width:17px; height:17px; }
+.destination-symbol { display:inline-flex; vertical-align:middle; margin-right:7px; }.destination-symbol svg { width:19px; height:19px; }
+.map-marker-layer button.map-marker { pointer-events:auto; padding:0; cursor:pointer; }.map-marker-layer button.map-marker:hover { box-shadow:0 0 0 3px #fff9,0 2px 8px #0006; }
+#newPointType,#pointType { padding:9px; border:1px solid #b9c2cf; border-radius:8px; background:white; font:inherit; }
+.point-type-help { font-size:13px; color:var(--muted); margin:0; line-height:1.5; }
+
+#deletePointDialog { max-width:480px; }.point-delete-confirmation { padding:24px; }.point-delete-confirmation h2 { font-size:23px; }.point-delete-confirmation label { display:grid; gap:10px; font-size:14px; }#replacementBase { width:100%; padding:10px; border:1px solid #b9c2cf; border-radius:8px; background:white; font:inherit; }
+
+.marker-robot {color:#b15b05;transform:translate(-50%,-50%);border-radius:50%;}

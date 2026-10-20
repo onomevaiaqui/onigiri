@@ -1,5 +1,10 @@
 # Painel web de destinos do Onigiri
 
+O painel também contém uma biblioteca de mapas e controles opcionais de captura
+SLAM. Consulte [Mapeamento e imagem SD](../../docs/IMAGEM_SD_E_MAPEAMENTO.md) para
+configuração no Raspberry Pi 4 e limites atuais. A captura real fica desabilitada
+até que o ambiente ROS e o YAML SLAM da unidade sejam validados.
+
 Este painel permite cadastrar locais, sinônimos e frases de voz antes de
 conectá-los ao ROS 2. A primeira versão opera somente em **simulação**: ela não
 publica tópicos ROS, não chama o Nav2 e não movimenta motores.
@@ -98,3 +103,47 @@ Então, no navegador do Windows, abra `http://127.0.0.1:8080`. A configuração
 exportada será recarregada pelo gerenciador de missões apenas quando ele estiver
 sem uma missão ativa; uma missão em andamento nunca muda de destino no meio do
 percurso.
+
+
+## Controles USB/Bluetooth no WSL2
+
+No terminal Ubuntu/WSL2:
+
+```bash
+cd ~/robotica_ws/src/onigiri
+git branch --show-current  # feature/controles-universais
+python3 -m venv .venv  # somente se ainda não existir
+.venv/bin/python -m pip install -r software/admin_web/requirements.txt
+PYTHONPATH=software/admin_web .venv/bin/python -m unittest discover -s software/admin_web/tests
+.venv/bin/python -m uvicorn app.main:app --app-dir software/admin_web --host 0.0.0.0 --port 8080
+```
+
+Abra http://localhost:8080 no Edge/Chrome do Windows e conecte o controle ao
+Windows (não é necessário encaminhar USB ao WSL). Clique em **Iniciar teste**
+e pressione um botão. A API depende de localhost/HTTPS e de permissão do navegador.
+O bind 0.0.0.0 facilita o acesso Windows→WSL; use 127.0.0.1 quando o encaminhamento
+localhost funcionar. Não use o IP HTTP da máquina para a Gamepad API.
+
+- Escolha o controle conectado; eixos mostram valores brutos e tratados, botões
+  mostram intensidade e destaque quando pressionados.
+- Crie um perfil, ajuste deadzone e calibre mantendo os analógicos soltos por
+  1,5 segundo. A calibração mede o centro, não o curso máximo dos eixos.
+- Capture uma ação, solte os controles e então mova um eixo/pressione um botão.
+  A captura expira em 10 segundos; Escape cancela. Entradas duplicadas são recusadas.
+- Clique em **Salvar perfil** após editar. Trocar de perfil descarta edições não
+  salvas. Perfis, seleção, calibração e mapeamentos ficam em localStorage,
+  por navegador/origem; não são compartilhados com outros computadores.
+- Parar, desconectar ou ocultar a aba limpa as leituras e cancela capturas.
+  Ao retornar à aba, inicie o teste novamente.
+
+Este módulo apenas visualiza entradas e a prévia das ações. Não envia comandos
+HTTP/WebSocket/ROS, não aciona motores nem vibração. O app.js existente foi preservado.
+
+Teste automatizado adicional (Node + Playwright com Chromium instalado):
+
+```bash
+node software/admin_web/tests/gamepad.browser.cjs
+# Para usar o Edge instalado: GAMEPAD_BROWSER_CHANNEL=msedge node software/admin_web/tests/gamepad.browser.cjs
+```
+
+O teste simula um controle; a validação física USB/Bluetooth continua sendo manual.

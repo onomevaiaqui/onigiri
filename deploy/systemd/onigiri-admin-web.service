@@ -8,6 +8,7 @@ User=onigiri
 Group=onigiri
 WorkingDirectory=/home/onigiri/onigiri
 Environment=PYTHONUNBUFFERED=1
+EnvironmentFile=-/etc/onigiri/admin.env
 # Local-only by design. Use an SSH tunnel to access it from a PC.
 ExecStart=/home/onigiri/onigiri/.venv-admin/bin/python -m uvicorn app.main:app --app-dir software/admin_web --host 127.0.0.1 --port 8080
 Restart=on-failure

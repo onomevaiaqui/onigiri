@@ -81,6 +81,8 @@ class DestinationStore:
                 )
                 """
             )
+            columns={row[1] for row in connection.execute('PRAGMA table_info(destinations)')}
+            if 'map_name' not in columns:connection.execute('ALTER TABLE destinations ADD COLUMN map_name TEXT')
             count = connection.execute("SELECT COUNT(*) FROM destinations").fetchone()[0]
             if count == 0:
                 self._seed(connection)
@@ -126,6 +128,7 @@ class DestinationStore:
             "wait_seconds": row["wait_seconds"],
             "return_to_base": bool(row["return_to_base"]),
             "is_home": bool(row["is_home"]),
+            "map_name": row["map_name"],
         }
 
     def list(self) -> list[dict[str, Any]]:
@@ -182,6 +185,17 @@ class DestinationStore:
                     )
                     if result.rowcount == 0:
                         raise KeyError("Destino não encontrado.")
+                if 'map_name' in values:
+                    map_name=values['map_name']
+                    if map_name is not None and not re.fullmatch(r'[a-zA-Z0-9][a-zA-Z0-9_-]{0,59}',map_name):raise ValueError('Nome de mapa inválido')
+                    connection.execute('UPDATE destinations SET map_name = ? WHERE id = ?', (map_name,destination_id))
+                if values.get("is_home") is True:
+                    connection.execute("UPDATE destinations SET is_home = 0")
+                    connection.execute("UPDATE destinations SET is_home = 1 WHERE id = ?", (destination_id,))
+                elif values.get("is_home") is False:
+                    current = connection.execute("SELECT is_home FROM destinations WHERE id = ?", (destination_id,)).fetchone()
+                    if current["is_home"]:
+                        raise ValueError("Defina outro ponto como base antes de transformar esta base em destino.")
         except sqlite3.IntegrityError as error:
             raise ValueError("Já existe um destino com esse nome.") from error
         self.export_ros_config()
@@ -200,13 +214,17 @@ class DestinationStore:
         assert result is not None
         return result
 
-    def delete(self, destination_id: int) -> None:
-        destination = self.get(destination_id)
-        if destination is None:
-            raise KeyError("Destino não encontrado.")
-        if destination["is_home"]:
-            raise ValueError("Defina outro destino como base antes de excluir este.")
+    def delete(self, destination_id: int, replacement_id: int | None = None) -> None:
         with self._connection() as connection:
+            destination = connection.execute("SELECT is_home FROM destinations WHERE id = ?", (destination_id,)).fetchone()
+            if destination is None:
+                raise KeyError("Destino não encontrado.")
+            if destination["is_home"]:
+                if replacement_id is None:
+                    raise ValueError("Escolha outra base para excluir esta.")
+                if replacement_id == destination_id or connection.execute("SELECT 1 FROM destinations WHERE id = ?", (replacement_id,)).fetchone() is None:
+                    raise ValueError("Escolha um ponto existente diferente como nova base.")
+                connection.execute("UPDATE destinations SET is_home = 1 WHERE id = ?", (replacement_id,))
             connection.execute("DELETE FROM destinations WHERE id = ?", (destination_id,))
         self.export_ros_config()
 
@@ -276,6 +294,7 @@ class DestinationStore:
                     max(0.0, float(record.get("wait_seconds", 15.0))),
                     1 if record.get("return_to_base", True) else 0,
                     1 if record.get("is_home") else 0,
+                    record.get("map_name"),
                 )
             )
         with self._connection() as connection:
@@ -283,8 +302,8 @@ class DestinationStore:
             connection.executemany(
                 """
                 INSERT INTO destinations
-                (name, aliases, phrases, x, y, yaw, arrival_message, wait_seconds, return_to_base, is_home)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                (name, aliases, phrases, x, y, yaw, arrival_message, wait_seconds, return_to_base, is_home, map_name)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 prepared,
             )
