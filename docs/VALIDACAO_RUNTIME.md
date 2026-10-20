@@ -2,7 +2,7 @@
 
 Ambiente: WSL2 Ubuntu 24.04 x86_64, ROS 2 Jazzy; navegador Edge por Playwright. Hardware físico não conectado.
 
-- 50 testes Python: persistência, destinos, mapas, PNG RGB/profundidade, mistura dos chassis, limite de potência, parada latched, watchdog, serial POSIX com pseudo-terminal, parâmetros Nav2, cloud-init e backup/restauração SQLite.
+- 51 testes Python: persistência, destinos, mapas, PNG RGB/profundidade, mistura dos chassis, limite de potência, parada latched, watchdog, serial POSIX com pseudo-terminal, parâmetros Nav2, cloud-init e backup/restauração SQLite.
 - Navegador: perfis de controle, remapeamento/calibração, mapas e prévia, zoom/arraste, edição/exclusão de pontos, tipos base/destino, seleção de plataforma/serial persistente, quatro canais mecanum, recusa de movimento desabilitado e layout móvel.
 - Integração ROS isolada (domínio 177): scan e odometria sintéticos → base → serial virtual, expiração de comandos, expiração de odometria apesar de cmd_vel contínuo, ação NavigateToPose contra servidor sintético, chegada, emergência e liberação sem rearme.
 - Nav2 real isolado (domínio 178): AMCL e servidores de navegação ativados, RF2O compilado com patch de inicialização TF, mapa de sala e scans sintéticos, TF map → base_footprint disponível. Nenhum motor iniciado e nenhuma navegação física testada.

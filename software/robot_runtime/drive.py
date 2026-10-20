@@ -8,10 +8,10 @@ def finite(*values):
 def wheels(chassis, vx, vy, wz, width, length):
     finite(vx,vy,wz,width,length)
     if width<=0 or length<=0:raise ValueError("Dimensões devem ser positivas")
-    if chassis in ("tank","independent"):
+    if chassis == "tank":
         if abs(vy)>1e-6:raise ValueError("Este chassi não permite deslocamento lateral")
         left,right=vx-wz*width/2,vx+wz*width/2
-        return [left,right] if chassis=="tank" else [left,right,left,right]
+        return [left,right]
     if chassis=="mecanum":
         k=(width+length)/2
         return [vx-vy-k*wz,vx+vy+k*wz,vx+vy-k*wz,vx-vy+k*wz]

@@ -13,7 +13,7 @@ class Sink:
 class DriveTests(unittest.TestCase):
     def test_differential_and_mecanum(self):
         self.assertEqual(wheels('tank',1,0,2,.4,.4),[.6,1.4])
-        self.assertEqual(wheels('independent',1,0,0,.4,.4),[1,1,1,1])
+        with self.assertRaises(ValueError):wheels('independent',1,0,0,.4,.4)
         self.assertEqual(wheels('mecanum',0,1,0,.4,.4),[-1,1,1,-1])
         with self.assertRaises(ValueError):wheels('tank',0,1,0,.4,.4)
         with self.assertRaises(ValueError):wheels('mecanum',float('nan'),0,0,.4,.4)

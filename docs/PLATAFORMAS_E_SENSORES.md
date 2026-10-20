@@ -1,12 +1,12 @@
 # Plataformas e sensores
 
-O guia atualizado está em [Operação robótica](OPERACAO_ROBOTICA.md). Ele cobre os perfis Onigiri, tank, mecanum e quatro rodas fixas, Sabertooth, Gemini 2, Nav2 e a imagem SD.
+O guia atualizado está em [Operação robótica](OPERACAO_ROBOTICA.md). Ele cobre os perfis Onigiri, tank com dois motores, Onigiri com três motores/omniball e mecanum com quatro motores, Sabertooth, Gemini 2, Nav2 e a imagem SD.
 
 # Plataformas e sensores
 
 No painel, abra Configurações → Plataforma e sensores. Escolha Raspberry Pi 4 ou 5, Onigiri original ou tank, o controlador e a câmera. O cadastro fica em data/platform.json (ONIGIRI_PLATFORM_FILE permite mudar o caminho) e sobrevive ao reinício. A atualização preserva esse arquivo.
 
-O perfil Onigiri mantém o HAT existente. Tank admite Sabertooth 2x32 e 2x60, duas esteiras, sem movimento lateral. Meça a distância entre os centros das esteiras: 0,30 m é apenas um valor inicial. A função tank_tracks converte velocidades ROS em velocidades lineares das esteiras; ainda não envia comandos ao Sabertooth. O perfil não altera o serviço de motores existente. Os perfis mecanum e quatro rodas fixas têm equações e transporte para quatro motores; consulte o guia atualizado.
+O perfil Onigiri mantém o HAT existente. Tank admite Sabertooth 2x32 e 2x60, duas esteiras, sem movimento lateral. Meça a distância entre os centros das esteiras: 0,30 m é apenas um valor inicial. A função tank_tracks converte velocidades ROS em velocidades lineares das esteiras; ainda não envia comandos ao Sabertooth. O perfil não altera o serviço de motores existente. Mecanum é a única opção de quatro motores. O perfil de quatro rodas fixas foi removido.
 
 ## Integração dos motores pendente
 

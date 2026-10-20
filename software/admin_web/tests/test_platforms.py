@@ -1,7 +1,7 @@
 import tempfile
 import unittest
 from pathlib import Path
-from app.platforms import PlatformStore, tank_tracks
+from app.platforms import PlatformStore, tank_tracks, CATALOG
 
 class PlatformTests(unittest.TestCase):
     def test_persistence_and_original_default(self):
@@ -31,3 +31,9 @@ class PlatformTests(unittest.TestCase):
             for driver in ['sabertooth2x32','sabertooth2x60']:
                 config=PlatformInput(chassis='tank',computer=computer,motor_driver=driver,camera='gemini2')
                 self.assertEqual(config.motor_driver,driver)
+
+    def test_exactly_three_chassis_and_retired_profile_rejected(self):
+        from app.main import PlatformInput
+        from pydantic import ValidationError
+        self.assertEqual([item['id'] for item in CATALOG],['onigiri','tank','mecanum'])
+        with self.assertRaises(ValidationError):PlatformInput(chassis='independent')

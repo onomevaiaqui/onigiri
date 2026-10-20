@@ -6,10 +6,9 @@ from pathlib import Path
 from threading import RLock
 
 CATALOG = [
-    {"id": "onigiri", "name": "Onigiri original", "description": "Dois motores de tração e um motor lateral", "available": True},
-    {"id": "tank", "name": "Tank com esteiras", "description": "Tração diferencial: esteira esquerda e direita; sem deslocamento lateral", "available": True},
-    {"id": "mecanum", "name": "Quatro rodas mecanum", "description": "Quatro motores; dois controladores Sabertooth em serial compartilhada", "available": True},
-    {"id": "independent", "name": "Quatro rodas independentes", "description": "Quatro motores; dois controladores Sabertooth em serial compartilhada", "available": True},
+    {"id": "onigiri", "name": "3 motores com omniball · Onigiri", "description": "Plataforma original Onigiri: dois motores de tração e um motor lateral com omniball", "available": True},
+    {"id": "tank", "name": "2 motores com esteiras · Tank", "description": "Tração diferencial: esteira esquerda e direita; sem deslocamento lateral", "available": True},
+    {"id": "mecanum", "name": "4 motores com rodas mecanum", "description": "Quatro rodas mecanum; dois controladores Sabertooth, com USB separado ou serial TTL compartilhada", "available": True},
 ]
 
 def tank_tracks(linear, angular, track_separation):
@@ -32,7 +31,7 @@ class PlatformStore:
                     "camera": "none", "lidar": True}
 
     def save(self, config):
-        if config["chassis"] not in ("onigiri", "tank", "mecanum", "independent"):
+        if config["chassis"] not in ("onigiri", "tank", "mecanum"):
             raise ValueError("Plataforma ainda não disponível")
         with self.lock:
             self.path.parent.mkdir(parents=True, exist_ok=True)

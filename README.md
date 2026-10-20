@@ -104,4 +104,4 @@ licenças e condições de seus fabricantes.
 
 ## Plataformas e operação ROS 2
 
-Veja [Operação robótica](docs/OPERACAO_ROBOTICA.md) para Sabertooth, tank, mecanum, quatro rodas fixas, Gemini 2, navegação e imagem SD experimental. Os testes de software não substituem o comissionamento físico.
+Veja [Operação robótica](docs/OPERACAO_ROBOTICA.md) para Sabertooth, tank, Onigiri com omniball, mecanum, Gemini 2, navegação e imagem SD experimental. Os testes de software não substituem o comissionamento físico.

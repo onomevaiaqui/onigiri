@@ -23,8 +23,7 @@ Configurações → Plataforma e sensores:
 
 - Onigiri original mantém seu driver/HAT anterior. O novo serviço de base recusa esse perfil e não substitui o driver original.
 - Tank: M1 esquerda, M2 direita. Uma Sabertooth 2x32 USB direta ou 2x60 por USB–TTL.
-- Quatro rodas fixas: M1 frente esquerda, M2 frente direita, M3 traseira esquerda, M4 traseira direita. Tração diferencial, sem esterçamento.
-- Mecanum: mesma ordem; rodas montadas no arranjo X. A orientação física dos roletes precisa corresponder às equações; teste os sentidos com as rodas suspensas.
+- Mecanum: M1 frente esquerda, M2 frente direita, M3 traseira esquerda, M4 traseira direita; rodas montadas no arranjo X. A orientação física dos roletes precisa corresponder às equações; teste os sentidos com as rodas suspensas.
 - Quatro motores exigem dois controladores. Para dois 2x32 USB, selecione uma porta USB para cada placa. Para dois 2x60, pode usar S1 compartilhada com endereços distintos. Endereços padrão no formulário: 128 e 129; precisam coincidir com o hardware.
 
 Prefira `/dev/serial/by-id/...`, listado por `ls -l /dev/serial/by-id/`. O código usa comandos legados Packetized Serial com checksum de sete bits, 8N1. No 2x32, aceite comandos legados na configuração DEScribe, não apenas comandos CRC. O 2x60 recebe autobaud 0xAA; o 2x32 USB não precisa desse byte. O driver configura serial timeout em 300 ms, envia zero ao abrir/fechar e usa trava exclusiva de porta.
@@ -102,3 +101,7 @@ Para reconstruir em Linux/WSL com suporte a loop/mount, use `sudo python3 deploy
 - https://www.dimensionengineering.com/datasheets/Sabertooth2x32.pdf
 - https://docs.nav2.org/
 - https://cdimage.ubuntu.com/ubuntu/releases/24.04/release/
+
+## Três opções de montagem
+
+O seletor contém somente 2 motores com esteiras (Tank), 3 motores com omniball (Onigiri) e 4 motores com rodas mecanum. Configurações antigas de quatro rodas fixas exigem uma nova seleção explícita; não são convertidas automaticamente em mecanum. O perfil Onigiri preserva o driver e a fiação originais; os campos de inversão do novo runtime não reconfiguram o HAT legado.

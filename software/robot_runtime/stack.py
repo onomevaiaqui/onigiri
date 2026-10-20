@@ -36,7 +36,7 @@ def main():
     config=json.loads(Path(os.environ.get('ONIGIRI_PLATFORM_FILE','/home/onigiri/onigiri/data/platform.json')).read_text())
     if not config.get('extrinsics_measured'):raise SystemExit('Meça e confirme extrínsecas no painel')
     if not config.get('lidar'):raise SystemExit('Este perfil sem encoders exige LiDAR')
-    if config['chassis']=='onigiri':raise SystemExit('Use a configuração ROS original do Onigiri; esta stack é para os novos chassis')
+    if config['chassis'] not in ('tank','mecanum'):raise SystemExit('Selecione Tank ou Mecanum; Onigiri mantém a configuração ROS original')
     map_path=Path(sys.argv[2]).resolve()
     if not map_path.is_file():raise SystemExit('Mapa ausente')
     with tempfile.TemporaryDirectory(prefix='onigiri-nav2-') as temporary:

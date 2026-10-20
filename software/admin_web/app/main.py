@@ -247,7 +247,7 @@ class PlatformInput(BaseModel):
     serial_port: str = Field(default="", max_length=240, pattern=r"^(/dev/[A-Za-z0-9_./:-]+)?$")
     serial_address: int = Field(default=128, ge=128, le=135)
     serial_baud: Literal[9600, 19200, 38400] = 9600
-    chassis: Literal["onigiri", "tank", "mecanum", "independent"] = "onigiri"
+    chassis: Literal["onigiri", "tank", "mecanum"] = "onigiri"
     wheelbase_m: float = Field(default=0.3, ge=0.05, le=3, allow_inf_nan=False)
     max_track_speed_mps: float = Field(default=0.3, ge=0.01, le=2, allow_inf_nan=False)
     power_limit: float = Field(default=0.2, ge=0.01, le=1, allow_inf_nan=False)
@@ -280,7 +280,8 @@ def set_platform(payload: PlatformInput):
     import math
     if not all(math.isfinite(v) and abs(v)<=20 for v in payload.lidar_xyz_rpy+payload.camera_xyz_rpy):
         raise HTTPException(422, "Extrínsecas inválidas")
-    channels = 4 if payload.chassis in ("mecanum", "independent") else 2
+    channels = 4 if payload.chassis == "mecanum" else 3 if payload.chassis == "onigiri" else 2
+    if "motor_inversions" not in payload.model_fields_set:payload.motor_inversions=[False]*channels
     if len(payload.motor_inversions) != channels:
         raise HTTPException(422, "Confira o número de motores")
     if channels == 4 and payload.serial_address == payload.serial_address_2:

@@ -2,7 +2,7 @@ const {chromium}=require('playwright');
 const assert=require('node:assert/strict');
 (async()=>{const browser=await chromium.launch({channel:'msedge',headless:true});try{
 const page=await browser.newPage({baseURL:process.env.PLATFORMS_TEST_URL||"http://localhost:18086"});await page.goto((process.env.PLATFORMS_TEST_URL||'http://localhost:18086')+'/#settings');
-const form=page.locator('#platformForm');await form.locator('[name=chassis]').selectOption('tank');
+const form=page.locator('#platformForm');await form.locator('[name=chassis]').selectOption('tank');assert.deepEqual(await form.locator('[name=chassis] option').evaluateAll(options=>options.map(option=>option.value)),['onigiri','tank','mecanum']);
 await form.locator('[name=motor_driver]').selectOption('sabertooth2x60');
 await form.locator('[name=computer]').selectOption('raspberry5');
 await form.locator('[name=camera]').selectOption('gemini2');

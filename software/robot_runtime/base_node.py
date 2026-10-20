@@ -22,11 +22,12 @@ def main():
     initial_config=config_path.read_text();config=json.loads(initial_config)
     required=['wheelbase_m','max_track_speed_mps','power_limit','motor_inversions','serial_port','serial_address','serial_baud']
     if not all(key in config for key in required):raise SystemExit('Configure dimensões, limites e canais no painel')
+    if config.get('chassis') not in ('tank','mecanum'):raise SystemExit('Escolha Tank ou Mecanum para este driver; Onigiri usa o HAT original')
     if not config.get('extrinsics_measured'):raise SystemExit('Confirme a montagem e as dimensões medidas no painel')
     if config['motor_driver'] not in ('sabertooth2x32','sabertooth2x60'):raise SystemExit('Perfil sem Sabertooth')
     if not .01<=config['power_limit']<=1:raise SystemExit('Limite de potência inválido')
     addresses=[config['serial_address']]
-    if config['chassis'] in ('mecanum','independent'):addresses.append(config['serial_address_2'])
+    if config['chassis'] == 'mecanum':addresses.append(config['serial_address_2'])
     if len(addresses)==2 and config['motor_driver']=='sabertooth2x32':
         if not config.get('serial_port_2'):raise SystemExit('Dois Sabertooth USB precisam de duas portas')
         first=SerialSabertooth(config['serial_port'],config['serial_baud'],addresses[:1],config['motor_driver'])
