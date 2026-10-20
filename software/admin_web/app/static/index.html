@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Painel Onigiri</title>
     <link rel="stylesheet" href="/static/style.css" />
+    <link rel="stylesheet" href="/static/gamepad.css" />
+    <link rel="stylesheet" href="/static/operations.css" />
   </head>
   <body>
     <header class="topbar">
@@ -94,7 +96,52 @@
           </section>
         </div>
       </section>
-    </main>
+
+<section class="panel" id="gamepadPanel">
+  <div class="panel-heading">
+    <div>
+      <h3>Controle remoto</h3>
+      <p>Configure e teste controles USB e Bluetooth.</p>
+    </div>
+  </div>
+
+  <p id="gamepadStatus" role="status">Aguardando controle...</p>
+  <p>Conecte o controle ao Windows, inicie o teste e pressione um botão. Somente visualização local.</p>
+  <label>Controle <select id="gamepadDevice" aria-label="Controle conectado"></select></label>
+  <fieldset><legend>Perfis deste navegador</legend>
+    <label>Perfil <select id="gamepadProfile"></select></label>
+    <label>Nome <input id="gamepadProfileName" maxlength="60" /></label>
+    <button id="gamepadSave" type="button">Salvar perfil</button>
+    <button id="gamepadNew" type="button">Novo perfil</button>
+    <button id="gamepadDelete" type="button">Excluir perfil</button>
+    <label>Deadzone <input id="gamepadDeadzone" type="range" min="0" max="0.5" step="0.01" value="0.12" /><output id="gamepadDeadzoneValue">0.12</output></label>
+    <button id="gamepadCalibrate" type="button">Calibrar centro (solte os analógicos)</button>
+    <button id="gamepadReset" type="button">Limpar calibração</button>
+    <p id="gamepadNotice" role="status"></p>
+  </fieldset>
+
+  <div class="panel-actions">
+    <button id="gamepadStart" class="primary" type="button">
+      Iniciar teste
+    </button>
+    <button id="gamepadStop" class="secondary" type="button">
+      Parar teste
+    </button>
+  </div>
+
+  <h4>Analógicos</h4>
+  <div id="gamepadAxes">Nenhuma leitura.</div>
+
+  <h4>Botões pressionados</h4>
+  <div id="gamepadButtons">Nenhuma leitura.</div>
+  <h4>Ações (prévia local)</h4>
+  <p>Capture, solte os controles e depois mova um eixo ou pressione um botão. Escape cancela. Salve o perfil para persistir alterações.</p>
+  <div id="gamepadMappings"></div>
+
+  <p>Modo de simulação: nenhum comando é enviado aos motores.</p>
+</section>
+
+</main>
 
     <dialog id="destinationDialog">
       <form id="destinationForm" method="dialog" autocomplete="off">
@@ -138,6 +185,8 @@
         </div>
       </article>
     </template>
-    <script src="/static/app.js"></script>
+    <script src="/static/gamepad.js"></script>
+<script src="/static/app.js"></script>
+    <script src="/static/operations.js"></script>
   </body>
 </html>
