@@ -17,7 +17,7 @@ class NetworkTests(unittest.TestCase):
   with tempfile.TemporaryDirectory() as folder,patch.object(agent.time,'sleep'):
    p=Path(folder)/'wifi.nmconnection';net=agent.Network(self.config(),run,p);net.busy=True;net.apply('Minha Rede;1','senha12345')
    self.assertIn(('connection','up','id',agent.AP),calls);self.assertFalse(net.busy)
-   self.assertEqual(p.stat().st_mode&0o777,0o600);self.assertIn('ssid=Minha\\sRede\\;1',p.read_text())
+   self.assertEqual(p.stat().st_mode&0o777,0o600);self.assertIn('ssid='+ ';'.join(str(value) for value in 'Minha Rede;1'.encode())+';',p.read_text())
    self.assertNotIn('senha12345',str(calls))
  def test_recovery_after_disconnection(self):
   calls=[]

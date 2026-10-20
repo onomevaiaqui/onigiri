@@ -32,8 +32,8 @@ class Network:
   profile=self.profile
   try:
    # Keyfile avoids Wi-Fi passwords in argv/process listings. Never log its contents.
-   def escape(value):return value.replace('\\','\\\\').replace(';','\\;').replace(' ','\\s')
-   text=f'[connection]\nid=onigiri-user\nuuid={uuid.uuid4()}\ntype=wifi\ninterface-name={self.config["interface"]}\nautoconnect=true\nautoconnect-priority=100\n[wifi]\nmode=infrastructure\nssid={escape(ssid)}\n[wifi-security]\nkey-mgmt=wpa-psk\npsk={escape(password)}\n[ipv4]\nmethod=auto\n[ipv6]\nmethod=auto\n'
+   def escape(value):return value.replace('\\','\\\\').replace(' ','\\s')
+   text=f'[connection]\nid=onigiri-user\nuuid={uuid.uuid4()}\ntype=wifi\ninterface-name={self.config["interface"]}\nautoconnect=true\nautoconnect-priority=100\n[wifi]\nmode=infrastructure\nssid={";".join(str(value) for value in ssid.encode())};\n[wifi-security]\nkey-mgmt=wpa-psk\npsk={escape(password)}\n[ipv4]\nmethod=auto\n[ipv6]\nmethod=auto\n'
    fd=os.open(profile,os.O_WRONLY|os.O_CREAT|os.O_TRUNC,0o600)
    with os.fdopen(fd,'w') as stream:stream.write(text)
    os.chmod(profile,0o600);self.run('connection','load',str(profile));self.run('connection','up','id','onigiri-user')
