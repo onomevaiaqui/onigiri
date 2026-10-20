@@ -24,3 +24,7 @@ data/platform.json
 
 data/backups/
 before-restore-*.tar.gz
+
+# Per-image access credentials
+ONIGIRI-ACESSO.txt
+access.json

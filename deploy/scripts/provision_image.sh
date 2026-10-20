@@ -6,6 +6,7 @@ source /etc/os-release
 [[ "$VERSION_ID" == 24.04 && "$(dpkg --print-architecture)" == arm64 ]] || { echo 'Requer Ubuntu 24.04 arm64'; exit 1; }
 root=/home/onigiri/onigiri
 [[ ! -e "$root/software" ]] || { echo 'Instalação existente preservada; use o atualizador'; exit 1; }
+until curl -fsI --max-time 10 https://raw.githubusercontent.com/ros/rosdistro/master/ros.key >/dev/null; do sleep 15; done
 apt-get update
 apt-get install -y curl ca-certificates gnupg python3-venv python3-yaml avahi-daemon
 install -d -m 755 /etc/apt/keyrings
@@ -17,6 +18,7 @@ mkdir -p "$root"
 cp -a /opt/onigiri-bootstrap/payload/. "$root/"
 chown -R onigiri:onigiri "$root"
 sudo -u onigiri bash "$root/deploy/scripts/install_admin_web.sh"
+bash "$root/deploy/scripts/install_network.sh"
 sudo -u onigiri bash "$root/deploy/scripts/install_robot_runtime.sh"
 sudo -u onigiri bash "$root/deploy/scripts/install_lidar_odometry.sh"
 if [[ -f /opt/onigiri-bootstrap/platform.json ]]; then

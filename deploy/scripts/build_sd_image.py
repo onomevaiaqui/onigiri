@@ -16,9 +16,11 @@ def main():
     parser.add_argument('--public-key',required=True,type=Path);parser.add_argument('--output',required=True,type=Path)
     parser.add_argument('--model',choices=['raspberry4','raspberry5'],required=True)
     parser.add_argument('--with-orbbec',action='store_true')
+    parser.add_argument('--credentials',required=True,type=Path,help='Novo cartão de acesso local, não publicar')
     args=parser.parse_args()
     if os.geteuid()!=0:parser.error('Execute com sudo; mount/losetup necessários')
     source=args.base.resolve();output=args.output.resolve()
+    if args.credentials.exists():parser.error('Cartão de acesso já existe')
     if output.exists() or output.suffix!='.img' or source==output:parser.error('Destino deve ser arquivo .img novo')
     if not output.parent.is_dir():parser.error('Pasta de destino inexistente')
     digest=hashlib.sha256()
@@ -40,20 +42,26 @@ def main():
                 marker=payload/'with-orbbec';marker.touch();archive.add(marker,arcname='with-orbbec')
         opener=lzma.open if source.suffix=='.xz' else open
         with opener(source,'rb') as src,output.open('xb') as dst:shutil.copyfileobj(src,dst,4*1024*1024)
-        mount=stage/'boot';mount.mkdir();mounted=False
+        mounted_root=stage/'root';mounted_root.mkdir();root_mounted=False
+        mount=mounted_root/'boot/firmware';mounted=False
         try:
             loop=subprocess.check_output(['losetup','--find','--show','--partscan',str(output)],text=True).strip()
             subprocess.run(['udevadm','settle'],check=True)
+            subprocess.run(['mount',loop+'p2',str(mounted_root)],check=True);root_mounted=True
+            mount.mkdir(parents=True,exist_ok=True)
             subprocess.run(['mount',loop+'p1',str(mount)],check=True);mounted=True
             if not (mount/'config.txt').exists():raise ValueError('Partição de boot Raspberry Pi não reconhecida')
             (mount/'user-data').write_text('#cloud-config\n'+yaml.safe_dump(seed,sort_keys=False))
             (mount/'meta-data').write_text('instance-id: onigiri-'+hashlib.sha256(public.encode()).hexdigest()[:12]+'\nlocal-hostname: onigiri\n')
             (mount/'network-config').write_text(yaml.safe_dump({'version':2,'ethernets':{'ethernet':{'match':{'name':'e*'},'dhcp4':True,'optional':True}}}))
             shutil.copyfile(stage/'onigiri-bundle.tar.gz',mount/'onigiri-bundle.tar.gz')
+            from prepare_first_access import prepare
+            prepare(mounted_root,root,args.credentials)
             os.sync()
         finally:
             if mounted:subprocess.run(['umount',str(mount)],check=True)
+            if root_mounted:subprocess.run(['umount',str(mounted_root)],check=True)
             if loop:subprocess.run(['losetup','-d',loop],check=True)
     print('Imagem preparada:',output)
-    print('Primeiro boot exige Ethernet com Internet para instalar ROS e dependências. Movimento desabilitado.')
+    print('Primeiro acesso por Wi-Fi direto; consulte o cartão de acesso. Instalação ROS requer Internet. Movimento desabilitado.')
 if __name__=='__main__':main()

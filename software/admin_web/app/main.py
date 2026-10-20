@@ -78,6 +78,8 @@ async def lifespan(app):
 
 
 app = FastAPI(title="Painel Onigiri", version="0.1.0", lifespan=lifespan)
+from .access import PanelAccess
+app.add_middleware(PanelAccess)
 app.mount("/static", StaticFiles(directory=Path(__file__).parent / "static"), name="static")
 
 
@@ -435,3 +437,23 @@ def runtime_camera_driver(operation:str):
 def runtime_send(operation,**kwargs):
     try:return robot_bridge.send(operation,**kwargs)
     except ValueError as error:raise HTTPException(409,str(error)) from error
+
+
+class WifiInput(BaseModel):
+    ssid: str = Field(min_length=1,max_length=32)
+    password: str = Field(min_length=8,max_length=63)
+
+@app.get('/api/setup/network')
+def setup_network():
+    from .network import request
+    try:return request('/api/setup/network')
+    except (OSError,ValueError):return {'enabled':False,'mode':'unavailable','message':'Configuração de Wi-Fi não instalada neste dispositivo.','addresses':[]}
+
+@app.post('/api/setup/network/connect',status_code=202)
+def setup_wifi(payload: WifiInput):
+    if maps.status()['running'] or navigation_stack.status()['running']:
+        raise HTTPException(409,'Encerre o mapeamento e a navegação antes de trocar a rede')
+    from .network import request
+    try:return request('/api/setup/network/connect',payload.model_dump())
+    except OSError:raise HTTPException(503,'Serviço de rede indisponível')
+    except ValueError as error:raise HTTPException(400,str(error))

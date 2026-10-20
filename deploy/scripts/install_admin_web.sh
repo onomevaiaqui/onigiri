@@ -18,5 +18,9 @@ fi
 mkdir -p "$project_root/data/maps"
 sudo systemctl daemon-reload
 sudo systemctl enable --now onigiri-admin-web.service
-echo "Painel instalado apenas em 127.0.0.1:8080. Acesse por tunel SSH a partir do PC."
+if [[ -e /etc/systemd/system/onigiri-admin-web.service.d/network.conf ]]; then
+ echo "Painel disponível na rede na porta 8080, com autenticação do cartão de acesso."
+else
+ echo "Painel instalado apenas em 127.0.0.1:8080. Acesse por tunel SSH a partir do PC."
+fi
 echo "O arquivo do servico de missoes foi atualizado; reinicie-o de forma controlada para usar a configuracao exportada."

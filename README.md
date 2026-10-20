@@ -109,3 +109,5 @@ Veja [Operação robótica](docs/OPERACAO_ROBOTICA.md) para Sabertooth, tank, On
 ### Mesmo painel em outros chassis
 
 Selecione omniball, esteiras ou mecanum, Raspberry 4/5 e controlador em Configurações. [Robô com Gemini 2 sem LiDAR](docs/ROBO_RGBD.md) usa os mesmos mapas e destinos, com odometria visual e banco RTAB-Map persistido.
+
+Consulte o [manual de primeiro acesso](docs/PRIMEIRO_ACESSO.md) para conexão direta por Wi-Fi, rede comum e configuração do robô pelo navegador.

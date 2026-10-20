@@ -83,16 +83,9 @@ Backup inclui SQLite consistente, plataforma, destinos exportados e mapas; exclu
 
 A imagem `onigiri-pi4-pi5-instalador.img` foi montada a partir da imagem oficial Ubuntu 24.04.5 Server arm64 para Raspberry Pi, com SHA256 de origem conferido. Ela contém o código e um cloud-init de instalação. Use cartão de pelo menos 32 GB. O **boot físico ainda não foi validado** em Pi 4/5 e o instalador ARM64 precisa de teste no hardware.
 
-1. Grave a imagem em um cartão dedicado. Não sobrescreva seu cartão atual sem backup.
-2. Ethernet com DHCP e Internet é o padrão. Para Wi-Fi, gere `network-config` em Configurações → Rede da imagem SD e copie para a partição de boot antes do primeiro boot.
-3. Ligue o Raspberry e aguarde a instalação. Consulte `cloud-init status --long` e `/var/log/cloud-init-output.log`; a conclusão cria `/var/lib/onigiri/provisioned`.
-4. Acesse usando a chave privada entregue localmente, sem senha padrão compartilhada:
+O primeiro acesso agora usa a rede **Onigiri-Config-XXXXXX** e o cartão **ONIGIRI-ACESSO.txt**. Abra `http://192.168.50.1:8080`, cadastre o Wi-Fi comum e continue pelo IP do Raspberry ou `http://onigiri.local:8080`. Consulte [Primeiro acesso](PRIMEIRO_ACESSO.md) para as etapas completas e recuperação.
 
-```powershell
-ssh -i .\onigiri-image-ssh.key -N -L 8081:127.0.0.1:8080 onigiri@onigiri.local
-```
-
-Abra `http://localhost:8081`. A chave privada pertence a esta imagem local: preserve-a; não publique a imagem personalizada com essa chave de acesso para terceiros. Para distribuir imagens, gere um par de chaves por usuário/dispositivo. O construtor recebe apenas a chave pública. A imagem compartilhável ainda exige um fluxo de identidade por instalação.
+O portal inicial e os componentes de rede ficam previamente instalados na imagem; o restante da instalação de robótica ainda baixa dependências pela Internet no primeiro boot. SSH com chave continua disponível para manutenção, mas não é necessário para cadastrar o Wi-Fi no fluxo inicial. A imagem personalizada contém credenciais próprias; não a redistribua com o mesmo cartão de acesso.
 
 Para reconstruir em Linux/WSL com suporte a loop/mount, use `sudo python3 deploy/scripts/build_sd_image.py --help`. O construtor copia a imagem de origem, valida o SHA256 fornecido e só trabalha em um arquivo .img novo; não grava dispositivos físicos. Os pacotes apt/pip instalados no primeiro boot dependem do repositório daquele momento; a instalação registra suas versões em `/var/lib/onigiri/packages.tsv`.
 
@@ -107,3 +100,5 @@ Para reconstruir em Linux/WSL com suporte a loop/mount, use `sudo python3 deploy
 ## Três opções de montagem
 
 O seletor contém somente 2 motores com esteiras (Tank), 3 motores com omniball (Onigiri) e 4 motores com rodas mecanum. Configurações antigas de quatro rodas fixas exigem uma nova seleção explícita; não são convertidas automaticamente em mecanum. O perfil Onigiri preserva o driver e a fiação originais; os campos de inversão do novo runtime não reconfiguram o HAT legado.
+
+Consulte o [manual de primeiro acesso](PRIMEIRO_ACESSO.md) para conexão direta por Wi-Fi, rede comum e configuração do robô pelo navegador.

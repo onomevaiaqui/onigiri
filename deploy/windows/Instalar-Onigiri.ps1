@@ -4,7 +4,8 @@
     [switch]$InstalarOdometria,
     [switch]$InstalarRuntime,
     [switch]$InstalarCamera,
-    [switch]$InstalarRGBD
+    [switch]$InstalarRGBD,
+    [switch]$InstalarRede
 )
 $ErrorActionPreference = 'Stop'
 $packagePath = Join-Path $PSScriptRoot 'onigiri-painel-raspberry.tar.gz'
@@ -22,6 +23,7 @@ if ($InstalarOdometria) {
 if ($InstalarRuntime) { $installCommand += ' && bash /home/onigiri/onigiri/deploy/scripts/install_robot_runtime.sh' }
 if ($InstalarCamera) { $installCommand += ' && bash /home/onigiri/onigiri/deploy/scripts/install_orbbec.sh' }
 if ($InstalarRGBD) { $installCommand += ' && bash /home/onigiri/onigiri/deploy/scripts/install_rgbd.sh' }
+if ($InstalarRede) { $installCommand += ' && sudo bash /home/onigiri/onigiri/deploy/scripts/install_network.sh' }
 Write-Host 'Instalando. O sudo pode solicitar novamente a senha do usuário onigiri.'
 & ssh -t -o StrictHostKeyChecking=yes $destination $installCommand
 if ($LASTEXITCODE -ne 0) { throw 'A instalação não foi concluída. Preserve a mensagem de erro para diagnóstico.' }

@@ -1,0 +1,11 @@
+[Unit]
+Description=Onigiri Wi-Fi setup and fallback agent
+After=NetworkManager.service
+Wants=NetworkManager.service
+[Service]
+ExecStart=/usr/bin/python3 /opt/onigiri-network/network_agent.py
+RuntimeDirectory=onigiri-network
+Restart=on-failure
+RestartSec=3
+[Install]
+WantedBy=multi-user.target

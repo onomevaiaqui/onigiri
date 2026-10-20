@@ -24,3 +24,9 @@ Os scripts `runtime_ros_integration.py` e `nav2_ros_integration.py` são opciona
 ## RGB-D sem LiDAR
 
 56 testes unitários aprovados. `rgbd_ros_integration.py` usa ROS 2/RTAB-Map reais com RGB-D sintético: odometria, mapa, prévia, gravação atômica YAML/PGM/banco visual e reabertura com localização e Nav2 ativos. Confere que o banco salvo permanece intacto. Não equivale a teste físico da Gemini 2 ou dos motores.
+
+## Primeiro acesso e rede
+
+62 testes unitários aprovados, incluindo recuperação do ponto de acesso, validação de SSID/senha, keyfile privado e autenticação. Teste de navegador cobre cadastro Wi-Fi, remoção da senha do formulário e ordem frame → driver → Raspberry → sensores. Alterações Wi-Fi do teste são simuladas; boot, DHCP e rádio ainda precisam de teste físico.
+
+`panel_auth_integration.py` verifica recusa de acesso anônimo e acesso autenticado às páginas, recursos e APIs em servidor real temporário. O cliente/agente de rede também é testado via socket Unix real, sem alterar interfaces.
