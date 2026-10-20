@@ -10,6 +10,6 @@ if ! ros2 pkg prefix orbbec_camera >/dev/null 2>&1; then
   exit 1
 fi
 exec ros2 launch orbbec_camera gemini2.launch.py camera_name:=camera \
-  enable_color:=true enable_depth:=true enable_ir:=false \
+  enable_color:=true enable_depth:=true depth_registration:=true enable_ir:=false \
   enable_point_cloud:=false enable_colored_point_cloud:=false \
   enable_accel:=true enable_gyro:=true

@@ -7,6 +7,14 @@ if [[ -n "${ONIGIRI_ROS_SETUP:-}" ]]; then source "$ONIGIRI_ROS_SETUP"; fi
 if [[ -n "${ONIGIRI_ODOMETRY_SETUP:-}" ]]; then source "$ONIGIRI_ODOMETRY_SETUP"; fi
 set -u
 case "${1:-}" in
+  start-rgbd)
+    project_root="$(cd -- "$(dirname -- "$0")/../.." && pwd)"
+    exec /usr/bin/python3 "$project_root/software/robot_runtime/rgbd.py" "${2:?Banco visual ausente}"
+    ;;
+  save-rgbd)
+    project_root="$(cd -- "$(dirname -- "$0")/../.." && pwd)"
+    exec /usr/bin/python3 "$project_root/software/robot_runtime/save_rgbd.py" "${2:?Destino ausente}" "${3:?Banco visual ausente}"
+    ;;
   start-lidar-odometry)
     project_root="$(cd -- "$(dirname -- "$0")/../.." && pwd)"
     exec /usr/bin/python3 "$project_root/software/admin_web/app/lidar_odometry.py"

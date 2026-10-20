@@ -20,3 +20,7 @@ PYTHONPATH=software/admin_web .venv/bin/python -m unittest discover -s software/
 ```
 
 Os scripts `runtime_ros_integration.py` e `nav2_ros_integration.py` são opcionais e exigem ROS instalado. Execute-os com ROS_DOMAIN_ID exclusivo, após source do ROS; o segundo exige também source do overlay RF2O. O teste serial usa /dev/pts, não dispositivos físicos. Os testes de navegador reais exigem um servidor FastAPI com banco/plataforma/mapas temporários e Playwright instalado.
+
+## RGB-D sem LiDAR
+
+56 testes unitários aprovados. `rgbd_ros_integration.py` usa ROS 2/RTAB-Map reais com RGB-D sintético: odometria, mapa, prévia, gravação atômica YAML/PGM/banco visual e reabertura com localização e Nav2 ativos. Confere que o banco salvo permanece intacto. Não equivale a teste físico da Gemini 2 ou dos motores.

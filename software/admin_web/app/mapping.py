@@ -24,6 +24,9 @@ class MapManager:
         self.experimental = False
         self.stationary = False
         self.lidar_odometry = False
+        self.rgbd = False
+        self.rgbd_session = None
+        self.rgbd_enabled = os.environ.get("ONIGIRI_RGBD_ENABLED")=="1"
         self.lidar_enabled = os.environ.get('ONIGIRI_LIDAR_ODOMETRY_ENABLED') == '1'
         self.preview_process = None
         self.preview_directory = None
@@ -41,10 +44,10 @@ class MapManager:
             if self.process is not None and code is not None:
                 self._stop_preview()
             return {'enabled': self.enabled, 'running': running,
-                    'lidar_odometry_enabled': self.lidar_enabled,
+                    'lidar_odometry_enabled': self.lidar_enabled, 'rgbd_enabled':self.rgbd_enabled,
                     'profile': self.profile(),
                     'state': 'running' if running else 'failed' if code not in (None, 0) else 'idle',
-                    'detail': ('Odometria pelo LiDAR ativa. Perfil experimental de mapeamento do sensor, sem navegação.' if running and self.lidar_odometry else
+                    'detail': ('Mapeamento visual RGB-D pela Gemini 2. Aguarde odometria e mapa.' if running and self.rgbd else 'Odometria pelo LiDAR ativa. Perfil experimental de mapeamento do sensor, sem navegação.' if running and self.lidar_odometry else
                                'Teste parado: TF fixas aproximadas. Mantenha o robô imóvel; não use este mapa para navegação.' if running and self.stationary else
                                'SLAM experimental com parâmetros padrão. Não validado para navegação; TF e odometria precisam estar disponíveis.' if running and self.experimental else
                                'SLAM iniciado; a captura depende do LiDAR, TF e odometria. Salvar confirma se há mapa disponível.' if running else
@@ -53,12 +56,14 @@ class MapManager:
                                'Captura ROS não habilitada neste servidor. Você pode carregar e guardar mapas locais.')}
 
     def profile(self):
-        return 'lidar-odometry' if self.lidar_odometry else 'stationary-preview' if self.stationary else 'experimental-default' if self.experimental else 'configured'
+        return 'rgbd' if self.rgbd else 'lidar-odometry' if self.lidar_odometry else 'stationary-preview' if self.stationary else 'experimental-default' if self.experimental else 'configured'
 
-    def start(self, experimental: bool = False, stationary: bool = False, lidar_odometry: bool = False) -> dict:
+    def start(self, experimental: bool = False, stationary: bool = False, lidar_odometry: bool = False, rgbd: bool = False) -> dict:
         with self.lock:
             if not self.enabled:
                 raise ValueError('Captura ROS não habilitada neste servidor.')
+            if rgbd and (stationary or lidar_odometry):raise ValueError('O perfil RGB-D não usa TF de teste nem RF2O')
+            if rgbd and not self.rgbd_enabled:raise ValueError('Instale a integração RGB-D no Raspberry antes de iniciar')
             if lidar_odometry and stationary:
                 raise ValueError('Escolha Teste parado ou Odometria pelo LiDAR; não podem operar juntos.')
             if lidar_odometry and not self.lidar_enabled:
@@ -66,17 +71,21 @@ class MapManager:
             if self.process and self.process.poll() is None:
                 return self.status()
             params = os.environ.get('ONIGIRI_SLAM_PARAMS', '')
-            if not (experimental or stationary or lidar_odometry) and (not params or not Path(params).is_file()):
+            if not (rgbd or experimental or stationary or lidar_odometry) and (not params or not Path(params).is_file()):
                 raise ValueError('Configure ONIGIRI_SLAM_PARAMS com o YAML de SLAM validado para este robô.')
             self.root.mkdir(parents=True, exist_ok=True)
             if self.log:
                 self.log.close()
             self.log = (self.root / 'slam.log').open('ab')
+            self.rgbd = rgbd
+            if self.rgbd_session:self.rgbd_session.cleanup();self.rgbd_session=None
+            if rgbd:self.rgbd_session=tempfile.TemporaryDirectory(prefix=".rgbd-",dir=self.root)
             self.stationary = stationary
             self.lidar_odometry = lidar_odometry
             self.experimental = experimental or stationary or lidar_odometry
             operation = 'start-lidar-odometry' if lidar_odometry else 'start-stationary' if stationary else 'start-experimental' if experimental else 'start'
-            self.process = subprocess.Popen(['bash', str(self.worker), operation], stdout=self.log,
+            command=['bash',str(self.worker),'start-rgbd',str(Path(self.rgbd_session.name)/'rtabmap.db')] if rgbd else ['bash',str(self.worker),operation]
+            self.process = subprocess.Popen(command, stdout=self.log,
                                             stderr=subprocess.STDOUT, start_new_session=True)
             self._stop_preview()
             self.preview_directory = tempfile.TemporaryDirectory(prefix='.preview-', dir=self.root)
@@ -124,7 +133,7 @@ class MapManager:
             failed = self.preview_process is not None and self.preview_process.poll() is not None
             return {'state': 'error' if failed else 'waiting', 'detail':
                     'Leitor da prévia indisponível. Consulte slam.log.' if failed else
-                    'Aguardando /map. Verifique LiDAR, SLAM e transformações TF.'}
+                    'Aguardando /map. Verifique RGB, profundidade alinhada, câmera e odometria visual.' if self.rgbd else 'Aguardando /map. Verifique LiDAR, SLAM e transformações TF.'}
         if 'error' in snapshot:
             return {'state': 'error', 'detail': snapshot['error']}
         if after is not None and snapshot.get('changed_at', snapshot['received_at']) == after:
@@ -149,6 +158,7 @@ class MapManager:
                         os.killpg(self.process.pid, signal.SIGKILL)
                         self.process.wait(timeout=3)
             self.process = None
+            if self.rgbd_session:self.rgbd_session.cleanup();self.rgbd_session=None
             if self.log:
                 self.log.close()
                 self.log = None
@@ -194,7 +204,8 @@ class MapManager:
                     if not self.enabled or not self.status()['running']:
                         raise ValueError('Inicie o mapeamento ROS antes de salvar a captura.')
                     try:
-                        saver = subprocess.Popen(['bash', str(self.worker), 'save', str(stage / 'map')],
+                        command=['bash',str(self.worker),'save-rgbd',str(stage/'map'),str(Path(self.rgbd_session.name)/'rtabmap.db')] if self.rgbd else ['bash', str(self.worker), 'save', str(stage / 'map')]
+                        saver = subprocess.Popen(command,
                                                  stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
                                                  start_new_session=True)
                         saver.wait(timeout=35)
@@ -228,6 +239,7 @@ class MapManager:
                 metadata = {'source': source}
                 if source == 'ros':
                     metadata['profile'] = self.profile()
+                    if self.rgbd and not (stage/'rtabmap.db').is_file():raise ValueError('O salvamento visual não produziu o banco de localização')
                 (stage / 'metadata.json').write_text(json.dumps(metadata))
                 stage.rename(final)
             return {'name': name, 'source': source}

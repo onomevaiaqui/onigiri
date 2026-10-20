@@ -33,6 +33,7 @@ PY
 chown onigiri:onigiri "$root/data/platform.json"
 if [[ -f /opt/onigiri-bootstrap/with-orbbec ]]; then
  sudo -u onigiri bash "$root/deploy/scripts/install_orbbec.sh"
+ sudo -u onigiri bash "$root/deploy/scripts/install_rgbd.sh"
  printf '\nONIGIRI_CAMERA_AUTOSTART=1\n' >> /etc/onigiri/admin.env
 fi
 install -m 644 "$root/deploy/systemd/onigiri-lidar.service" /etc/systemd/system/onigiri-lidar.service

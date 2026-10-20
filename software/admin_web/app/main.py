@@ -195,9 +195,17 @@ def map_action(action, *args):
         raise HTTPException(status_code=503, detail='Falha ao acessar o serviço ou os arquivos de mapas.') from error
 
 
+def mapping_source():
+    config=platforms.get()
+    return 'lidar' if config.get('lidar',True) else 'rgbd' if config.get('camera')=='gemini2' else 'none'
+
+
 @app.get('/api/mapping')
 def mapping_status():
-    return maps.status()
+    result=maps.status();result['perception_source']=mapping_source()
+    if not result['running'] and result['perception_source']=='rgbd':
+        result['detail']='Pronto para mapear com a Gemini 2 (RGB-D).' if maps.rgbd_enabled else 'Instale a integração RGB-D para mapear com a Gemini 2.'
+    return result
 
 
 @app.get('/api/mapping/preview')
@@ -209,6 +217,13 @@ def mapping_preview(after: float | None = None):
 def mapping_start(payload: MappingStartInput | None = None):
     if navigation_stack.status()["running"]:
         raise HTTPException(409,"Encerre a navegação antes de iniciar SLAM")
+    source=mapping_source()
+    if source=='none':raise HTTPException(409,'Selecione os sensores do robô em Configurações')
+    if source=='rgbd':
+        if not maps.rgbd_enabled:raise HTTPException(409,'Instale e habilite RGB-D no Raspberry')
+        if not platforms.get().get('extrinsics_measured'):raise HTTPException(409,'Configure e confirme a posição medida da câmera na base')
+        if camera_driver.enabled and not camera_driver.status()['running']:camera_driver.start()
+        return map_action(maps.start,False,False,False,True)
     return map_action(maps.start, payload.experimental if payload else False, payload.stationary if payload else False,
                       payload.lidar_odometry if payload else False)
 
@@ -271,8 +286,8 @@ def get_platform():
 
 @app.put("/api/platform")
 def set_platform(payload: PlatformInput):
-    if navigation_stack.status()["running"]:
-        raise HTTPException(409,"Encerre a navegação antes de alterar o chassi")
+    if navigation_stack.status()["running"] or maps.status()["running"]:
+        raise HTTPException(409,"Encerre o mapeamento e a navegação antes de alterar o perfil")
     if payload.chassis != "onigiri" and payload.motor_driver == "onigiri_hat":
         raise HTTPException(422, "Selecione um Sabertooth para o tank")
     if payload.chassis == "onigiri" and payload.motor_driver != "onigiri_hat":
@@ -372,6 +387,8 @@ def runtime_navigation_start(payload:NavigationMapInput):
     metadata=maps.metadata(maps.root/name)
     if metadata.get('profile')=='stationary-preview':
         raise HTTPException(409,"Captura com TF fixas não pode ser usada para navegação")
+    if mapping_source()=='rgbd' and not (maps.root/name/'rtabmap.db').is_file():raise HTTPException(409,'Escolha um mapa RGB-D salvo com o banco visual')
+    if mapping_source()=='lidar' and metadata.get('profile')=='rgbd':raise HTTPException(409,'Este mapa pertence ao perfil RGB-D; selecione Gemini 2 sem LiDAR')
     path=maps.root/name/'map.yaml'
     if not path.is_file():raise HTTPException(404,"Mapa não encontrado")
     result=map_action(navigation_stack.start,path)

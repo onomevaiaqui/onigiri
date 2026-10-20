@@ -105,3 +105,7 @@ licenças e condições de seus fabricantes.
 ## Plataformas e operação ROS 2
 
 Veja [Operação robótica](docs/OPERACAO_ROBOTICA.md) para Sabertooth, tank, Onigiri com omniball, mecanum, Gemini 2, navegação e imagem SD experimental. Os testes de software não substituem o comissionamento físico.
+
+### Mesmo painel em outros chassis
+
+Selecione omniball, esteiras ou mecanum, Raspberry 4/5 e controlador em Configurações. [StacBot com Gemini 2 sem LiDAR](docs/STACBOT_RGBD.md) usa os mesmos mapas e destinos, com odometria visual e banco RTAB-Map persistido.

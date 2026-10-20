@@ -67,3 +67,5 @@ button:focus-visible,select:focus-visible { outline:3px solid #a9c4b6; outline-o
 .dashboard-map.has-map { padding:20px; }.dashboard-map.has-map>span { display:none; }
 
 .platform-panel form {display:grid;gap:16px;max-width:680px}.platform-panel label {display:grid;gap:7px}.platform-panel label:has(input[type="checkbox"]) {display:flex;align-items:center}.platform-panel input[type="checkbox"] {width:auto}.platform-panel [hidden] {display:none}
+
+.profile-basic {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.profile-advanced>label,.profile-advanced>fieldset {margin-top:16px}.profile-advanced summary {cursor:pointer;font-weight:600}@media(max-width:700px){.profile-basic{grid-template-columns:1fr}}

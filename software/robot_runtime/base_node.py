@@ -43,6 +43,11 @@ def main():
                 finally:second.close()
         sink=Dual()
     else:sink=SerialSabertooth(config['serial_port'],config['serial_baud'],addresses,config['motor_driver'])
+    rgbd=not config.get('lidar',True) and config.get('camera')=='gemini2'
+    if rgbd:
+        pose=config.get('camera_xyz_rpy',[0.]*6)
+        if abs(math.atan2(math.sin(pose[5]),math.cos(pose[5])))>.35 or abs(pose[4])>.6:
+            sink.close();raise SystemExit('O perfil RGB-D de movimento exige câmera frontal; confira a orientação medida')
     controller=DriveController(sink,config)
     rclpy.init();node=Node('onigiri_base')
     status=node.create_publisher(String,'/onigiri/base/status',10)
@@ -56,16 +61,29 @@ def main():
         p=msg.pose.pose.position;q=msg.pose.pose.orientation
         odometry['time']=time.monotonic()
         values=[p.x,p.y,p.z,q.x,q.y,q.z,q.w]
-        odometry['valid']=all(math.isfinite(v) for v in values) and .9<sum(v*v for v in [q.x,q.y,q.z,q.w])<1.1
-    node.create_subscription(Odometry,'/odom_rf2o',odom,10)
+        covariance=[msg.pose.covariance[i] for i in (0,7,35)]
+        stamp=msg.header.stamp.sec+msg.header.stamp.nanosec/1e9
+        odometry['valid']=all(math.isfinite(v) for v in values) and .9<sum(v*v for v in [q.x,q.y,q.z,q.w])<1.1 and all(math.isfinite(v) and 0<=v<=.5 for v in covariance) and abs(time.time()-stamp)<.5
+    node.create_subscription(Odometry,'/odom_rgbd' if rgbd else '/odom_rf2o',odom,__import__('rclpy.qos',fromlist=['qos_profile_sensor_data']).qos_profile_sensor_data)
+    depth_state={'time':0.,'clear':False}
+    def depth_status(msg):
+        try:
+            value=json.loads(msg.data);depth_state['time']=time.monotonic()
+            depth_state['clear']=value.get('source')=='rgbd' and value.get('clear') is True and abs(time.time()-value.get('stamp',0))<.5
+        except (ValueError,TypeError):depth_state['clear']=False
+    if rgbd:node.create_subscription(String,'/onigiri/perception',depth_status,10)
     def safe_scan():
+        if rgbd:return depth_state['clear'] and time.monotonic()-depth_state['time']<.5
         clearance=.5*math.hypot(config.get('body_width_m',.4),config.get('body_length_m',.4))+.1
         return time.monotonic()-scan_state['time']<.5 and scan_state['minimum']>clearance
     def safe_odom():return odometry['valid'] and time.monotonic()-odometry['time']<.5
     def velocity(msg):
         try:
             if not safe_scan() or not safe_odom():controller.stop();return
-            controller.command(msg.linear.x,msg.linear.y,msg.angular.z)
+            if rgbd:
+                if msg.linear.x<0 or abs(msg.linear.y)>1e-6:controller.stop();return
+                controller.command(min(msg.linear.x,.1),0.,max(-.2,min(.2,msg.angular.z)))
+            else:controller.command(msg.linear.x,msg.linear.y,msg.angular.z)
         except Exception as error:node.get_logger().error(str(error))
     def arm(msg):
         try:controller.arm() if msg.data else controller.stop()
@@ -81,7 +99,7 @@ def main():
             if config_path.read_text()!=initial_config:
                 controller.stop();raise SystemExit('Configuração alterada; reinicie a base para adotar o novo perfil')
             if controller.armed and (not safe_scan() or not safe_odom()):controller.stop()
-            controller.tick();msg=String();msg.data=json.dumps({'armed':controller.armed,'emergency_stop':controller.estop,'chassis':config['chassis'],'lidar_clear':safe_scan(),'odometry_valid':safe_odom()});status.publish(msg)
+            controller.tick();msg=String();msg.data=json.dumps({'armed':controller.armed,'emergency_stop':controller.estop,'chassis':config['chassis'],'perception_source':'rgbd' if rgbd else 'lidar','perception_clear':safe_scan(),'front_only':rgbd,'lidar_clear':safe_scan() if not rgbd else False,'odometry_valid':safe_odom()});status.publish(msg)
         except Exception as error:
             controller.armed=False;node.get_logger().error(str(error))
     node.create_timer(.05,tick)
