@@ -26,11 +26,26 @@
   const intro=document.querySelector('.intro'), map=document.querySelector('.map-panel'), layout=document.querySelector('.layout');
   const destinations=document.querySelector('.destinations-panel'), right=document.querySelector('.right-column');
   const mission=right.querySelector('.panel'), settings=right.querySelector('.note');
-  views.maps.append(intro,map,destinations);views.missions.append(mission);views.settings.append(settings);
+  const destinationWorkspace=document.createElement('div');destinationWorkspace.className='destination-workbench';
+  destinationWorkspace.append(map,destinations);
+  views.maps.append(intro,destinationWorkspace);views.missions.append(mission);views.settings.append(settings);
   views.controls.append(document.getElementById('gamepadPanel'));
   views.sensors.insertAdjacentHTML('beforeend','<div class="panel unavailable"><span aria-hidden="true">◉</span><h3>Aguardando integração de sensores</h3><p>Não há telemetria conectada. Os dados de LiDAR, bateria e odometria aparecerão aqui quando a integração estiver disponível.</p><span class="simulation-badge">Simulação</span></div>');
   views.settings.insertAdjacentHTML('afterbegin','<p class="view-description">Revise o cadastro e restaure backups. Os perfis do controle ficam na área Controle remoto.</p>');
   layout.remove();shell.append(sidebar,content);main.replaceChildren(shell);
+  // Fit the actual canvas element, preserving its bounds for click-to-map coordinates.
+  const savedCanvas=document.getElementById('mapCanvas');
+  const savedArea=savedCanvas.parentElement;
+  function fitSavedMap(){
+    if(savedCanvas.hidden || !savedCanvas.width || !savedCanvas.height)return;
+    const width=savedArea.clientWidth-24,height=savedArea.clientHeight-24;
+    if(width<=0||height<=0)return;
+    const scale=Math.min(width/savedCanvas.width,height/savedCanvas.height);
+    savedCanvas.style.width=(savedCanvas.width*scale)+'px';
+    savedCanvas.style.height=(savedCanvas.height*scale)+'px';
+  }
+  new ResizeObserver(fitSavedMap).observe(savedArea);
+  new MutationObserver(()=>queueMicrotask(fitSavedMap)).observe(savedCanvas,{attributes:true,attributeFilter:['hidden','width','height']});
   // Keep the original inputs and listeners while grouping them into clear cards.
   const controlPanel=document.getElementById('gamepadPanel');
   const controlIntro=controlPanel.querySelector('.panel-heading');

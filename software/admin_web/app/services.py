@@ -182,6 +182,13 @@ class DestinationStore:
                     )
                     if result.rowcount == 0:
                         raise KeyError("Destino não encontrado.")
+                if values.get("is_home") is True:
+                    connection.execute("UPDATE destinations SET is_home = 0")
+                    connection.execute("UPDATE destinations SET is_home = 1 WHERE id = ?", (destination_id,))
+                elif values.get("is_home") is False:
+                    current = connection.execute("SELECT is_home FROM destinations WHERE id = ?", (destination_id,)).fetchone()
+                    if current["is_home"]:
+                        raise ValueError("Defina outro ponto como base antes de transformar esta base em destino.")
         except sqlite3.IntegrityError as error:
             raise ValueError("Já existe um destino com esse nome.") from error
         self.export_ros_config()
@@ -200,13 +207,17 @@ class DestinationStore:
         assert result is not None
         return result
 
-    def delete(self, destination_id: int) -> None:
-        destination = self.get(destination_id)
-        if destination is None:
-            raise KeyError("Destino não encontrado.")
-        if destination["is_home"]:
-            raise ValueError("Defina outro destino como base antes de excluir este.")
+    def delete(self, destination_id: int, replacement_id: int | None = None) -> None:
         with self._connection() as connection:
+            destination = connection.execute("SELECT is_home FROM destinations WHERE id = ?", (destination_id,)).fetchone()
+            if destination is None:
+                raise KeyError("Destino não encontrado.")
+            if destination["is_home"]:
+                if replacement_id is None:
+                    raise ValueError("Escolha outra base para excluir esta.")
+                if replacement_id == destination_id or connection.execute("SELECT 1 FROM destinations WHERE id = ?", (replacement_id,)).fetchone() is None:
+                    raise ValueError("Escolha um ponto existente diferente como nova base.")
+                connection.execute("UPDATE destinations SET is_home = 1 WHERE id = ?", (replacement_id,))
             connection.execute("DELETE FROM destinations WHERE id = ?", (destination_id,))
         self.export_ros_config()
 

@@ -1,0 +1,22 @@
+const {chromium}=require('playwright');
+const assert=require('node:assert/strict');
+(async()=>{const browser=await chromium.launch({channel:'msedge',headless:true});try{
+const page=await browser.newPage();await page.goto((process.env.PLATFORMS_TEST_URL||'http://localhost:18086')+'/#settings');
+const form=page.locator('#platformForm');await form.locator('[name=chassis]').selectOption('tank');
+await form.locator('[name=motor_driver]').selectOption('sabertooth2x60');
+await form.locator('[name=computer]').selectOption('raspberry5');
+await form.locator('[name=camera]').selectOption('gemini2');
+await form.locator('[name=serial_port]').fill('/dev/serial/by-id/usb-test');
+await form.locator('button[type=submit]').click();await page.getByText('Plataforma salva. Nenhum serviço foi iniciado.').waitFor();
+await page.reload();await form.locator('[name=chassis] option[value=tank]').waitFor({state:'attached'});
+await page.waitForFunction(()=>document.querySelector('#platformForm [name=motor_driver]').value==='sabertooth2x60');
+assert.equal(await page.locator('#motorConnection').inputValue(),'Adaptador USB–TTL');
+assert.equal(await form.locator('[name=serial_port]').inputValue(),'/dev/serial/by-id/usb-test');
+const bench=page.locator('#tankBench');await bench.locator('[name=forward]').fill('1');
+await bench.locator('[name=turn]').fill('0.5');await bench.locator('button[type=submit]').click();
+await page.getByText(/Esquerda: 0.33 · Direita: 1.00/).waitFor();
+await page.locator('#tankNeutral').click();await page.getByText(/Esquerda: 0.00 · Direita: 0.00/).waitFor();
+await page.setViewportSize({width:390,height:844});assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+await page.locator('[data-view=sensors]').click();await page.locator('#cameraObserve').click();await page.getByText('Active ONIGIRI_CAMERA_PREVIEW_ENABLED=1 no servidor ROS').waitFor();
+console.log('PASS: tank, Raspberry 5, USB–TTL persistente, mistura, zero e layout móvel');
+}finally{await browser.close();}})().catch(e=>{console.error(e);process.exit(1)});

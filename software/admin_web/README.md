@@ -1,5 +1,10 @@
 # Painel web de destinos do Onigiri
 
+O painel também contém uma biblioteca de mapas e controles opcionais de captura
+SLAM. Consulte [Mapeamento e imagem SD](../../docs/IMAGEM_SD_E_MAPEAMENTO.md) para
+configuração no Raspberry Pi 4 e limites atuais. A captura real fica desabilitada
+até que o ambiente ROS e o YAML SLAM da unidade sejam validados.
+
 Este painel permite cadastrar locais, sinônimos e frases de voz antes de
 conectá-los ao ROS 2. A primeira versão opera somente em **simulação**: ela não
 publica tópicos ROS, não chama o Nav2 e não movimenta motores.

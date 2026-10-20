@@ -16,3 +16,4 @@ output/Onigiri_Latinoware_2026_mapa_v3.pptx
 config/destinations.json
 config/destinations.runtime.json
 data/*.db
+data/maps/

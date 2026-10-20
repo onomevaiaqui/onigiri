@@ -32,6 +32,36 @@ class DestinationStoreTests(unittest.TestCase):
     def test_normalizes_accents(self) -> None:
         self.assertEqual(normalize("  Escritório  "), "escritorio")
 
+    def test_point_type_changes_base_atomically(self):
+        saved = self.store.save({'name':'nova base','is_home':True,'x':1,'y':2})
+        self.assertTrue(saved['is_home'])
+        self.assertEqual([p['id'] for p in self.store.list() if p['is_home']],[saved['id']])
+        ordinary = self.store.save({'name':'sala nova','is_home':False})
+        self.assertFalse(ordinary['is_home'])
+        self.store.delete(ordinary['id'])
+        self.assertIsNone(self.store.get(ordinary['id']))
+
+    def test_delete_base_with_replacement(self):
+        home=next(p for p in self.store.list() if p['is_home'])
+        other=next(p for p in self.store.list() if not p['is_home'])
+        with self.assertRaises(ValueError):self.store.delete(home['id'],home['id'])
+        with self.assertRaises(ValueError):self.store.delete(home['id'],999999)
+        self.assertTrue(self.store.get(home['id'])['is_home'])
+        self.store.delete(home['id'],other['id'])
+        self.assertIsNone(self.store.get(home['id']))
+        self.assertTrue(self.store.get(other['id'])['is_home'])
+        self.assertEqual(json.loads(self.store.export_path.read_text())['home'],other['name'])
+
+    def test_base_cannot_be_demoted_or_deleted_without_replacement(self):
+        home = next(p for p in self.store.list() if p['is_home'])
+        with self.assertRaises(ValueError):
+            self.store.save({'name':'não deve persistir','is_home':False},home['id'])
+        self.assertEqual(self.store.get(home['id'])['name'],home['name'])
+        with self.assertRaises(ValueError):self.store.delete(home['id'])
+        replacement=self.store.save({'name':'substituta','is_home':True})
+        self.store.delete(home['id'])
+        self.assertTrue(self.store.get(replacement['id'])['is_home'])
+
     def test_longest_matching_phrase_wins(self) -> None:
         self.store.save(
             {

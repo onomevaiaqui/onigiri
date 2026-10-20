@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="/static/style.css" />
     <link rel="stylesheet" href="/static/gamepad.css" />
     <link rel="stylesheet" href="/static/operations.css" />
+    <link rel="stylesheet" href="/static/mapping.css" />
+    <link rel="stylesheet" href="/static/map-markers.css" />
   </head>
   <body>
     <header class="topbar">
@@ -21,8 +23,8 @@
       <section class="intro">
         <div>
           <p class="eyebrow">DESTINOS E COMANDOS</p>
-          <h2>Cadastre o que o robô deve entender</h2>
-          <p>Esta primeira versão organiza destinos e frases. Ela não envia comandos ao ROS 2 nem movimenta o robô.</p>
+          <h2>Mapeie o ambiente e organize os destinos</h2>
+          <p>Guarde mapas, cadastre destinos e configure a captura do ambiente. O painel não movimenta o robô.</p>
         </div>
         <button id="newDestination" class="primary">Novo destino</button>
       </section>
@@ -44,7 +46,7 @@
         </div>
         <div class="map-footer">
           <p id="mapStatus">Branco = área livre; preto = obstáculo; cinza = área ainda desconhecida. Os arquivos são lidos apenas neste navegador.</p>
-          <div><span id="mapPoint">Nenhum ponto selecionado.</span><button id="newDestinationAtPoint" class="primary" disabled>Novo destino neste ponto</button></div>
+          <div><span id="mapPoint">Nenhum ponto selecionado.</span><label>Tipo de ponto<select id="newPointType"><option value="destination">Destino</option><option value="base">Base</option></select></label><button id="newDestinationAtPoint" class="primary" disabled>Adicionar ponto</button><button id="clearMapSelection" type="button" class="secondary">Limpar seleção</button></div>
         </div>
       </section>
 
@@ -154,21 +156,31 @@
         </div>
         <input type="hidden" id="destinationId" />
         <div class="form-grid">
-          <label>Nome do destino<input id="name" required maxlength="80" placeholder="Ex.: Escritório" /></label>
+          <label>Tipo de ponto<select id="pointType"><option value="destination">Destino</option><option value="base">Base</option></select></label><p class="point-type-help">Ao escolher Base, a base anterior vira destino. Ao excluir a base ativa, escolha uma substituta na confirmação.</p><label>Nome do ponto<input id="name" required maxlength="80" placeholder="Ex.: Escritório" /></label>
           <label>Mensagem ao chegar<input id="arrivalMessage" maxlength="160" placeholder="Ex.: Chegamos ao Escritório." /></label>
           <label class="wide">Nomes alternativos, um por linha<textarea id="aliases" rows="4" placeholder="escritório&#10;sala administrativa"></textarea></label>
           <label class="wide">Frases completas aceitas, uma por linha<textarea id="phrases" rows="4" placeholder="me leve ao escritório&#10;onde fica o escritório"></textarea></label>
           <div class="wide phrase-helper"><p>Use frases completas para evitar ambiguidade. Você poderá editar todas as sugestões.</p><button id="suggestPhrases" type="button" class="secondary">Sugerir frases para este destino</button></div>
-          <label>Posição X no mapa<input id="x" type="number" step="0.01" value="0" /></label>
-          <label>Posição Y no mapa<input id="y" type="number" step="0.01" value="0" /></label>
+          <label>Posição X no mapa<input id="x" type="number" step="any" value="0" /></label>
+          <label>Posição Y no mapa<input id="y" type="number" step="any" value="0" /></label>
           <label>Orientação Yaw em radianos<input id="yaw" type="number" step="0.01" value="0" /></label>
           <label>Espera ao chegar, em segundos<input id="waitSeconds" type="number" min="0" max="600" step="1" value="15" /></label>
           <label class="checkbox wide"><input id="returnToBase" type="checkbox" checked /> Retornar à base após a espera</label>
         </div>
         <p class="form-help">As coordenadas serão medidas no mapa ROS 2 numa etapa posterior. Por enquanto, o painel trabalha em modo de simulação.</p>
         <p id="formError" class="error" role="alert"></p>
-        <div class="dialog-actions"><button type="button" id="cancelDialog" class="secondary">Cancelar</button><button class="primary" type="submit">Salvar destino</button></div>
+        <div class="dialog-actions"><button type="button" id="deletePoint" class="danger" hidden>Excluir ponto</button><button type="button" id="cancelDialog" class="secondary">Cancelar</button><button class="primary" type="submit">Salvar ponto</button></div>
       </form>
+    </dialog>
+
+    <dialog id="deletePointDialog" aria-labelledby="deletePointName">
+      <div class="point-delete-confirmation">
+        <h2 id="deletePointName">Excluir ponto?</h2>
+        <p>O cadastro e seu marcador serão removidos.</p>
+        <label id="replacementBaseField" hidden>Este ponto é a base atual. Escolha a nova base:<select id="replacementBase"></select></label>
+        <p id="deletePointError" class="error" role="alert"></p>
+        <div class="dialog-actions"><button id="cancelDeletePoint" type="button" class="secondary">Cancelar</button><button id="confirmDeletePoint" type="button" class="danger">Confirmar exclusão</button></div>
+      </div>
     </dialog>
 
     <template id="destinationTemplate">
@@ -188,5 +200,8 @@
     <script src="/static/gamepad.js"></script>
 <script src="/static/app.js"></script>
     <script src="/static/operations.js"></script>
+    <script src="/static/mapping.js"></script>
+    <script src="/static/map-markers.js"></script>
+  <script src="/static/platforms.js"></script>
   </body>
 </html>

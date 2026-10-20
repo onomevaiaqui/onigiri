@@ -65,3 +65,5 @@ button:focus-visible,select:focus-visible { outline:3px solid #a9c4b6; outline-o
 
 .dashboard-map canvas { max-width:100%; max-height:300px; object-fit:contain; image-rendering:pixelated; border:1px solid #e2e2e2; border-radius:8px; }
 .dashboard-map.has-map { padding:20px; }.dashboard-map.has-map>span { display:none; }
+
+.platform-panel form {display:grid;gap:16px;max-width:680px}.platform-panel label {display:grid;gap:7px}.platform-panel label:has(input[type="checkbox"]) {display:flex;align-items:center}.platform-panel input[type="checkbox"] {width:auto}.platform-panel [hidden] {display:none}

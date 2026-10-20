@@ -7,12 +7,18 @@ const assert=require('node:assert/strict');
 const root=path.resolve(__dirname,'../app/static');
 (async()=>{
   const server=http.createServer((req,res)=>{
+    if(req.url==='/api/mapping' || req.url==='/api/maps'){
+      res.setHeader('Content-Type','application/json');return res.end(JSON.stringify(req.url==='/api/maps'?[]:{enabled:false,running:false,detail:'Captura indisponível no teste.'}));
+    }
     if(req.url==='/api/destinations' || req.url==='/api/readiness'){
       res.setHeader('Content-Type','application/json');
-      return res.end(JSON.stringify(req.url==='/api/destinations'?[]:{without_phrases:[],without_map_position:[],phrase_conflicts:[]}));
+      return res.end(JSON.stringify(req.url==='/api/destinations'?[
+        {id:1,name:'Base',aliases:[],phrases:[],is_home:true,x:.025,y:.075,yaw:0},
+        {id:2,name:'Sala',aliases:[],phrases:[],is_home:false,x:.075,y:.025,yaw:0}
+      ]:{without_phrases:[],without_map_position:[],phrase_conflicts:[]}));
     }
     const name=req.url==='/'?'index.html':req.url.replace('/static/','');
-    if(!['index.html','app.js','style.css','gamepad.js','gamepad.css','operations.js','operations.css'].includes(name)){res.writeHead(404);return res.end();}
+    if(!['index.html','app.js','style.css','gamepad.js','gamepad.css','operations.js','operations.css','mapping.js','mapping.css','map-markers.js','map-markers.css'].includes(name)){res.writeHead(404);return res.end();}
     res.setHeader('Content-Type',name.endsWith('.js')?'text/javascript':name.endsWith('.css')?'text/css':'text/html');
     res.end(fs.readFileSync(path.join(root,name)));
   });
@@ -38,10 +44,33 @@ const root=path.resolve(__dirname,'../app/static');
       await page.setInputFiles('#mapYamlFile',{name:'test.yaml',mimeType:'text/yaml',buffer:Buffer.from('resolution: 0.05\norigin: [0, 0, 0]\n')});
       await page.setInputFiles('#mapPgmFile',{name:'test.pgm',mimeType:'image/x-portable-graymap',buffer:Buffer.from('P2\n2 2\n255\n255 0 128 255\n')});
       await page.waitForFunction(()=>!document.querySelector('.dashboard-map canvas').hidden);
+      await page.locator('#mapCanvas').scrollIntoViewIfNeeded();
+      const mapBounds=await page.locator('#mapCanvas').boundingBox();
+      await page.mouse.click(mapBounds.x+mapBounds.width*.4,mapBounds.y+mapBounds.height*.4);
+      assert.match(await page.textContent('#mapPoint'),/X 0.025, Y 0.075/);
+      assert.equal(await page.locator('.map-marker.marker-home').count(),1);
+      assert.equal(await page.locator('.map-marker.marker-destination').count(),1);
+      assert.equal(await page.locator('.map-marker.marker-point').count(),1);
+      await page.locator('.map-marker.marker-home').click();
+      assert.equal(await page.inputValue('#pointType'),'base');
+      assert.equal(await page.locator('#deletePoint').isVisible(),true);
+      await page.click('#closeDialog');
+      await page.locator('.map-marker.marker-destination').click();
+      assert.equal(await page.inputValue('#pointType'),'destination');
+      await page.click('#closeDialog');
+      await page.selectOption('#newPointType','base');await page.click('#newDestinationAtPoint');
+      assert.equal(await page.inputValue('#pointType'),'base');
+      assert.equal(await page.locator('#deletePoint').isVisible(),false);
+      await page.click('#closeDialog');
       await page.click('[data-view="dashboard"]');
       assert.equal(await page.locator('.dashboard-map canvas').isVisible(),true);
       assert.equal(await page.locator('.dashboard-map canvas').getAttribute('width'),'2');
       await page.click('.dashboard-map');assert.equal(await page.locator('#view-maps').isVisible(),true);
+      await page.setInputFiles('#mapYamlFile',{name:'rotated.yaml',mimeType:'text/yaml',buffer:Buffer.from('resolution: 0.05\norigin: [0, 0, 1.5707963267948966]\n')});
+      await page.waitForTimeout(80);await page.locator('#mapCanvas').scrollIntoViewIfNeeded();
+      const rotated=await page.locator('#mapCanvas').boundingBox();
+      await page.mouse.click(rotated.x+rotated.width*.25,rotated.y+rotated.height*.25);
+      assert.match(await page.textContent('#mapPoint'),/X -0.075, Y 0.025/);
       await page.setInputFiles('#mapPgmFile',{name:'invalid.pgm',mimeType:'image/x-portable-graymap',buffer:Buffer.from('invalid')});
       await page.waitForFunction(()=>document.querySelector('.dashboard-map canvas').hidden);
     }
