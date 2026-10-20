@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="tank-title tank-desc"><title id="tank-title">Frame com duas esteiras</title><desc id="tank-desc">Esteiras largas e corpo central com frente inclinada, simplificados a partir do STEP de referência.</desc><rect x="5" y="8" width="12" height="48" rx="5"/>
+ <rect x="47" y="8" width="12" height="48" rx="5"/>
+ <path d="M5 18h12M5 28h12M5 38h12M5 48h12m30-30h12M47 28h12M47 38h12M47 48h12"/>
+ <path d="M17 19h5m20 0h5M17 45h5m20 0h5"/>
+ <path d="M22 12h20v40H22zM22 37l10 5 10-5"/>
+ <rect x="27" y="20" width="10" height="4" rx="2"/></svg>

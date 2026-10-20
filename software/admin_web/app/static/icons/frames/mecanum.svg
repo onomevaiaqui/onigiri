@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="mecanum-title mecanum-desc"><title id="mecanum-title">Frame com quatro rodas mecanum</title><desc id="mecanum-desc">Chassi retangular genérico com quatro rodas separadas e roletes diagonais espelhados em arranjo X.</desc><rect x="6" y="8" width="11" height="19" rx="3.5"/>
+ <rect x="47" y="8" width="11" height="19" rx="3.5"/>
+ <rect x="6" y="37" width="11" height="19" rx="3.5"/>
+ <rect x="47" y="37" width="11" height="19" rx="3.5"/>
+ <path d="m7 12 9 6m-9 0 9 6m32-6 9-6m-9 12 9-6m-50 25 9-6m-9 12 9-6m32-6 9 6m-9 0 9 6"/>
+ <path d="M17 18h5m20 0h5M17 46h5m20 0h5"/>
+ <rect x="22" y="11" width="20" height="42" rx="3"/>
+ <path d="m29 21 3-3 3 3"/></svg>
