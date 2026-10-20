@@ -155,6 +155,7 @@
           <button type="button" id="closeDialog" class="icon-button" aria-label="Fechar">×</button>
         </div>
         <input type="hidden" id="destinationId" />
+        <label>Mapa salvo deste ponto<input id="destinationMap" maxlength="60" placeholder="Nome do mapa; necessário para navegar"></label>
         <div class="form-grid">
           <label>Tipo de ponto<select id="pointType"><option value="destination">Destino</option><option value="base">Base</option></select></label><p class="point-type-help">Ao escolher Base, a base anterior vira destino. Ao excluir a base ativa, escolha uma substituta na confirmação.</p><label>Nome do ponto<input id="name" required maxlength="80" placeholder="Ex.: Escritório" /></label>
           <label>Mensagem ao chegar<input id="arrivalMessage" maxlength="160" placeholder="Ex.: Chegamos ao Escritório." /></label>
@@ -203,5 +204,7 @@
     <script src="/static/mapping.js"></script>
     <script src="/static/map-markers.js"></script>
   <script src="/static/platforms.js"></script>
+  <script src="/static/runtime.js"></script>
+  <script src="/static/setup.js"></script>
   </body>
 </html>

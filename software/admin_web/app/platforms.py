@@ -8,8 +8,8 @@ from threading import RLock
 CATALOG = [
     {"id": "onigiri", "name": "Onigiri original", "description": "Dois motores de tração e um motor lateral", "available": True},
     {"id": "tank", "name": "Tank com esteiras", "description": "Tração diferencial: esteira esquerda e direita; sem deslocamento lateral", "available": True},
-    {"id": "mecanum", "name": "Quatro rodas mecanum", "description": "Integração futura", "available": False},
-    {"id": "independent", "name": "Quatro rodas independentes", "description": "Integração futura", "available": False},
+    {"id": "mecanum", "name": "Quatro rodas mecanum", "description": "Quatro motores; dois controladores Sabertooth em serial compartilhada", "available": True},
+    {"id": "independent", "name": "Quatro rodas independentes", "description": "Quatro motores; dois controladores Sabertooth em serial compartilhada", "available": True},
 ]
 
 def tank_tracks(linear, angular, track_separation):
@@ -32,7 +32,7 @@ class PlatformStore:
                     "camera": "none", "lidar": True}
 
     def save(self, config):
-        if config["chassis"] not in ("onigiri", "tank"):
+        if config["chassis"] not in ("onigiri", "tank", "mecanum", "independent"):
             raise ValueError("Plataforma ainda não disponível")
         with self.lock:
             self.path.parent.mkdir(parents=True, exist_ok=True)

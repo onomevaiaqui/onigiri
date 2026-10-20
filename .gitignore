@@ -17,3 +17,10 @@ config/destinations.json
 config/destinations.runtime.json
 data/*.db
 data/maps/
+
+data/platform.json
+*.img
+*.img.xz
+
+data/backups/
+before-restore-*.tar.gz

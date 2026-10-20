@@ -37,6 +37,7 @@ function resetForm() {
 function openEditor(destination = null, mapPoint = null, kind = "destination") {
   resetForm();
   element("pointType").value = destination?.is_home ? "base" : kind;
+  element("destinationMap").value = destination?.map_name || state.map?.savedName || "";
   element("deletePoint").hidden = !destination;
   if (destination) {
     element("dialogTitle").textContent = `Editar: ${destination.name}`;
@@ -143,7 +144,7 @@ async function loadMapFiles() {
   try {
     const metadata = parseMapMetadata(await yaml.text());
     const image = parsePgm(await pgm.arrayBuffer());
-    state.map = { ...metadata, ...image, label: `${yaml.name} + ${pgm.name}` };
+    state.map = { ...metadata, ...image, savedName: element("mapPgmFile").dataset.savedMapName || null, label: `${yaml.name} + ${pgm.name}` };
     state.selectedMapPoint = null;
     element("mapPoint").textContent = "Nenhum ponto selecionado.";
     element("newDestinationAtPoint").disabled = true;
@@ -302,8 +303,8 @@ function renderSimulation(result) {
 }
 
 element("newDestination").addEventListener("click", () => openEditor());
-element("mapYamlFile").addEventListener("change", loadMapFiles);
-element("mapPgmFile").addEventListener("change", loadMapFiles);
+element("mapYamlFile").addEventListener("change", event=>{if(event.isTrusted)delete element("mapPgmFile").dataset.savedMapName;loadMapFiles();});
+element("mapPgmFile").addEventListener("change", event=>{if(event.isTrusted)delete element("mapPgmFile").dataset.savedMapName;loadMapFiles();});
 element("mapCanvas").addEventListener("click", selectMapPoint);
 element("clearMapSelection").addEventListener("click", () => { clearMapSelection(); if (state.map) drawMap(); });
 element("newDestinationAtPoint").addEventListener("click", () => openEditor(null, state.selectedMapPoint, element("newPointType").value));
@@ -343,6 +344,7 @@ element("destinationForm").addEventListener("submit", async (event) => {
     wait_seconds: Number(element("waitSeconds").value),
     return_to_base: element("returnToBase").checked,
     is_home: element("pointType").value === "base",
+    map_name: element("destinationMap").value.trim() || null,
   };
   const id = element("destinationId").value;
   try {

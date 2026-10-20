@@ -1,7 +1,7 @@
 import struct
 import unittest
 import zlib
-from app.camera_preview_ros import image_png
+from app.camera_preview_ros import image_png, depth_png
 from app.camera import CameraPreview
 
 def pixels(png):
@@ -26,3 +26,8 @@ class CameraTests(unittest.TestCase):
         with self.assertRaises(ValueError):camera.start()
         self.assertFalse(camera.status()['running'])
         camera.stop()
+
+    def test_depth_units_endianness_and_invalid_pixels(self):
+        self.assertEqual(pixels(depth_png(3,1,6,'16UC1',struct.pack('<3H',0,1000,5000))),bytes([0,0,204,0]))
+        self.assertEqual(pixels(depth_png(1,1,2,'16UC1',struct.pack('>H',1000),True)),bytes([0,204]))
+        self.assertEqual(pixels(depth_png(2,1,8,'32FC1',struct.pack('<2f',float('nan'),1.))),bytes([0,0,204]))

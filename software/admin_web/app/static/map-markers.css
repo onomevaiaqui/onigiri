@@ -11,3 +11,5 @@
 .point-type-help { font-size:13px; color:var(--muted); margin:0; line-height:1.5; }
 
 #deletePointDialog { max-width:480px; }.point-delete-confirmation { padding:24px; }.point-delete-confirmation h2 { font-size:23px; }.point-delete-confirmation label { display:grid; gap:10px; font-size:14px; }#replacementBase { width:100%; padding:10px; border:1px solid #b9c2cf; border-radius:8px; background:white; font:inherit; }
+
+.marker-robot {color:#b15b05;transform:translate(-50%,-50%);border-radius:50%;}

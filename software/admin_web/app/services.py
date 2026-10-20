@@ -81,6 +81,8 @@ class DestinationStore:
                 )
                 """
             )
+            columns={row[1] for row in connection.execute('PRAGMA table_info(destinations)')}
+            if 'map_name' not in columns:connection.execute('ALTER TABLE destinations ADD COLUMN map_name TEXT')
             count = connection.execute("SELECT COUNT(*) FROM destinations").fetchone()[0]
             if count == 0:
                 self._seed(connection)
@@ -126,6 +128,7 @@ class DestinationStore:
             "wait_seconds": row["wait_seconds"],
             "return_to_base": bool(row["return_to_base"]),
             "is_home": bool(row["is_home"]),
+            "map_name": row["map_name"],
         }
 
     def list(self) -> list[dict[str, Any]]:
@@ -182,6 +185,10 @@ class DestinationStore:
                     )
                     if result.rowcount == 0:
                         raise KeyError("Destino não encontrado.")
+                if 'map_name' in values:
+                    map_name=values['map_name']
+                    if map_name is not None and not re.fullmatch(r'[a-zA-Z0-9][a-zA-Z0-9_-]{0,59}',map_name):raise ValueError('Nome de mapa inválido')
+                    connection.execute('UPDATE destinations SET map_name = ? WHERE id = ?', (map_name,destination_id))
                 if values.get("is_home") is True:
                     connection.execute("UPDATE destinations SET is_home = 0")
                     connection.execute("UPDATE destinations SET is_home = 1 WHERE id = ?", (destination_id,))
@@ -287,6 +294,7 @@ class DestinationStore:
                     max(0.0, float(record.get("wait_seconds", 15.0))),
                     1 if record.get("return_to_base", True) else 0,
                     1 if record.get("is_home") else 0,
+                    record.get("map_name"),
                 )
             )
         with self._connection() as connection:
@@ -294,8 +302,8 @@ class DestinationStore:
             connection.executemany(
                 """
                 INSERT INTO destinations
-                (name, aliases, phrases, x, y, yaw, arrival_message, wait_seconds, return_to_base, is_home)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                (name, aliases, phrases, x, y, yaw, arrival_message, wait_seconds, return_to_base, is_home, map_name)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 prepared,
             )

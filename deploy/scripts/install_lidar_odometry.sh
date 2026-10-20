@@ -12,9 +12,11 @@ source_dir="$workspace/src/rf2o_laser_odometry"
 if [[ ! -e "$source_dir" ]]; then
   git clone --branch ros2 https://github.com/MAPIRlab/rf2o_laser_odometry.git "$source_dir"
 fi
-[[ -z "$(git -C "$source_dir" status --porcelain)" ]] || { echo 'Há alterações locais no RF2O; instalação interrompida sem sobrescrever.'; exit 1; }
+project_root="$(cd -- "$(dirname -- "$0")/../.." && pwd)"
+if [[ -n "$(git -C "$source_dir" status --porcelain)" ]]; then python3 "$project_root/deploy/scripts/patch_rf2o.py" "$source_dir"; fi
 git -C "$source_dir" cat-file -e "$revision^{commit}"
 git -C "$source_dir" checkout --detach "$revision"
+python3 "$project_root/deploy/scripts/patch_rf2o.py" "$source_dir"
 cd "$workspace"
 set +u
 source /opt/ros/jazzy/setup.bash

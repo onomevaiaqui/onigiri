@@ -25,10 +25,13 @@ class CameraPreview:
     def stop(self):
         with self.lock:
             if self.process and self.process.poll() is None:
-                os.killpg(self.process.pid,signal.SIGTERM)
+                try:os.killpg(self.process.pid,signal.SIGTERM)
+                except ProcessLookupError:pass
                 try:self.process.wait(timeout=3)
                 except subprocess.TimeoutExpired:
-                    os.killpg(self.process.pid,signal.SIGKILL);self.process.wait(timeout=3)
+                    try:os.killpg(self.process.pid,signal.SIGKILL)
+                    except ProcessLookupError:pass
+                    self.process.wait(timeout=3)
             self.process=None
             if self.directory:self.directory.cleanup();self.directory=None
             return {"enabled":self.enabled,"running":False,"state":"idle"}
@@ -44,4 +47,10 @@ class CameraPreview:
                         result.update(data);result['age_seconds']=round(age,1)
                         result['state']='error' if 'error' in data else 'live' if age<3 else 'stale'
                     except (ValueError,KeyError,OSError):pass
+            if running and self.directory:
+                for name in ('depth','imu'):
+                    try:
+                        data=json.loads((Path(self.directory.name)/(name+'.json')).read_text())
+                        data['age_seconds']=round(max(0,time.time()-data['received_at']),1);result[name]=data
+                    except (OSError,ValueError,KeyError):pass
             return result

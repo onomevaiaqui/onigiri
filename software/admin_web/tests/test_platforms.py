@@ -12,7 +12,7 @@ class PlatformTests(unittest.TestCase):
             config={"chassis":"tank", "track_separation_m":0.42,"camera":"gemini2","lidar":True}
             store.save(config)
             self.assertEqual(PlatformStore(path).get(), config)
-            with self.assertRaises(ValueError): store.save({"chassis":"mecanum"})
+            with self.assertRaises(ValueError): store.save({"chassis":"unknown"})
             self.assertEqual(store.get(), config)
     def test_differential_units_and_rotation(self):
         self.assertEqual(tank_tracks(1,0,.4), {"left":1,"right":1})
@@ -24,7 +24,7 @@ class PlatformTests(unittest.TestCase):
         from app.main import PlatformInput, set_platform
         from fastapi import HTTPException
         with self.assertRaises(ValidationError): PlatformInput(track_separation_m=float('nan'))
-        with self.assertRaises(ValidationError): PlatformInput(chassis='mecanum')
+        with self.assertRaises(ValidationError): PlatformInput(chassis='unknown')
         with self.assertRaises(HTTPException): set_platform(PlatformInput(chassis='tank'))
         with self.assertRaises(HTTPException): set_platform(PlatformInput(motor_driver='sabertooth2x60'))
         for computer in ['raspberry4','raspberry5']:

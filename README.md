@@ -101,3 +101,7 @@ hardware continuem abertas.
 Elas se aplicam somente aos arquivos originais do projeto. Raspberry Pi,
 RPLIDAR, HAT de motores e demais produtos de terceiros permanecem sujeitos às
 licenças e condições de seus fabricantes.
+
+## Plataformas e operação ROS 2
+
+Veja [Operação robótica](docs/OPERACAO_ROBOTICA.md) para Sabertooth, tank, mecanum, quatro rodas fixas, Gemini 2, navegação e imagem SD experimental. Os testes de software não substituem o comissionamento físico.

@@ -177,6 +177,7 @@
     yaml.items.add(new File([map.yaml],`${name}.yaml`,{type:'text/yaml'}));
     pgm.items.add(new File([bytes],`${name}.pgm`,{type:'image/x-portable-graymap'}));
     $('mapYamlFile').files=yaml.files;$('mapPgmFile').files=pgm.files;
+    $('mapPgmFile').dataset.savedMapName=name;
     $('mapPgmFile').dispatchEvent(new Event('change',{bubbles:true}));
     notice(`Mapa “${name}” aberto. ${map.profile==='lidar-odometry'?'Mapa experimental com odometria do sensor, não validado para navegação. ':map.profile==='stationary-preview'?'Teste parado com TF fixas, não usar para navegação. ':map.profile==='experimental-default'?'Mapa experimental, não validado para navegação. ':''}A posição do robô não está conectada.`);
   });

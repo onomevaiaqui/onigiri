@@ -3,6 +3,7 @@
   const area=document.querySelector('.map-workspace'),canvas=document.getElementById('mapCanvas');
   const overlay=document.createElement('div');overlay.className='map-marker-layer';area.append(overlay);
   const icons={
+    robot:'<circle cx="12" cy="12" r="9"/><path d="M6 12h12m-5-5 5 5-5 5"/>',
     point:'<path d="M20 10c0 6-8 11-8 11S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>',
     destination:'<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/>',
     home:'<path d="m3 10 9-7 9 7M5 9v12h14V9M9 21v-7h6v7"/>'
@@ -13,7 +14,8 @@
     const item=document.createElement('span');item.className='marker-'+type;item.innerHTML=svg(type);item.append(label);legend.append(item);
   });
   area.after(legend);
-  let data=null;
+  let data=null,robotPose=null;
+  window.addEventListener("onigiri:robot-pose",event=>{robotPose=event.detail;render();});
   function worldFraction(map,x,y){
     const dx=x-map.origin.x,dy=y-map.origin.y,c=Math.cos(map.origin.yaw),s=Math.sin(map.origin.yaw);
     return {x:(c*dx+s*dy)/(map.width*map.resolution),y:1-(-s*dx+c*dy)/(map.height*map.resolution)};
@@ -31,10 +33,11 @@
       item.style.left=(bounds.left-parent.left-area.clientLeft+x*bounds.width)+'px';
       item.style.top=(bounds.top-parent.top-area.clientTop+y*bounds.height)+'px';overlay.append(item);
     }
-    data.destinations.forEach(destination=>{
+    data.destinations.filter(d=>!d.map_name||d.map_name===data.map.savedName).forEach(destination=>{
       const p=worldFraction(data.map,destination.x,destination.y);
       marker(destination.is_home?'home':'destination',p.x,p.y,`${destination.is_home?'Base':'Destino'}: ${destination.name}`,false,destination);
     });
+    if(robotPose&&robotPose.map_name&&robotPose.map_name===data.map.savedName){const p=worldFraction(data.map,robotPose.x,robotPose.y);marker("robot",p.x,p.y,"Posição medida do robô");const icon=overlay.querySelector(".marker-robot svg");if(icon)icon.style.transform=`rotate(${-(robotPose.yaw-data.map.origin.yaw)*180/Math.PI}deg)`;}
     if(data.point){const p=data.point;marker('point',(p.pixelX+.5)/data.map.width,(p.pixelY+.5)/data.map.height,p.valid?'Ponto selecionado':'Ponto fora da área livre',!p.valid);}
   }
   window.addEventListener('onigiri:map-rendered',event=>{data=event.detail;render();});
