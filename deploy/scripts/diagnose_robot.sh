@@ -3,7 +3,7 @@
 set -uo pipefail
 uname -m
 cat /etc/os-release
-for unit in onigiri-admin-web onigiri-base onigiri-lidar; do
+for unit in onigiri-admin-web onigiri-udp onigiri-lidar; do
  systemctl is-active "$unit" || true
 done
 ls -l /dev/serial/by-id/ 2>/dev/null || true

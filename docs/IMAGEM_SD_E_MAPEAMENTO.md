@@ -1,6 +1,6 @@
 # Mapeamento no painel e imagem SD do Onigiri
 
-Para instalação e conexão Wi-Fi atuais, consulte [Primeiro acesso](PRIMEIRO_ACESSO.md). Os exemplos abaixo registram o fluxo de diagnóstico e mapeamento.
+Este fluxo é exclusivo do LiDAR do Onigiri original. Para instalação e conexão Wi-Fi atuais, consulte [Primeiro acesso](PRIMEIRO_ACESSO.md). Os exemplos abaixo registram o fluxo de diagnóstico e mapeamento.
 
 Alvo confirmado pelo usuário: Raspberry Pi 4, Ubuntu 24.04.5 LTS e ROS 2 Jazzy.
 Confirmar ARM64 na unidade antes de gerar a imagem distribuível.

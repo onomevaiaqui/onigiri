@@ -88,16 +88,13 @@
       $('mappingStatus').textContent=status.running ? (status.profile==='lidar-odometry'?'Captura ativa · odometria LiDAR':status.profile==='stationary-preview'?'Captura ativa · teste parado':status.profile==='experimental-default'?'Captura ativa · experimental':'Captura ativa') : status.detail;
       $('mappingMode').textContent=status.enabled?'Captura ROS':'Captura indisponível';
       $('mappingMode').dataset.enabled=String(status.enabled);
-      const rgbd=status.perception_source==='rgbd';
-      $('mappingStart').textContent=rgbd?'Mapear com Gemini 2':'Iniciar mapeamento';
-      $('mappingStart').disabled=busy||!status.enabled||status.running||(rgbd&&!status.rgbd_enabled)||status.perception_source==='none';
+      $('mappingStart').disabled=busy||!status.enabled||status.running;
       $('mappingStop').disabled=busy||!status.running;
       $('mappingSave').disabled=busy||!status.running;
-      $('mappingExperimental').disabled=rgbd||busy||status.running;
-      $('mappingStationary').disabled=rgbd||busy||status.running;
-      $('mappingLidarOdometry').disabled=rgbd||busy||status.running||!status.lidar_odometry_enabled;
-      if(rgbd){$('mappingExperimental').checked=false;$('mappingStationary').checked=false;$('mappingLidarOdometry').checked=false;}
-      $('lidarOdometryHelp').textContent=rgbd?'Fonte automática: Gemini 2. O salvamento inclui o mapa 2D e o banco visual.':status.lidar_odometry_enabled?'Rastreia o movimento do sensor. Mantenha o LiDAR nivelado e fixo ao robô; ainda não valida navegação.':'Requer instalar RF2O no Raspberry com o instalador opcional de odometria.';
+      $('mappingExperimental').disabled=busy||status.running;
+      $('mappingStationary').disabled=busy||status.running;
+      $('mappingLidarOdometry').disabled=busy||status.running||!status.lidar_odometry_enabled;
+      $('lidarOdometryHelp').textContent=status.lidar_odometry_enabled?'Rastreia o movimento do sensor. Mantenha o LiDAR nivelado e fixo ao robô; ainda não valida navegação.':'Requer instalar RF2O no Raspberry com o instalador opcional de odometria.';
       if(status.running){
         $('mappingExperimental').checked=['experimental-default','stationary-preview','lidar-odometry'].includes(status.profile);
         $('mappingStationary').checked=status.profile==='stationary-preview';
@@ -109,7 +106,7 @@
   async function library(){
     const selected=$('mappingLibrary').value;
     const maps=await request('/api/maps');
-    $('mappingLibrary').replaceChildren(new Option(maps.length?'Selecione um mapa':'Nenhum mapa salvo',''),...maps.map(m=>new Option(`${m.name} · ${m.profile==='rgbd'?'Gemini 2 RGB-D':m.profile==='lidar-odometry'?'odometria LiDAR':m.profile==='stationary-preview'?'teste parado':m.profile==='experimental-default'?'experimental':m.source==='ros'?'ROS':'importado'}`,m.name)));
+    $('mappingLibrary').replaceChildren(new Option(maps.length?'Selecione um mapa':'Nenhum mapa salvo',''),...maps.map(m=>new Option(`${m.name} · ${m.profile==='lidar-odometry'?'odometria LiDAR':m.profile==='stationary-preview'?'teste parado':m.profile==='experimental-default'?'experimental':m.source==='ros'?'ROS':'importado'}`,m.name)));
     if(maps.some(m=>m.name===selected))$('mappingLibrary').value=selected;
   }
   async function refreshPreview(){

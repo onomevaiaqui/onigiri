@@ -2,9 +2,6 @@
     [ValidatePattern('^[a-zA-Z0-9.-]+$')]
     [string]$Raspberry = '100.95.225.112',
     [switch]$InstalarOdometria,
-    [switch]$InstalarRuntime,
-    [switch]$InstalarCamera,
-    [switch]$InstalarRGBD,
     [switch]$InstalarRede
 )
 $ErrorActionPreference = 'Stop'
@@ -20,9 +17,6 @@ if ($InstalarOdometria) {
     $installCommand += ' && bash /home/onigiri/onigiri/deploy/scripts/install_lidar_odometry.sh'
     Write-Host 'Também será instalado e compilado o RF2O no Raspberry. Esta etapa pode levar alguns minutos.'
 }
-if ($InstalarRuntime) { $installCommand += ' && bash /home/onigiri/onigiri/deploy/scripts/install_robot_runtime.sh' }
-if ($InstalarCamera) { $installCommand += ' && bash /home/onigiri/onigiri/deploy/scripts/install_orbbec.sh' }
-if ($InstalarRGBD) { $installCommand += ' && bash /home/onigiri/onigiri/deploy/scripts/install_rgbd.sh' }
 if ($InstalarRede) { $installCommand += ' && sudo bash /home/onigiri/onigiri/deploy/scripts/install_network.sh' }
 Write-Host 'Instalando. O sudo pode solicitar novamente a senha do usuário onigiri.'
 & ssh -t -o StrictHostKeyChecking=yes $destination $installCommand

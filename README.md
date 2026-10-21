@@ -102,12 +102,8 @@ Elas se aplicam somente aos arquivos originais do projeto. Raspberry Pi,
 RPLIDAR, HAT de motores e demais produtos de terceiros permanecem sujeitos às
 licenças e condições de seus fabricantes.
 
-## Plataformas e operação ROS 2
+## Escopo após a separação
 
-Veja [Operação robótica](docs/OPERACAO_ROBOTICA.md) para Sabertooth, tank, Onigiri com omniball, mecanum, Gemini 2, navegação e imagem SD experimental. Os testes de software não substituem o comissionamento físico.
+Este repositório atende exclusivamente ao **Onigiri original**: Raspberry Pi 4, HAT original, três motores omniball e RPLIDAR A1M8. O painel mantém a aparência atual, acesso por navegador, configuração e imagem SD. Não há seleção de outros frames ou drivers nem comandos do runtime genérico no painel.
 
-### Mesmo painel em outros chassis
-
-Selecione omniball, esteiras ou mecanum, Raspberry 4/5 e controlador em Configurações. [Robô com Gemini 2 sem LiDAR](docs/ROBO_RGBD.md) usa os mesmos mapas e destinos, com odometria visual e banco RTAB-Map persistido.
-
-Consulte o [manual de primeiro acesso](docs/PRIMEIRO_ACESSO.md) para conexão direta por Wi-Fi, rede comum e configuração do robô pelo navegador.
+O software multiplataforma foi preservado integralmente no repositório privado [Omni Framework](https://github.com/onomevaiaqui/omni-framework). Consulte o [escopo do Onigiri](docs/ESCOPO_ONIGIRI.md) e o [manual de primeiro acesso](docs/PRIMEIRO_ACESSO.md).

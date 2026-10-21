@@ -36,3 +36,15 @@ class ProvisionTests(unittest.TestCase):
             # Reopen uses the migration path and preserves all records.
             reopened=DestinationStore(Path(folder)/'dest.db',Path(folder)/'dest.json',ROOT/'config/destinations.example.json')
             self.assertEqual(reopened.list(),store.list())
+
+    def test_platform_retirement_preserves_user_data_and_original_driver(self):
+        tool=module('retire_platform_files')
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder)/'project';backup=Path(folder)/'backup'
+            for name in ('software/robot_runtime/base_node.py','software/raspberry/onigiri_udp_tank.py','data/platform.json','data/maps/sala/map.yaml'):
+                path=root/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_text('preserve')
+            tool.retire(root,backup)
+            self.assertFalse((root/'software/robot_runtime').exists())
+            self.assertTrue((backup/'retired-platforms/software/robot_runtime/base_node.py').is_file())
+            self.assertTrue((root/'software/raspberry/onigiri_udp_tank.py').is_file())
+            self.assertTrue((root/'data/platform.json').is_file());self.assertTrue((root/'data/maps/sala/map.yaml').is_file())
