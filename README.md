@@ -104,4 +104,17 @@ licenças e condições de seus fabricantes.
 
 ## Hardware suportado
 
-Este repositório atende ao **Onigiri original**: Raspberry Pi 4, HAT original, três motores omniball e RPLIDAR A1M8. O painel oferece acesso pelo navegador, configuração, mapas, destinos e geração de imagem SD para esse robô.
+O Onigiri usa somente percepção por **LiDAR 2D rotativo**; não há suporte a
+Gemini 2, Orbbec ou RGB-D neste repositório. Pelo painel é possível registrar:
+
+- Raspberry Pi 4 ou 5;
+- frame de três rodas omniball ou quatro rodas mecanum;
+- HAT original, Sabertooth, RoboClaw, Cytron, RoboCore e pontes H comuns;
+- RPLIDAR A1/A2/A3/S1, LDROBOT, YDLIDAR ou um LiDAR que já publique
+  `sensor_msgs/LaserScan` no tópico `/scan`;
+- webcam UVC com microfone e um dispositivo de alto-falante.
+
+O adaptador de movimento validado atualmente é o HAT original no frame omniball.
+Os demais drivers podem ser selecionados e documentados no perfil, mas ficam
+sem acionamento até a integração elétrica e o teste físico específicos. O painel
+continua permitindo mapear e salvar destinos sem enviar comandos ao robô.

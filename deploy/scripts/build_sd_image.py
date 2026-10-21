@@ -14,7 +14,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--base',required=True,type=Path);parser.add_argument('--sha256',required=True)
     parser.add_argument('--public-key',required=True,type=Path);parser.add_argument('--output',required=True,type=Path)
-    parser.add_argument('--model',choices=['raspberry4'],required=True)
+    parser.add_argument('--model',choices=['raspberry4','raspberry5'],required=True)
     parser.add_argument('--credentials',required=True,type=Path,help='Novo cartão de acesso local, não publicar')
     args=parser.parse_args()
     if os.geteuid()!=0:parser.error('Execute com sudo; mount/losetup necessários')
@@ -35,7 +35,7 @@ def main():
                 for path in sorted((root/folder).rglob('*')):
                     if path.is_file() and '__pycache__' not in path.parts and not path.name.endswith(('.runtime.json','.pyc')) and path.name!='destinations.json':
                         archive.add(path,arcname='payload/'+str(path.relative_to(root)),recursive=False)
-            profile=payload/'platform.json';profile.write_text(json.dumps({'computer':args.model,'chassis':'onigiri','motor_driver':'onigiri_hat','camera':'none','lidar':True,'track_separation_m':.3}))
+            profile=payload/'platform.json';profile.write_text(json.dumps({'computer':args.model,'chassis':'omniball','motor_driver':'onigiri_hat','motor_connection':'i2c','serial_port':'','lidar_model':'rplidar','lidar_port':'','camera':'uvc','camera_device':'/dev/video0','microphone_device':'default','speaker_device':'default'}))
             archive.add(profile,arcname='platform.json')
         opener=lzma.open if source.suffix=='.xz' else open
         with opener(source,'rb') as src,output.open('xb') as dst:shutil.copyfileobj(src,dst,4*1024*1024)

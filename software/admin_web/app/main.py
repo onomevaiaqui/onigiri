@@ -228,28 +228,51 @@ def map_save(payload: MapInput):
     return map_action(maps.save, payload.name, payload.yaml, payload.pgm_base64)
 
 
-# Fixed Onigiri hardware; this panel does not expose actuator commands.
+# Hardware declarations never expose actuator commands.
 from typing import Literal
 from pydantic import ConfigDict
-from .platforms import PlatformStore
+from .platforms import (
+    CAMERA_CATALOG,
+    CHASSIS_CATALOG,
+    DRIVER_BY_ID,
+    DRIVER_CATALOG,
+    LIDAR_CATALOG,
+    PlatformStore,
+)
 platforms=PlatformStore(os.environ.get('ONIGIRI_PLATFORM_FILE',PROJECT_ROOT/'data/platform.json'))
 
 class PlatformInput(BaseModel):
     model_config=ConfigDict(extra='forbid')
     robot_name: str = Field(default='',max_length=80)
-    computer: Literal['raspberry4']='raspberry4'
-    chassis: Literal['onigiri']='onigiri'
-    motor_driver: Literal['onigiri_hat']='onigiri_hat'
-    camera: Literal['none']='none'
-    lidar: Literal[True]=True
+    computer: Literal['raspberry4','raspberry5']='raspberry4'
+    chassis: Literal['omniball','mecanum']='omniball'
+    motor_driver: str = 'onigiri_hat'
+    motor_connection: Literal['i2c','usb','usb_ttl','gpio_pwm_dir']='i2c'
+    serial_port: str = Field(default='',max_length=240,pattern=r'^(/dev/[A-Za-z0-9_./:-]+)?$')
+    lidar_model: str = 'rplidar'
+    lidar_port: str = Field(default='',max_length=240,pattern=r'^(/dev/[A-Za-z0-9_./:-]+)?$')
+    camera: Literal['none','uvc']='uvc'
+    camera_device: str = Field(default='/dev/video0',max_length=240,pattern=r'^(/dev/[A-Za-z0-9_./:-]+)?$')
+    microphone_device: str = Field(default='default',max_length=120)
+    speaker_device: str = Field(default='default',max_length=120)
 
 @app.get('/api/platform')
 def get_platform():
-    return {'config':platforms.get(),'motor_status':'HAT original; o painel não aciona motores'}
+    return {
+        'config':platforms.get(),
+        'catalog':CHASSIS_CATALOG,
+        'drivers':DRIVER_CATALOG,
+        'lidars':LIDAR_CATALOG,
+        'cameras':CAMERA_CATALOG,
+        'motor_status':'O painel apenas grava o perfil. Nenhum comando é enviado aos motores.',
+    }
 
 @app.put('/api/platform')
 def set_platform(payload:PlatformInput):
+    if payload.motor_driver not in DRIVER_BY_ID:
+        raise HTTPException(422,'Controlador de motores fora do catálogo')
     try:return platforms.save(payload.model_dump())
+    except ValueError as error:raise HTTPException(422,str(error))
     except OSError:raise HTTPException(500,'Não foi possível salvar a configuração')
 
 

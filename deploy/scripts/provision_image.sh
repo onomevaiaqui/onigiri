@@ -25,13 +25,16 @@ sudo -u onigiri bash "$root/deploy/scripts/install_lidar_odometry.sh"
 if [[ -f /opt/onigiri-bootstrap/platform.json ]]; then
  install -o onigiri -g onigiri -m 600 /opt/onigiri-bootstrap/platform.json "$root/data/platform.json"
 fi
+if [[ ! -f "$root/data/platform.json" ]]; then
 python3 - "$root/data/platform.json" <<'PYPROFILE'
 import json,sys
 from pathlib import Path
 p=Path(sys.argv[1]);p.parent.mkdir(parents=True,exist_ok=True)
-p.write_text(json.dumps({'robot_name':'','computer':'raspberry4','chassis':'onigiri','motor_driver':'onigiri_hat','camera':'none','lidar':True}))
+p.write_text(json.dumps({'robot_name':'','computer':'raspberry4','chassis':'omniball','motor_driver':'onigiri_hat','motor_connection':'i2c','serial_port':'','lidar_model':'rplidar','lidar_port':'','camera':'uvc','camera_device':'/dev/video0','microphone_device':'default','speaker_device':'default'}))
 PYPROFILE
+fi
 chown onigiri:onigiri "$root/data/platform.json"
+chmod 755 "$root/deploy/scripts/start_lidar.sh"
 install -m 644 "$root/deploy/systemd/onigiri-lidar.service" /etc/systemd/system/onigiri-lidar.service
 systemctl daemon-reload
 systemctl enable --now avahi-daemon.service onigiri-lidar.service

@@ -1,16 +1,24 @@
-import tempfile,unittest
+import tempfile
+import unittest
 from pathlib import Path
-from pydantic import ValidationError
+
 from app.platforms import PlatformStore
+
+
 class PlatformTests(unittest.TestCase):
- def test_fixed_hardware_and_name_persistence(self):
-  with tempfile.TemporaryDirectory() as folder:
-   store=PlatformStore(Path(folder)/'platform.json');self.assertEqual(store.get()['chassis'],'onigiri');store.save({'robot_name':'Recepção'});self.assertEqual(store.get()['robot_name'],'Recepção')
-   with self.assertRaises(ValueError):store.save({'chassis':'other'})
- def test_api_rejects_different_hardware(self):
-  from app.main import PlatformInput,app
-  for data in ({'chassis':'other'},{'motor_driver':'other'},{'computer':'another-board'},{'camera':'other'},{'lidar':False},{'serial_port':'/dev/ttyUSB0'}):
-   with self.assertRaises(ValidationError):PlatformInput(**data)
-  self.assertEqual(PlatformInput(robot_name='Onigiri').chassis,'onigiri')
-  paths={route.path for route in app.routes}
-  self.assertFalse(any(path.startswith('/api/runtime') for path in paths));self.assertFalse(any(path.startswith('/api/sensors/camera') for path in paths))
+    def test_migrates_original_profile_and_persists_supported_hardware(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "platform.json"
+            path.write_text('{"robot_name":"Recepção","chassis":"onigiri"}')
+            store = PlatformStore(path)
+            self.assertEqual(store.get()["chassis"], "omniball")
+            saved = store.save({**store.get(), "computer":"raspberry5", "chassis":"mecanum", "camera":"uvc"})
+            self.assertEqual(saved["computer"], "raspberry5")
+            self.assertEqual(store.get()["chassis"], "mecanum")
+
+    def test_rejects_incompatible_driver_connection(self):
+        with tempfile.TemporaryDirectory() as folder:
+            store = PlatformStore(Path(folder) / "platform.json")
+            config = {**store.get(), "motor_driver":"sabertooth2x32", "motor_connection":"i2c"}
+            with self.assertRaises(ValueError):
+                store.save(config)
