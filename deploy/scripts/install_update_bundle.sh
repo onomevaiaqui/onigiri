@@ -38,7 +38,6 @@ rollback() {
   trap - ERR
   echo "Falha na atualização; restaurando arquivos gerenciados de $backup_root"
   cp -a "$backup_root/files/." "$project_root/"
-  if [[ -d "$backup_root/retired-platforms" ]]; then cp -a "$backup_root/retired-platforms/." "$project_root/"; fi
   if [[ -f "$backup_root/new-files.txt" ]]; then
     while IFS= read -r relative_path; do rm -f -- "$project_root/$relative_path"; done < "$backup_root/new-files.txt"
   fi
@@ -49,13 +48,6 @@ rollback() {
   exit 1
 }
 trap rollback ERR
-if systemctl is-active --quiet onigiri-base.service; then
-  echo 'Encerrando o antigo serviço de base genérico para dedicar este sistema ao Onigiri.'
-  sudo systemctl stop onigiri-base.service
-fi
-# The generic base belongs to Omni Framework, never the dedicated Onigiri panel.
-sudo systemctl disable --now onigiri-base.service 2>/dev/null || true
-python3 payload/deploy/scripts/retire_platform_files.py "$project_root" "$backup_root"
 while IFS= read -r relative_path; do
   mkdir -p "$project_root/$(dirname "$relative_path")"
   cp "payload/$relative_path" "$project_root/$relative_path"

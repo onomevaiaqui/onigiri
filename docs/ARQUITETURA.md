@@ -26,7 +26,7 @@ Raspberry Pi 4 + ROS 2 Jazzy
 
 | Local | Arquivo | Responsabilidade |
 |---|---|---|
-| Raspberry Pi | `software/raspberry/onigiri_udp_tank.py` | Recebe comandos UDP, controla motores, aplica parada frontal e publica integração ROS 2. |
+| Raspberry Pi | `software/raspberry/onigiri_motor_controller.py` | Recebe comandos UDP, controla motores, aplica parada frontal e publica integração ROS 2. |
 | Raspberry Pi | `software/raspberry/onigiri_autonomous_basic.py` | Executa a autonomia reativa quando habilitada. |
 | Raspberry Pi | `software/raspberry/onigiri_voice_recognizer.py` | Transcreve localmente o microfone da webcam e publica frases reconhecidas. |
 | Raspberry Pi | `software/raspberry/onigiri_mission_manager.py` | Conecta pedidos de destino ao Nav2, espera e retorno à base. |

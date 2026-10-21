@@ -102,8 +102,6 @@ Elas se aplicam somente aos arquivos originais do projeto. Raspberry Pi,
 RPLIDAR, HAT de motores e demais produtos de terceiros permanecem sujeitos às
 licenças e condições de seus fabricantes.
 
-## Escopo após a separação
+## Hardware suportado
 
-Este repositório atende exclusivamente ao **Onigiri original**: Raspberry Pi 4, HAT original, três motores omniball e RPLIDAR A1M8. O painel mantém a aparência atual, acesso por navegador, configuração e imagem SD. Não há seleção de outros frames ou drivers nem comandos do runtime genérico no painel.
-
-O software multiplataforma foi preservado integralmente no repositório privado [Omni Framework](https://github.com/onomevaiaqui/omni-framework). Consulte o [escopo do Onigiri](docs/ESCOPO_ONIGIRI.md) e o [manual de primeiro acesso](docs/PRIMEIRO_ACESSO.md).
+Este repositório atende ao **Onigiri original**: Raspberry Pi 4, HAT original, três motores omniball e RPLIDAR A1M8. O painel oferece acesso pelo navegador, configuração, mapas, destinos e geração de imagem SD para esse robô.

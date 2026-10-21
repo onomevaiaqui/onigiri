@@ -9,7 +9,7 @@ class PlatformTests(unittest.TestCase):
    with self.assertRaises(ValueError):store.save({'chassis':'other'})
  def test_api_rejects_different_hardware(self):
   from app.main import PlatformInput,app
-  for data in ({'chassis':'other'},{'motor_driver':'other'},{'computer':'raspberry5'},{'camera':'other'},{'lidar':False},{'serial_port':'/dev/ttyUSB0'}):
+  for data in ({'chassis':'other'},{'motor_driver':'other'},{'computer':'another-board'},{'camera':'other'},{'lidar':False},{'serial_port':'/dev/ttyUSB0'}):
    with self.assertRaises(ValidationError):PlatformInput(**data)
   self.assertEqual(PlatformInput(robot_name='Onigiri').chassis,'onigiri')
   paths={route.path for route in app.routes}

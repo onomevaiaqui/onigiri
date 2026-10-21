@@ -8,7 +8,7 @@ User=onigiri
 Group=onigiri
 SupplementaryGroups=i2c
 WorkingDirectory=/home/onigiri/onigiri
-ExecStart=/bin/bash -lc 'source /opt/ros/jazzy/setup.bash && exec python3 software/raspberry/onigiri_udp_tank.py'
+ExecStart=/bin/bash -lc 'source /opt/ros/jazzy/setup.bash && exec python3 software/raspberry/onigiri_motor_controller.py'
 Restart=on-failure
 RestartSec=1
 

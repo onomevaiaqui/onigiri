@@ -16,10 +16,10 @@ class ProvisionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             root=Path(folder)/'robot';(root/'data').mkdir(parents=True)
             with sqlite3.connect(root/'data/test.db') as db:db.execute('create table test (value)');db.execute('insert into test values (42)')
-            (root/'data/platform.json').write_text('{"chassis":"tank"}')
+            (root/'data/platform.json').write_text('{"robot_name":"Onigiri"}')
             archive=Path(folder)/'backup.tar.gz';tool.backup(root,archive)
             (root/'data/platform.json').write_text('{}');tool.restore(root,archive)
-            self.assertEqual((root/'data/platform.json').read_text(),'{"chassis":"tank"}')
+            self.assertEqual((root/'data/platform.json').read_text(),'{"robot_name":"Onigiri"}')
             with sqlite3.connect(root/'data/test.db') as db:self.assertEqual(db.execute('select value from test').fetchone()[0],42)
             malicious=Path(folder)/'bad.tar.gz'
             with tarfile.open(malicious,'w:gz') as tar:
@@ -37,14 +37,4 @@ class ProvisionTests(unittest.TestCase):
             reopened=DestinationStore(Path(folder)/'dest.db',Path(folder)/'dest.json',ROOT/'config/destinations.example.json')
             self.assertEqual(reopened.list(),store.list())
 
-    def test_platform_retirement_preserves_user_data_and_original_driver(self):
-        tool=module('retire_platform_files')
-        with tempfile.TemporaryDirectory() as folder:
-            root=Path(folder)/'project';backup=Path(folder)/'backup'
-            for name in ('software/robot_runtime/base_node.py','software/raspberry/onigiri_udp_tank.py','data/platform.json','data/maps/sala/map.yaml'):
-                path=root/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_text('preserve')
-            tool.retire(root,backup)
-            self.assertFalse((root/'software/robot_runtime').exists())
-            self.assertTrue((backup/'retired-platforms/software/robot_runtime/base_node.py').is_file())
-            self.assertTrue((root/'software/raspberry/onigiri_udp_tank.py').is_file())
-            self.assertTrue((root/'data/platform.json').is_file());self.assertTrue((root/'data/maps/sala/map.yaml').is_file())
+

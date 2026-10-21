@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Receive UDP tank commands and control the Onigiri Motor HAT."""
+"""Receive UDP motion commands and control the original Onigiri Motor HAT."""
 
 import socket
 import time

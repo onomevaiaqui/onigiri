@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Send Logitech F710 tank commands to the Onigiri over UDP."""
+"""Send Logitech F710 motion commands to the Onigiri over UDP."""
 
 import argparse
 import socket
